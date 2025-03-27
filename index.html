@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="エニアグラム簡易診断フォーム" />
+    <title>エニアグラム簡易診断</title>
+    <style>
+      body {
+        font-family: "Helvetica Neue", sans-serif;
+        background-color: #fdfdfd;
+        padding: 20px;
+        line-height: 1.6;
+        color: #333;
+        max-width: 860px;
+        margin: auto;
+      }
+      h1 {
+        font-size: 28px;
+        color: #2c3e50;
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .type-section {
+        background: #fff;
+        border: 1px solid #ddd;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      }
+      .type-title {
+        font-weight: bold;
+        font-size: 20px;
+        margin-bottom: 10px;
+        color: #2980b9;
+      }
+      button {
+        display: block;
+        margin: 20px auto;
+        padding: 14px 30px;
+        font-size: 16px;
+        background-color: #3498db;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      button:hover {
+        background-color: #2980b9;
+      }
+      #result {
+        margin-top: 30px;
+        font-size: 18px;
+        font-weight: bold;
+        background: #eafaf1;
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid #b2dfdb;
+      }
+      label {
+        display: block;
+        margin-bottom: 6px;
+      }
+      @media screen and (max-width: 600px) {
+        body {
+          padding: 15px;
+        }
+        .type-title {
+          font-size: 18px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>エニアグラム簡易診断</h1>
+    <p>
+      以下のキーワードの中で「自分に当てはまる」と感じるものにチェックを入れてください。該当数の多いタイプがあなたの第一候補となります。
+    </p>
+    <form id="enneagramForm"></form>
+    <button onclick="calculateResult()">診断する</button>
+    <div id="result"></div>
+
+    <script>
+      const data = {
+        1: [
+          "完璧主義",
+          "規律",
+          "秩序",
+          "正義感",
+          "自己厳格",
+          "自己改善",
+          "自己要求",
+          "批判的",
+          "几帳面",
+          "信頼性",
+          "忍耐力",
+          "自己否定",
+          "自己成就",
+          "ルール遵守",
+          "慎重",
+          "自己管理",
+          "自己規律",
+          "融通が利かない",
+          "欲求の抑制",
+          "責任感の過剰",
+        ],
+        2: [
+          "思いやり",
+          "奉仕",
+          "関心",
+          "共感力",
+          "サポート",
+          "気配り",
+          "親切",
+          "応援",
+          "寛容",
+          "感情の共有",
+          "人に喜ばれること",
+          "人間関係の構築",
+          "感謝の表現",
+          "献身的",
+          "尽力",
+          "援助",
+          "気遣い",
+          "お節介",
+          "自己犠牲",
+          "必要以上の依存関係",
+        ],
+        3: [
+          "成果主義",
+          "自己表現",
+          "自己宣伝",
+          "外部の評価",
+          "賞賛",
+          "自己啓発",
+          "外見重視",
+          "目標達成",
+          "仕事への情熱",
+          "効率性",
+          "生産性",
+          "努力",
+          "自己投資",
+          "野心",
+          "承認",
+          "対人スキル",
+          "社会的な成功",
+          "イメージの維持",
+          "成功への欲求",
+          "他者との競争",
+        ],
+        4: [
+          "感受性",
+          "芸術性",
+          "個別性",
+          "独自性",
+          "変わり者",
+          "創造性",
+          "美的センス",
+          "個性的なスタイル",
+          "ロマンチック",
+          "自己表現の欲求",
+          "情緒的な深さ",
+          "内的な世界",
+          "感情の起伏",
+          "美意識",
+          "独特な視点",
+          "自己陶酔",
+          "自己否定",
+          "感情の複雑さ",
+          "感傷的",
+          "感情の浮き沈み",
+        ],
+        5: [
+          "知識欲",
+          "探求心",
+          "分析力",
+          "観察力",
+          "冷静さ",
+          "直観力",
+          "独立性",
+          "研究熱心",
+          "思慮深さ",
+          "専門性",
+          "エキスパート",
+          "論理的思考",
+          "情報の収集と蓄積",
+          "感情の制御",
+          "客観性",
+          "物事の本質を追求",
+          "静寂",
+          "プライバシーの重視",
+          "自己完結型",
+          "非社交的",
+        ],
+        6: [
+          "忠誠心",
+          "安定性",
+          "責任感",
+          "協力性",
+          "リスク回避",
+          "信頼の確認",
+          "安心・安全の追求",
+          "判断の迅速さ",
+          "危機管理",
+          "慎重",
+          "予測と準備",
+          "規律性",
+          "忠実",
+          "自己防衛",
+          "心配性",
+          "警戒心",
+          "不安",
+          "不信感",
+          "組織やグループへの帰属意識",
+          "リーダーの指示に従う",
+        ],
+        7: [
+          "冒険心",
+          "楽観主義",
+          "創造性",
+          "好奇心",
+          "刺激を求める",
+          "多趣味",
+          "興味の幅広さ",
+          "アイデアの豊富さ",
+          "未来志向",
+          "夢想家",
+          "エネルギー",
+          "社交性",
+          "マルチタスク",
+          "自由奔放",
+          "変化への適応性",
+          "多様な経験の追求",
+          "ポジティブな姿勢",
+          "集中力の欠如",
+          "飽きやすさ",
+          "物事を終わらせる難しさ",
+        ],
+        8: [
+          "パワフル",
+          "自信",
+          "リーダーシップ",
+          "決断力",
+          "自己主張",
+          "力強さ",
+          "断固とした態度",
+          "対立",
+          "挑戦",
+          "主導権の取得",
+          "権威",
+          "リスクの受け入れ",
+          "影響力",
+          "自己支配",
+          "コントロール力",
+          "他者への支配欲",
+          "自己中心的",
+          "攻撃性",
+          "強引さ",
+          "過度な競争心",
+        ],
+        9: [
+          "平和",
+          "調和",
+          "平穏",
+          "決断の遅れ",
+          "適応",
+          "妥協",
+          "抑制",
+          "穏やかさ",
+          "中立",
+          "和解の促進",
+          "安定性",
+          "忍耐力",
+          "平凡さ",
+          "傍観者",
+          "穏やかな姿勢",
+          "寛大",
+          "衝突回避",
+          "現実逃避",
+          "自己主張の欠如",
+          "面倒を避ける",
+        ],
+      };
+
+      const descriptions = {
+        1: "タイプ1：理想主義者。正義感と誠実さを大切にし、自分にも他人にも厳しくなりがち。",
+        2: "タイプ2：献身的な援助者。他人への思いやりや気配りが強く、感謝されることに喜びを感じます。",
+        3: "タイプ3：達成者。成功を重視し、外からの評価や成果を追求します。",
+        4: "タイプ4：個性派ロマンチスト。感受性が豊かで、自分らしさや深い感情にこだわります。",
+        5: "タイプ5：観察者。知識を追求し、独立心が強く、一人の時間を大切にします。",
+        6: "タイプ6：忠実なサポーター。不安を感じやすい反面、仲間や安全を大切にします。",
+        7: "タイプ7：楽天的な冒険者。新しいことや刺激を求め、楽しいことに敏感です。",
+        8: "タイプ8：挑戦するリーダー。力強く自己主張し、弱さを見せない頼れる存在です。",
+        9: "タイプ9：平和主義者。対立を避け、周囲との調和を重視します。",
+      };
+
+      const form = document.getElementById("enneagramForm");
+      for (let type in data) {
+        const section = document.createElement("div");
+        section.className = "type-section";
+        const title = document.createElement("div");
+        title.className = "type-title";
+        title.textContent = `タイプ${type}`;
+        section.appendChild(title);
+        data[type].forEach((keyword, idx) => {
+          const id = `type${type}_${idx}`;
+          const label = document.createElement("label");
+          label.innerHTML = `<input type="checkbox" name="type${type}" value="1" id="${id}"> ${keyword}`;
+          section.appendChild(label);
+        });
+        form.appendChild(section);
+      }
+
+      function calculateResult() {
+        const counts = {};
+        for (let type in data) {
+          const checkboxes = document.querySelectorAll(
+            `input[name='type${type}']:checked`
+          );
+          counts[type] = checkboxes.length;
+        }
+        const max = Math.max(...Object.values(counts));
+        const resultTypes = Object.keys(counts).filter(
+          (type) => counts[type] === max
+        );
+
+        // 優先順位：数値の小さいタイプ（1→9）を優先表示
+        resultTypes.sort((a, b) => parseInt(a) - parseInt(b));
+        const mainType = resultTypes[0];
+
+        let resultText = `あなたのタイプは「タイプ${mainType}」です。\n${descriptions[mainType]}`;
+        if (resultTypes.length > 1) {
+          resultText += `\n\n※他にもタイプ${resultTypes
+            .slice(1)
+            .join("・")}の傾向も同数で見られます。`;
+        }
+        document.getElementById("result").textContent = resultText;
+      }
+    </script>
+  </body>
+</html>
