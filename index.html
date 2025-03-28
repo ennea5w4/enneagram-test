@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -6,134 +5,221 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>エニアグラム簡易診断</title>
   <style>
-    body {
-      font-family: "Helvetica Neue", sans-serif;
-      background-color: #f4fef8;
-      padding: 20px;
-      color: #2c3e50;
-      max-width: 860px;
-      margin: auto;
-    }
-    h1 {
-      font-size: 28px;
-      color: #2c3e50;
-      text-align: center;
-      margin-bottom: 10px;
-    }
-    .description-box {
-      background: #eefdf4;
-      padding: 15px;
-      border-radius: 10px;
-      border-left: 5px solid #2ecc71;
-      margin-bottom: 20px;
-    }
-    .type-section {
-      background: #fff;
-      border: 1px solid #ddd;
-      padding: 15px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    }
-    .type-title {
-      font-weight: bold;
-      font-size: 18px;
-      margin-bottom: 10px;
-      color: #16a085;
-    }
-    button {
-      display: inline-block;
-      padding: 10px 20px;
-      font-size: 16px;
-      background-color: #2ecc71;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-      margin-bottom: 20px;
-    }
-    button:hover {
-      background-color: #27ae60;
-    }
-    #result {
-      background: #eafaf1;
-      padding: 20px;
-      border-radius: 10px;
-      border: 1px solid #b2dfdb;
-      font-size: 16px;
-      font-weight: bold;
-      margin-top: 20px;
-    }
-    #result img {
-      max-width: 180px;
-      margin-top: 15px;
-    }
-    label {
-      display: block;
-      margin-bottom: 6px;
-      font-size: 15px;
-    }
+    body { font-family: sans-serif; background: #f4fdf8; padding: 20px; color: #2c3e50; }
+    h1 { text-align: center; }
+    .intro { background: #eefaf3; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+    .type-section { margin-bottom: 20px; }
+    #result { background: #eafaf1; padding: 20px; border-radius: 8px; margin-top: 20px; }
+    button { padding: 10px 20px; background: #2ecc71; color: white; border: none; border-radius: 5px; cursor: pointer; }
   </style>
 </head>
 <body>
-  <h1>エニアグラム簡易診断</h1>
-  <div class="description-box">
-    <strong>📝 以下のキーワードの中から「自分に当てはまる」と思うものをチェックしてください。</strong><br>
-    あなたの性格傾向に近いエニアグラムタイプの候補を簡単に知ることができます。
-  </div>
-
-  <form id="enneagramForm"></form>
-  <button onclick="calculateResult()">診断する</button>
-
-  <div id="result"></div>
-
-  <script>
-    const data = {
-      1: ["完璧主義", "規律", "秩序", "正義感", "自己改善", "信頼性", "忍耐力", "自己成就", "ルール遵守", "慎重", "自己管理", "自己規律", "融通が利かない", "欲求の抑制", "責任感の過剰", "厳格", "理想の追求", "誠実", "倫理観", "常に正しくあろうとする"],
-      2: ["思いやり", "奉仕", "関心", "共感力", "サポート", "親切", "応援", "寛容", "感情の共有", "人に喜ばれること", "感謝の表現", "献身的", "尽力", "援助", "気遣い", "お節介", "自己犠牲", "必要以上の依存関係", "見返りを求めがち", "人に尽くすことで価値を見出す"],
-      3: ["成果主義", "自己表現", "自己宣伝", "外部の評価", "賞賛", "自己啓発", "外見重視", "目標達成", "仕事への情熱", "効率性", "生産性", "努力", "自己投資", "野心", "承認", "対人スキル", "社会的な成功", "イメージの維持", "成功への欲求", "他者との競争"]
-    };
-
-    const form = document.getElementById("enneagramForm");
-
-    for (let type in data) {
-      const section = document.createElement("div");
-      section.className = "type-section";
-
-      const title = document.createElement("div");
-      title.className = "type-title";
-      title.textContent = `タイプ${type}`;
-      section.appendChild(title);
-
-      data[type].forEach(keyword => {
-        const label = document.createElement("label");
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.name = `type${type}`;
-        checkbox.value = keyword;
-        label.appendChild(checkbox);
-        label.append(` ${keyword}`);
-        section.appendChild(label);
-      });
-
-      form.appendChild(section);
-    }
-
-    function calculateResult() {
-      const counts = {};
-      for (let type in data) {
-        const checked = document.querySelectorAll(`input[name='type${type}']:checked`);
-        counts[type] = checked.length;
-      }
-
-      const max = Math.max(...Object.values(counts));
-      const topTypes = Object.keys(counts).filter(t => counts[t] === max);
-      const mainType = topTypes[0];
-
-      const resultText = `あなたのタイプ候補は <strong>タイプ${mainType}</strong> です。`;
-      document.getElementById("result").innerHTML = resultText;
-    }
-  </script>
-</body>
-</html>
+<h1>エニアグラム簡易診断</h1>
+<div class="intro">
+  <strong>📄 以下のキーワードの中から「自分に当てはまる」と思うものをチェックしてください。</strong><br>
+  あなたの性格傾向に近いエニアグラムタイプの候補を簡単に知ることができます。
+</div>
+<form id="enneagramForm">
+<div class="type-section"><strong>タイプ1</strong><br>
+<label><input type="checkbox" name="type1"> 完璧主義</label><br>
+<label><input type="checkbox" name="type1"> 規律</label><br>
+<label><input type="checkbox" name="type1"> 秩序</label><br>
+<label><input type="checkbox" name="type1"> 正義感</label><br>
+<label><input type="checkbox" name="type1"> 自己改善</label><br>
+<label><input type="checkbox" name="type1"> 信頼性</label><br>
+<label><input type="checkbox" name="type1"> 慎重</label><br>
+<label><input type="checkbox" name="type1"> 忍耐力</label><br>
+<label><input type="checkbox" name="type1"> ルール遵守</label><br>
+<label><input type="checkbox" name="type1"> 自己管理</label><br>
+<label><input type="checkbox" name="type1"> 自己否定</label><br>
+<label><input type="checkbox" name="type1"> 責任感の過剰</label><br>
+<label><input type="checkbox" name="type1"> 批判的</label><br>
+<label><input type="checkbox" name="type1"> 自己要求</label><br>
+<label><input type="checkbox" name="type1"> 几帳面</label><br>
+<label><input type="checkbox" name="type1"> 融通が利かない</label><br>
+<label><input type="checkbox" name="type1"> 欲求の抑制</label><br>
+<label><input type="checkbox" name="type1"> 自己厳格</label><br>
+<label><input type="checkbox" name="type1"> 自己規律</label><br>
+<label><input type="checkbox" name="type1"> 自己成就</label><br>
+</div>
+<div class="type-section"><strong>タイプ2</strong><br>
+<label><input type="checkbox" name="type2"> 思いやり</label><br>
+<label><input type="checkbox" name="type2"> 奉仕</label><br>
+<label><input type="checkbox" name="type2"> 関心</label><br>
+<label><input type="checkbox" name="type2"> 共感力</label><br>
+<label><input type="checkbox" name="type2"> サポート</label><br>
+<label><input type="checkbox" name="type2"> 気配り</label><br>
+<label><input type="checkbox" name="type2"> 親切</label><br>
+<label><input type="checkbox" name="type2"> 応援</label><br>
+<label><input type="checkbox" name="type2"> 寛容</label><br>
+<label><input type="checkbox" name="type2"> 感情の共有</label><br>
+<label><input type="checkbox" name="type2"> 人に喜ばれること</label><br>
+<label><input type="checkbox" name="type2"> 人間関係の構築</label><br>
+<label><input type="checkbox" name="type2"> 感謝の表現</label><br>
+<label><input type="checkbox" name="type2"> 献身的</label><br>
+<label><input type="checkbox" name="type2"> 尽力</label><br>
+<label><input type="checkbox" name="type2"> 援助</label><br>
+<label><input type="checkbox" name="type2"> 気遣い</label><br>
+<label><input type="checkbox" name="type2"> お節介</label><br>
+<label><input type="checkbox" name="type2"> 自己犠牲</label><br>
+<label><input type="checkbox" name="type2"> 必要以上の依存関係</label><br>
+</div>
+<div class="type-section"><strong>タイプ3</strong><br>
+<label><input type="checkbox" name="type3"> 成果主義</label><br>
+<label><input type="checkbox" name="type3"> 自己表現</label><br>
+<label><input type="checkbox" name="type3"> 自己宣伝</label><br>
+<label><input type="checkbox" name="type3"> 外部の評価</label><br>
+<label><input type="checkbox" name="type3"> 賞賛</label><br>
+<label><input type="checkbox" name="type3"> 自己啓発</label><br>
+<label><input type="checkbox" name="type3"> 外見重視</label><br>
+<label><input type="checkbox" name="type3"> 目標達成</label><br>
+<label><input type="checkbox" name="type3"> 仕事への情熱</label><br>
+<label><input type="checkbox" name="type3"> 効率性</label><br>
+<label><input type="checkbox" name="type3"> 生産性</label><br>
+<label><input type="checkbox" name="type3"> 努力</label><br>
+<label><input type="checkbox" name="type3"> 自己投資</label><br>
+<label><input type="checkbox" name="type3"> 野心</label><br>
+<label><input type="checkbox" name="type3"> 承認</label><br>
+<label><input type="checkbox" name="type3"> 対人スキル</label><br>
+<label><input type="checkbox" name="type3"> 社会的な成功</label><br>
+<label><input type="checkbox" name="type3"> イメージの維持</label><br>
+<label><input type="checkbox" name="type3"> 成功への欲求</label><br>
+<label><input type="checkbox" name="type3"> 他者との競争</label><br>
+</div>
+<div class="type-section"><strong>タイプ4</strong><br>
+<label><input type="checkbox" name="type4"> 感受性</label><br>
+<label><input type="checkbox" name="type4"> 芸術性</label><br>
+<label><input type="checkbox" name="type4"> 個別性</label><br>
+<label><input type="checkbox" name="type4"> 独自性</label><br>
+<label><input type="checkbox" name="type4"> 変わり者</label><br>
+<label><input type="checkbox" name="type4"> 創造性</label><br>
+<label><input type="checkbox" name="type4"> 美的センス</label><br>
+<label><input type="checkbox" name="type4"> 個性的なスタイル</label><br>
+<label><input type="checkbox" name="type4"> ロマンチック</label><br>
+<label><input type="checkbox" name="type4"> 自己表現の欲求</label><br>
+<label><input type="checkbox" name="type4"> 情緒的な深さ</label><br>
+<label><input type="checkbox" name="type4"> 内的な世界</label><br>
+<label><input type="checkbox" name="type4"> 感情の起伏</label><br>
+<label><input type="checkbox" name="type4"> 美意識</label><br>
+<label><input type="checkbox" name="type4"> 独特な視点</label><br>
+<label><input type="checkbox" name="type4"> 自己陶酔</label><br>
+<label><input type="checkbox" name="type4"> 自己否定</label><br>
+<label><input type="checkbox" name="type4"> 感情の複雑さ</label><br>
+<label><input type="checkbox" name="type4"> 感傷的</label><br>
+<label><input type="checkbox" name="type4"> 感情の浮き沈み</label><br>
+</div>
+<div class="type-section"><strong>タイプ5</strong><br>
+<label><input type="checkbox" name="type5"> 知識欲</label><br>
+<label><input type="checkbox" name="type5"> 探求心</label><br>
+<label><input type="checkbox" name="type5"> 分析力</label><br>
+<label><input type="checkbox" name="type5"> 観察力</label><br>
+<label><input type="checkbox" name="type5"> 冷静さ</label><br>
+<label><input type="checkbox" name="type5"> 直観力</label><br>
+<label><input type="checkbox" name="type5"> 独立性</label><br>
+<label><input type="checkbox" name="type5"> 研究熱心</label><br>
+<label><input type="checkbox" name="type5"> 思慮深さ</label><br>
+<label><input type="checkbox" name="type5"> 専門性</label><br>
+<label><input type="checkbox" name="type5"> エキスパート</label><br>
+<label><input type="checkbox" name="type5"> 論理的思考</label><br>
+<label><input type="checkbox" name="type5"> 情報の収集と蓄積</label><br>
+<label><input type="checkbox" name="type5"> 感情の制御</label><br>
+<label><input type="checkbox" name="type5"> 客観性</label><br>
+<label><input type="checkbox" name="type5"> 物事の本質を追求</label><br>
+<label><input type="checkbox" name="type5"> 静寂</label><br>
+<label><input type="checkbox" name="type5"> プライバシーの重視</label><br>
+<label><input type="checkbox" name="type5"> 自己完結型</label><br>
+<label><input type="checkbox" name="type5"> 非社交的</label><br>
+</div>
+<div class="type-section"><strong>タイプ6</strong><br>
+<label><input type="checkbox" name="type6"> 忠誠心</label><br>
+<label><input type="checkbox" name="type6"> 安定性</label><br>
+<label><input type="checkbox" name="type6"> 責任感</label><br>
+<label><input type="checkbox" name="type6"> 協力性</label><br>
+<label><input type="checkbox" name="type6"> リスク回避</label><br>
+<label><input type="checkbox" name="type6"> 信頼の確認</label><br>
+<label><input type="checkbox" name="type6"> 安心・安全の追求</label><br>
+<label><input type="checkbox" name="type6"> 判断の迅速さ</label><br>
+<label><input type="checkbox" name="type6"> 危機管理</label><br>
+<label><input type="checkbox" name="type6"> 慎重</label><br>
+<label><input type="checkbox" name="type6"> 予測と準備</label><br>
+<label><input type="checkbox" name="type6"> 規律性</label><br>
+<label><input type="checkbox" name="type6"> 忠実</label><br>
+<label><input type="checkbox" name="type6"> 自己防衛</label><br>
+<label><input type="checkbox" name="type6"> 心配性</label><br>
+<label><input type="checkbox" name="type6"> 警戒心</label><br>
+<label><input type="checkbox" name="type6"> 不安</label><br>
+<label><input type="checkbox" name="type6"> 不信感</label><br>
+<label><input type="checkbox" name="type6"> 組織やグループへの帰属意識</label><br>
+<label><input type="checkbox" name="type6"> リーダーの指示に従う</label><br>
+</div>
+<div class="type-section"><strong>タイプ7</strong><br>
+<label><input type="checkbox" name="type7"> 冒険心</label><br>
+<label><input type="checkbox" name="type7"> 楽観主義</label><br>
+<label><input type="checkbox" name="type7"> 創造性</label><br>
+<label><input type="checkbox" name="type7"> 好奇心</label><br>
+<label><input type="checkbox" name="type7"> 刺激を求める</label><br>
+<label><input type="checkbox" name="type7"> 多趣味</label><br>
+<label><input type="checkbox" name="type7"> 興味の幅広さ</label><br>
+<label><input type="checkbox" name="type7"> アイデアの豊富さ</label><br>
+<label><input type="checkbox" name="type7"> 未来志向</label><br>
+<label><input type="checkbox" name="type7"> 夢想家</label><br>
+<label><input type="checkbox" name="type7"> エネルギー</label><br>
+<label><input type="checkbox" name="type7"> 社交性</label><br>
+<label><input type="checkbox" name="type7"> マルチタスク</label><br>
+<label><input type="checkbox" name="type7"> 自由奔放</label><br>
+<label><input type="checkbox" name="type7"> 変化への適応性</label><br>
+<label><input type="checkbox" name="type7"> 多様な経験の追求</label><br>
+<label><input type="checkbox" name="type7"> ポジティブな姿勢</label><br>
+<label><input type="checkbox" name="type7"> 集中力の欠如</label><br>
+<label><input type="checkbox" name="type7"> 飽きやすさ</label><br>
+<label><input type="checkbox" name="type7"> 物事を終わらせる難しさ</label><br>
+</div>
+<div class="type-section"><strong>タイプ8</strong><br>
+<label><input type="checkbox" name="type8"> パワフル</label><br>
+<label><input type="checkbox" name="type8"> 自信</label><br>
+<label><input type="checkbox" name="type8"> リーダーシップ</label><br>
+<label><input type="checkbox" name="type8"> 決断力</label><br>
+<label><input type="checkbox" name="type8"> 自己主張</label><br>
+<label><input type="checkbox" name="type8"> 力強さ</label><br>
+<label><input type="checkbox" name="type8"> 断固とした態度</label><br>
+<label><input type="checkbox" name="type8"> 対立</label><br>
+<label><input type="checkbox" name="type8"> 挑戦</label><br>
+<label><input type="checkbox" name="type8"> 主導権の取得</label><br>
+<label><input type="checkbox" name="type8"> 権威</label><br>
+<label><input type="checkbox" name="type8"> リスクの受け入れ</label><br>
+<label><input type="checkbox" name="type8"> 影響力</label><br>
+<label><input type="checkbox" name="type8"> 自己支配</label><br>
+<label><input type="checkbox" name="type8"> コントロール力</label><br>
+<label><input type="checkbox" name="type8"> 他者への支配欲</label><br>
+<label><input type="checkbox" name="type8"> 自己中心的</label><br>
+<label><input type="checkbox" name="type8"> 攻撃性</label><br>
+<label><input type="checkbox" name="type8"> 強引さ</label><br>
+<label><input type="checkbox" name="type8"> 過度な競争心</label><br>
+</div>
+<div class="type-section"><strong>タイプ9</strong><br>
+<label><input type="checkbox" name="type9"> 平和</label><br>
+<label><input type="checkbox" name="type9"> 調和</label><br>
+<label><input type="checkbox" name="type9"> 平穏</label><br>
+<label><input type="checkbox" name="type9"> 決断の遅れ</label><br>
+<label><input type="checkbox" name="type9"> 適応</label><br>
+<label><input type="checkbox" name="type9"> 妥協</label><br>
+<label><input type="checkbox" name="type9"> 抑制</label><br>
+<label><input type="checkbox" name="type9"> 穏やかさ</label><br>
+<label><input type="checkbox" name="type9"> 中立</label><br>
+<label><input type="checkbox" name="type9"> 和解の促進</label><br>
+<label><input type="checkbox" name="type9"> 安定性</label><br>
+<label><input type="checkbox" name="type9"> 忍耐力</label><br>
+<label><input type="checkbox" name="type9"> 平凡さ</label><br>
+<label><input type="checkbox" name="type9"> 傍観者</label><br>
+<label><input type="checkbox" name="type9"> 穏やかな姿勢</label><br>
+<label><input type="checkbox" name="type9"> 寛大</label><br>
+<label><input type="checkbox" name="type9"> 衝突回避</label><br>
+<label><input type="checkbox" name="type9"> 現実逃避</label><br>
+<label><input type="checkbox" name="type9"> 自己主張の欠如</label><br>
+<label><input type="checkbox" name="type9"> 面倒を避ける</label><br>
+</div>
+</form>
+<button onclick="calculateResult()">診断する</button>
+<div id="result"></div>
+<script>function calculateResult(){const c={};for(let i=1;i<=9;i++){const b=document.querySelectorAll("input[name='type"+i+"']:checked").length;c[i]=b}const m=Math.max(...Object.values(c));const r=Object.keys(c).filter(k=>c[k]===m);const s=r.sort((a,b)=>a-b);document.getElementById("result").innerHTML="あなたのタイプ候補は <strong>タイプ"+s[0]+"</strong> です。";}</script>
+</body></html>
