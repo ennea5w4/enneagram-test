@@ -3,9 +3,139 @@
 <head>
   <meta charset="UTF-8">
   <title>エニアグラム診断ツール</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 20px;
+      background-color: #fefefe;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+    }
+    form {
+      max-width: 800px;
+      margin: auto;
+    }
+    .type-section {
+      margin-bottom: 20px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background: #f9f9f9;
+    }
+    .type-title {
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    label {
+      display: block;
+      margin-bottom: 4px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    #result {
+      max-width: 800px;
+      margin: 30px auto;
+      padding: 20px;
+      background-color: #e8f5e9;
+      border: 1px solid #c8e6c9;
+      border-radius: 8px;
+    }
+    #result img {
+      max-width: 120px;
+      margin-top: 15px;
+    }
+  </style>
 </head>
 <body>
-  <h1>エニアグラム診断ツール</h1>
-  <p>このページは現在準備中です。</p>
+  <h1>エニアグラム簡易診断</h1>
+  <form id="enneagramForm"></form>
+  <button onclick="calculateResult()">診断する</button>
+  <div id="result"></div>
+
+  <script>
+    const data = {
+      1: ["完璧主義", "規律", "秩序", "正義感", "自己厳格"],
+      2: ["思いやり", "奉仕", "関心", "共感力", "サポート"],
+      3: ["成果主義", "自己表現", "外部の評価", "賞賛", "効率性"],
+      4: ["感受性", "芸術性", "個別性", "創造性", "感情の深さ"],
+      5: ["知識欲", "探求心", "分析力", "観察力", "独立性"],
+      6: ["忠誠心", "安定性", "責任感", "協力性", "リスク回避"],
+      7: ["冒険心", "楽観主義", "好奇心", "刺激追求", "多趣味"],
+      8: ["パワフル", "リーダーシップ", "決断力", "主張", "影響力"],
+      9: ["平和", "調和", "穏やかさ", "妥協", "安定"]
+    };
+
+    const descriptions = {
+      1: "理想に向かって努力し続けるタイプ。正義感が強く、完璧を求める傾向があります。",
+      2: "人の役に立ちたい思いが強く、優しさと献身性を持つタイプ。",
+      3: "成果を出すことに価値を感じ、前向きで努力家なタイプ。",
+      4: "独自性や感受性が高く、芸術的な表現に惹かれるタイプ。",
+      5: "知識と探究心にあふれ、静かに深く思考するタイプ。",
+      6: "慎重で忠実。安心や信頼関係を大切にするタイプ。",
+      7: "楽しいことや新しい刺激を求め、明るく前向きなタイプ。",
+      8: "強さとリーダーシップを持ち、自信を持って進むタイプ。",
+      9: "穏やかで協調性があり、周囲との調和を大切にするタイプ。"
+    };
+
+    function generateForm() {
+      const form = document.getElementById("enneagramForm");
+      for (let type in data) {
+        const section = document.createElement("div");
+        section.className = "type-section";
+        const title = document.createElement("div");
+        title.className = "type-title";
+        title.textContent = `タイプ${type}`;
+        section.appendChild(title);
+        data[type].forEach(keyword => {
+          const label = document.createElement("label");
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.name = `type${type}`;
+          checkbox.value = keyword;
+          label.appendChild(checkbox);
+          label.append(` ${keyword}`);
+          section.appendChild(label);
+        });
+        form.appendChild(section);
+      }
+    }
+
+    function calculateResult() {
+      event.preventDefault();
+      const counts = {};
+      for (let type in data) {
+        const checkboxes = document.querySelectorAll(`input[name='type${type}']:checked`);
+        counts[type] = checkboxes.length;
+      }
+      const max = Math.max(...Object.values(counts));
+      const resultTypes = Object.keys(counts).filter(type => counts[type] === max);
+      resultTypes.sort((a, b) => parseInt(a) - parseInt(b));
+      const mainType = resultTypes[0];
+
+      let resultHTML = `<p>あなたのタイプ候補は <strong>タイプ${mainType}</strong> です。</p>`;
+      resultHTML += `<p>${descriptions[mainType]}</p>`;
+      resultHTML += `<img src="img/type${mainType}.png" alt="タイプ${mainType}のイラスト">`;
+
+      if (resultTypes.length > 1) {
+        resultHTML += `<p>※他にもタイプ${resultTypes.slice(1).join("・")}の傾向も見られます。</p>`;
+      }
+
+      document.getElementById("result").innerHTML = resultHTML;
+    }
+
+    window.onload = generateForm;
+  </script>
 </body>
 </html>
