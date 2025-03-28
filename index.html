@@ -3,156 +3,136 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>エニアグラム簡易診断</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>エニアグラム簡易診断</title>
   <style>
     body {
-      font-family: sans-serif;
-      background-color: #f4fdf8;
-      color: #333;
+      font-family: "Helvetica Neue", sans-serif;
+      background-color: #f4fef8;
       padding: 20px;
-      max-width: 700px;
+      color: #2c3e50;
+      max-width: 860px;
       margin: auto;
     }
     h1 {
-      text-align: center;
+      font-size: 28px;
       color: #2c3e50;
+      text-align: center;
+      margin-bottom: 10px;
     }
-    .intro {
-      background: #e8f6f0;
+    .description-box {
+      background: #eefdf4;
       padding: 15px;
-      border-left: 4px solid #2ecc71;
+      border-radius: 10px;
+      border-left: 5px solid #2ecc71;
       margin-bottom: 20px;
     }
     .type-section {
+      background: #fff;
+      border: 1px solid #ddd;
+      padding: 15px;
+      border-radius: 10px;
       margin-bottom: 20px;
-      padding: 10px;
-      background-color: #fff;
-      border-radius: 8px;
-      border: 1px solid #ccc;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     }
-    .type-section h2 {
-      margin-top: 0;
-      color: #27ae60;
+    .type-title {
+      font-weight: bold;
+      font-size: 18px;
+      margin-bottom: 10px;
+      color: #16a085;
+    }
+    button {
+      display: inline-block;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #2ecc71;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      margin-bottom: 20px;
+    }
+    button:hover {
+      background-color: #27ae60;
+    }
+    #result {
+      background: #eafaf1;
+      padding: 20px;
+      border-radius: 10px;
+      border: 1px solid #b2dfdb;
+      font-size: 16px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+    #result img {
+      max-width: 180px;
+      margin-top: 15px;
     }
     label {
       display: block;
-      margin-left: 10px;
-    }
-    button {
-      background-color: #2ecc71;
-      color: white;
-      font-size: 16px;
-      padding: 10px 20px;
-      margin: 20px 0;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    #result {
-      background-color: #e8f6f0;
-      padding: 15px;
-      border-left: 5px solid #27ae60;
-      margin-top: 20px;
-      border-radius: 5px;
-    }
-    #result img {
-      max-width: 150px;
-      display: block;
-      margin-top: 10px;
+      margin-bottom: 6px;
+      font-size: 15px;
     }
   </style>
 </head>
 <body>
   <h1>エニアグラム簡易診断</h1>
-  <div class="intro">
-    📝 <strong>以下のキーワードの中から「自分に当てはまる」と思うものをチェックしてください。</strong><br>
+  <div class="description-box">
+    <strong>📝 以下のキーワードの中から「自分に当てはまる」と思うものをチェックしてください。</strong><br>
     あなたの性格傾向に近いエニアグラムタイプの候補を簡単に知ることができます。
   </div>
 
   <form id="enneagramForm"></form>
   <button onclick="calculateResult()">診断する</button>
+
   <div id="result"></div>
 
   <script>
     const data = {
-      1: ["完璧主義", "規律", "秩序", "正義感", "自己管理", "慎重", "責任感", "努力", "厳格", "真面目", "誠実", "自律", "道徳", "清廉潔白", "良心", "理想主義", "高潔", "自分に厳しい", "ミスを避ける", "自己抑制"],
-      2: ["思いやり", "親切", "世話好き", "共感", "温かい", "援助", "奉仕", "愛情深い", "他者優先", "頼られたい", "人のために尽くす", "感謝されたい", "自己犠牲", "無償の愛", "支援", "気配り", "献身", "感情的", "助けたい", "肯定的"],
-      3: ["成功志向", "目標達成", "成果重視", "効率的", "自信", "カリスマ", "魅力的", "モチベーション高い", "行動的", "計画的", "賞賛されたい", "外見重視", "表現力", "上昇志向", "競争心", "実行力", "プロ意識", "説得力", "達成感重視", "目立ちたい"],
-      4: ["感受性", "創造性", "美意識", "独自性", "ユニーク", "内向的", "芸術的", "感情的", "表現力", "孤独好き", "繊細", "共感力", "想像力", "自己探求", "個性", "理想主義", "直感的", "詩的", "ロマンチスト", "深い感情"],
-      5: ["知的好奇心", "分析力", "観察力", "冷静", "集中力", "独立心", "専門性", "探究心", "内省", "理論的", "論理的", "情報収集", "客観的", "控えめ", "孤独を好む", "知識欲", "効率的", "静か", "自制心", "慎重"],
-      6: ["忠誠心", "不安感", "警戒心", "慎重", "サポート役", "責任感", "協調性", "備え重視", "安全志向", "信頼関係重視", "グループ意識", "堅実", "保守的", "義務感", "助け合い", "頼れる人重視", "内面に葛藤", "誠実", "安定志向", "準備周到"],
-      7: ["楽観的", "活動的", "冒険心", "好奇心", "社交的", "明るい", "元気", "新しいもの好き", "前向き", "アイデア豊富", "刺激追求", "柔軟", "自由を好む", "飽きっぽい", "遊び心", "軽やか", "笑顔", "友達多い", "エネルギッシュ", "未来志向"],
-      8: ["リーダーシップ", "決断力", "エネルギッシュ", "力強さ", "自己主張", "統率力", "責任感", "支配欲", "独立心", "正義感", "大胆", "影響力", "闘争心", "勝ち気", "挑戦的", "防衛的", "弱さを見せない", "強さ重視", "守る姿勢", "行動力"],
-      9: ["平和主義", "協調性", "穏やか", "受け入れ力", "無欲", "争いを避ける", "聞き役", "安定重視", "自己主張が少ない", "柔軟性", "ゆったり", "優しい", "受動的", "我慢強い", "感情を抑える", "居心地重視", "静か", "丸く収める", "控えめ", "安心感"]
+      1: ["完璧主義", "規律", "秩序", "正義感", "自己改善", "信頼性", "忍耐力", "自己成就", "ルール遵守", "慎重", "自己管理", "自己規律", "融通が利かない", "欲求の抑制", "責任感の過剰", "厳格", "理想の追求", "誠実", "倫理観", "常に正しくあろうとする"],
+      2: ["思いやり", "奉仕", "関心", "共感力", "サポート", "親切", "応援", "寛容", "感情の共有", "人に喜ばれること", "感謝の表現", "献身的", "尽力", "援助", "気遣い", "お節介", "自己犠牲", "必要以上の依存関係", "見返りを求めがち", "人に尽くすことで価値を見出す"],
+      3: ["成果主義", "自己表現", "自己宣伝", "外部の評価", "賞賛", "自己啓発", "外見重視", "目標達成", "仕事への情熱", "効率性", "生産性", "努力", "自己投資", "野心", "承認", "対人スキル", "社会的な成功", "イメージの維持", "成功への欲求", "他者との競争"]
     };
 
-    const descriptions = {
-      1: "真面目で誠実。理想に向かって努力するタイプ。
-アドバイス：自分にも他人にも優しくなる余裕を持ってみて。",
-      2: "献身的な援助者。人の役に立つことに喜びを感じます。
-アドバイス：自分のニーズを後回しにしがちなので、まずは自分を大切に。",
-      3: "成功を追求する達成者。常に目標に向かって前進します。
-アドバイス：人からの評価だけでなく、自分自身の満足感にも目を向けて。",
-      4: "独自の世界観を持つ表現者。感受性が豊かで創造的。
-アドバイス：現実とのバランスをとることが自己理解に繋がります。",
-      5: "知識欲旺盛な観察者。静かに深く物事を考える傾向があります。
-アドバイス：安心できる場面からでも感情を共有する経験を。",
-      6: "誠実で忠実なサポーター。周囲との信頼関係を大切にします。
-アドバイス：自分の判断や直感を信じて一歩踏み出してみましょう。",
-      7: "楽天的な冒険者。新しいことや楽しい体験を好みます。
-アドバイス：今この瞬間に意識を向けると心が落ち着きます。",
-      8: "エネルギッシュなリーダー。堂々と自分を主張するタイプ。
-アドバイス：時には弱さを認めることで、人との絆が深まります。",
-      9: "平和を好む調和型。人に合わせるのが得意で穏やかな雰囲気。
-アドバイス：自分の意見や望みを声に出してみることを意識して。"
-    };
+    const form = document.getElementById("enneagramForm");
 
-    const images = {
-      1: "画像/type1.png",
-      2: "画像/type2.png",
-      3: "画像/type3.png",
-      4: "画像/type4.png",
-      5: "画像/type5.png",
-      6: "画像/type6.png",
-      7: "画像/type7.png",
-      8: "画像/type8.png",
-      9: "画像/type9.png"
-    };
+    for (let type in data) {
+      const section = document.createElement("div");
+      section.className = "type-section";
 
-    window.onload = () => {
-      const form = document.getElementById("enneagramForm");
-      for (let type = 1; type <= 9; type++) {
-        const section = document.createElement("div");
-        section.className = "type-section";
-        section.innerHTML = `<h2>タイプ${type}</h2>`;
-        data[type].forEach(word => {
-          section.innerHTML += `<label><input type="checkbox" name="type${type}" value="${word}"> ${word}</label>`;
-        });
-        form.appendChild(section);
-      }
-    };
+      const title = document.createElement("div");
+      title.className = "type-title";
+      title.textContent = `タイプ${type}`;
+      section.appendChild(title);
+
+      data[type].forEach(keyword => {
+        const label = document.createElement("label");
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.name = `type${type}`;
+        checkbox.value = keyword;
+        label.appendChild(checkbox);
+        label.append(` ${keyword}`);
+        section.appendChild(label);
+      });
+
+      form.appendChild(section);
+    }
 
     function calculateResult() {
       const counts = {};
       for (let type in data) {
-        counts[type] = document.querySelectorAll(`input[name='type${type}']:checked`).length;
+        const checked = document.querySelectorAll(`input[name='type${type}']:checked`);
+        counts[type] = checked.length;
       }
+
       const max = Math.max(...Object.values(counts));
-      const resultTypes = Object.keys(counts).filter(type => counts[type] === max);
-      resultTypes.sort((a, b) => parseInt(a) - parseInt(b));
-      const mainType = resultTypes[0];
+      const topTypes = Object.keys(counts).filter(t => counts[t] === max);
+      const mainType = topTypes[0];
 
-      let resultText = `あなたのタイプ候補は <strong>タイプ${mainType}</strong> です。<br><br>`;
-      resultText += descriptions[mainType].replace(/
-/g, "<br>");
-
-      if (resultTypes.length > 1) {
-        resultText += `<br><br>※他にもタイプ${resultTypes.slice(1).join("・")}の傾向も見られます。`;
-      }
-
-      const img = `<img src="${images[mainType]}" alt="タイプ${mainType}の画像">`;
-      document.getElementById("result").innerHTML = resultText + "<br>" + img;
+      const resultText = `あなたのタイプ候補は <strong>タイプ${mainType}</strong> です。`;
+      document.getElementById("result").innerHTML = resultText;
     }
   </script>
 </body>
