@@ -71,6 +71,13 @@
     <form id="enneagramForm"></form>
     <button onclick="calculateResult()">診断する</button>
     <div id="result"></div>
+    <button id="copyBtn" onclick="copyResult()" style="display: none">
+      診断結果をコピー
+    </button>
+    <div id="shareBtns" style="display: none; margin-top: 10px">
+      <a id="xShare" target="_blank">Xでシェア</a> |
+      <a id="lineShare" target="_blank">LINEで送る</a>
+    </div>
 
     <script>
       const data = {
@@ -345,6 +352,26 @@
         }
         const resultHTML = `${resultText}<br><img src="${images[mainType]}" class="type-image" alt="タイプ${mainType}の画像">`;
         document.getElementById("result").innerHTML = resultHTML;
+        document.getElementById("copyBtn").style.display = "block";
+        document.getElementById("shareBtns").style.display = "block";
+
+        const shareText = encodeURIComponent(
+          `エニアグラム簡易診断の結果 → タイプ${mainType}候補でした！`
+        );
+        const shareURL = encodeURIComponent(window.location.href);
+        document.getElementById(
+          "xShare"
+        ).href = `https://twitter.com/intent/tweet?text=${shareText}%0A${shareURL}`;
+        document.getElementById(
+          "lineShare"
+        ).href = `https://social-plugins.line.me/lineit/share?url=${shareURL}`;
+      }
+
+      function copyResult() {
+        const text = document.getElementById("result").innerText;
+        navigator.clipboard.writeText(text).then(() => {
+          alert("診断結果をコピーしました！");
+        });
       }
     </script>
   </body>
