@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>エニアグラム簡易タイプ診断（テンプレ）</title>
+<style>
+  :root { --primary:#00797b; --bg:#f7fafb; --card:#ffffff; --muted:#667085; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Yu Gothic UI","YuGothic","Hiragino Kaku Gothic ProN", Meiryo, sans-serif; background: var(--bg); margin:0; color:#111;}
+  header { padding: 20px 16px; background: var(--card); border-bottom: 1px solid #e5e7eb; position: sticky; top: 0; z-index: 10;}
+  header h1 { font-size: 20px; margin:0; color: var(--primary);}
+  main { max-width: 840px; margin: 0 auto; padding: 20px 16px 80px; }
+  .card { background: var(--card); border:1px solid #e5e7eb; border-radius: 12px; padding:16px; margin:12px 0; }
+  .q-title { font-weight:700; margin-bottom:8px; }
+  .opt { display:flex; gap:10px; align-items:center; padding:10px 12px; border-radius:10px; border:1px solid #e5e7eb; margin:8px 0; cursor:pointer; }
+  .opt input { transform: scale(1.1); }
+  .muted { color: var(--muted); font-size: 12px; }
+  .actions { position: sticky; bottom: 0; background: rgba(255,255,255,0.9); border-top:1px solid #e5e7eb; padding:12px 16px; display:flex; gap:10px; }
+  button { background: var(--primary); color:#fff; border:none; border-radius:10px; padding:12px 16px; font-weight:700; cursor:pointer; }
+  button.secondary { background:#e5e7eb; color:#111; }
+  .result { padding:16px; border-radius:12px; background:#ecfeff; border:1px solid #bae6fd; }
+  .badge { display:inline-block; padding:6px 10px; border-radius:999px; background:#e0f2fe; color:#075985; font-weight:700; margin-right:6px; }
+  details { margin-top: 6px; }
+  summary { cursor: pointer; color: var(--primary); }
+  .footer-note { margin-top:8px; }
+</style>
+</head>
+<body>
+  <header>
+    <h1>エニアグラム簡易タイプ診断（テンプレ）</h1>
+    <div class="muted">※講座用のデモ。結果は「タイプ候補」です。</div>
+  </header>
+  <main>
+    <div class="card">
+      <div class="muted">操作方法：</div>
+      <p>各設問で、あなたに当てはまる選択肢を1つ選んでください（3段階）。「診断する」を押すと結果が表示されます。</p>
+    </div>
+
+    <!-- 9問（タイプ1〜9に対応）。テキストは自由に編集してください -->
+    <form id="quiz">
+      <!-- Q1 Type 1 -->
+      <div class="card">
+        <div class="q-title">Q1. 物事を正しく整え、ルールや品質にこだわるほうだ。</div>
+        <label class="opt"><input type="radio" name="q1" value="2" required>当てはまる</label>
+        <label class="opt"><input type="radio" name="q1" value="1">どちらともいえない</label>
+        <label class="opt"><input type="radio" name="q1" value="0">当てはまらない</label>
+        <div class="muted">タイプ1（改革する人）に対応</div>
+      </div>
+      <!-- Q2 Type 2 -->
+      <div class="card">
+        <div class="q-title">Q2. 人の役に立つと嬉しく、ついサポート役を買って出る。</div>
+        <label class="opt"><input type="radio" name="q2" value="2" required>当てはまる</label>
+        <label class="opt"><input type="radio" name="q2" value="1">どちらともいえない</label>
+        <label class="opt"><input type="radio" name="q2" value="0">当てはまらない</label>
+        <div class="muted">タイプ2（助ける人）に対応</div>
+      </div>
+      <!-- Q3 Type 3 -->
+      <div class="card">
+        <div class="q-title">Q3. 目標達成や成果で評価されると燃える。</div>
+        <label class="opt"><input type="radio" name="q3" value="2" required>当てはまる</label>
+        <label class="opt"><input type="radio" name="q3" value="1">どちらともいえない</label>
+        <label class="opt"><input type="radio" name="q3" value="0">当てはまらない</label>
+        <div class="muted">タイプ3（達成する人）に対応</div>
+      </div>
+      <!-- Q4 Type 4 -->
+      <div class="card">
+        <div class="q-title">Q4. 自分らしさや独自性を表現したい気持ちが強い。</div>
+        <label class="opt"><input type="radio" name="q4" value="2" required>当てはまる</label>
+        <label class="opt"><input type="radio" name="q4" value="1">どちらともいえない</label>
+        <label class="opt"><input type="radio" name="q4" value="0">当てはまらない</label>
+        <div class="muted">タイプ4（個性的な人）に対応</div>
+      </div>
+      <!-- Q5 Type 5 -->
+      <div class="card">
+        <div class="q-title">Q5. 観察・分析が好きで、まず情報を集めてから動く。</div>
+        <label class="opt"><input type="radio" name="q5" value="2" required>当てはまる</label>
+        <label class="opt"><input type="radio" name="q5" value="1">どちらともいえない</label>
+        <label class="opt"><input type="radio" name="q5" value="0">当てはまらない</label>
+        <div class="muted">タイプ5（観察する人）に対応</div>
+      </div>
+      <!-- Q6 Type 6 -->
+      <div class="card">
+        <div class="q-title">Q6. 物事を慎重に検討し、信頼できる人や仕組みを重視する。</div>
+        <label class="opt"><input type="radio" name="q6" value="2" required>当てはまる</label>
+        <label class="opt"><input type="radio" name="q6" value="1">どちらともいえない</label>
+        <label class="opt"><input type="radio" name="q6" value="0">当てはまらない</label>
+        <div class="muted">タイプ6（忠実な人）に対応</div>
+      </div>
+      <!-- Q7 Type 7 -->
+      <div class="card">
+        <div class="q-title">Q7. 新しい体験やアイデアにワクワクし、前向きに動く。</div>
+        <label class="opt"><input type="radio" name="q7" value="2" required>当てはまる</label>
+        <label class="opt"><input type="radio" name="q7" value="1">どちらともいえない</label>
+        <label class="opt"><input type="radio" name="q7" value="0">当てはまらない</label>
+        <div class="muted">タイプ7（熱中する人）に対応</div>
+      </div>
+      <!-- Q8 Type 8 -->
+      <div class="card">
+        <div class="q-title">Q8. 率直でエネルギッシュ。物事を前に進めるリーダー気質だ。</div>
+        <label class="opt"><input type="radio" name="q8" value="2" required>当てはまる</label>
+        <label class="opt"><input type="radio" name="q8" value="1">どちらともいえない</label>
+        <label class="opt"><input type="radio" name="q8" value="0">当てはまらない</label>
+        <div class="muted">タイプ8（挑戦する人）に対応</div>
+      </div>
+      <!-- Q9 Type 9 -->
+      <div class="card">
+        <div class="q-title">Q9. 調和を大切にし、対立を避けて穏やかに物事を進めたい。</div>
+        <label class="opt"><input type="radio" name="q9" value="2" required>当てはまる</label>
+        <label class="opt"><input type="radio" name="q9" value="1">どちらともいえない</label>
+        <label class="opt"><input type="radio" name="q9" value="0">当てはまらない</label>
+        <div class="muted">タイプ9（平和を好む人）に対応</div>
+      </div>
+    </form>
+
+    <div class="actions">
+      <button id="run">診断する</button>
+      <button class="secondary" id="reset">リセット</button>
+    </div>
+
+    <div id="result" class="card" style="display:none;"></div>
+
+    <div class="footer-note muted">
+      <p>© Rainy Muse – このテンプレは1ファイル完結型。Canvaの「埋め込み」でURLを貼るだけで動作します。</p>
+    </div>
+  </main>
+
+<script>
+const names = {
+  1:"タイプ1（改革する人）", 2:"タイプ2（助ける人）", 3:"タイプ3（達成する人）",
+  4:"タイプ4（個性的な人）", 5:"タイプ5（観察する人）", 6:"タイプ6（忠実な人）",
+  7:"タイプ7（熱中する人）", 8:"タイプ8（挑戦する人）", 9:"タイプ9（平和を好む人）"
+};
+
+function diagnose(){
+  const scores = {1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0};
+  for(let i=1;i<=9;i++){
+    const sel = document.querySelector(`input[name=q${i}]:checked`);
+    if(!sel){ alert(`Q${i}が未回答です`); return; }
+    scores[i]+= Number(sel.value);
+  }
+  // sort
+  const sorted = Object.entries(scores).sort((a,b)=>b[1]-a[1]);
+  const topScore = sorted[0][1];
+  const candidates = sorted.filter(([k,v])=> v===topScore).map(([k])=>Number(k));
+
+  const res = document.getElementById('result');
+  const list = sorted.map(([k,v],idx)=>`<span class="badge">${idx+1}位 ${names[k]}：${v}点</span>`).join(" ");
+  const cands = candidates.map(k=>names[k]).join("、");
+  res.style.display="block";
+  res.innerHTML = `
+    <div class="result">
+      <h2 style="margin:4px 0 6px;">タイプ候補：${cands}</h2>
+      <div class="muted">※この診断は簡易版です。詳しい判断は問診・ワークと併用してください。</div>
+    </div>
+    <details><summary>スコア一覧を見る</summary><div style="margin-top:8px;">${list}</div></details>
+  `;
+  window.scrollTo({top: document.body.scrollHeight, behavior:'smooth'});
+}
+
+document.getElementById('run').addEventListener('click', (e)=>{ e.preventDefault(); diagnose(); });
+document.getElementById('reset').addEventListener('click', (e)=>{
+  e.preventDefault();
+  document.getElementById('quiz').reset();
+  const res = document.getElementById('result'); res.style.display='none'; res.innerHTML='';
+});
+</script>
+</body>
+</html>
