@@ -70,17 +70,6 @@
   button:hover {
     background-color: #27ae60;
   }
-  /* 日本語＋英語を見やすく */
-#result p { margin: .6em 0; }
-#result .en {
-  display:block;
-  font-style: italic;
-  color:#445;
-  opacity:.9;
-  margin-top:.2em;
-}
-#result .adv { margin-top:.8em; }
-#result .adv strong { color:#2ecc71; }
      </style>
   </head>
   <body>
@@ -305,54 +294,18 @@
   ]
 };
 
-     <script>
-const descriptions = {
-  1: "タイプ1：理想主義者（The Reformer）\n" +
-     "高い理想を持ち、正しさや規律を大切にします。自己にも他者にも厳しくなりやすい傾向があります。\n" +
-     "<span class='en'>Principled, purposeful, self-controlled, and perfection-seeking.</span>\n" +
-     "<p class='adv'><strong>アドバイス / Advice:</strong> 完璧より前進を。自分へも柔らかさを。<span class='en'>Aim for progress, not perfection. Be flexible and kind to yourself.</span></p>",
 
-  2: "タイプ2：献身的な援助者（The Helper）\n" +
-     "人の役に立ちたい思いが強く、他者とのつながりを大切にします。\n" +
-     "<span class='en'>Caring, generous, people-oriented, relationship-driven.</span>\n" +
-     "<p class='adv'><strong>アドバイス / Advice:</strong> 人の前にまず自分を満たして。<span class='en'>Care for yourself as much as you care for others.</span></p>",
-
-  3: "タイプ3：達成者（The Achiever）\n" +
-     "成果を出すことに長け、効率や評価を意識するタイプです。\n" +
-     "<span class='en'>Ambitious, adaptable, goal-focused, image-conscious.</span>\n" +
-     "<p class='adv'><strong>アドバイス / Advice:</strong> 評価より真実の自分へ。<span class='en'>Value authenticity over image.</span></p>",
-
-  4: "タイプ4：個性派ロマンチスト（The Individualist）\n" +
-     "感受性が豊かで独自性を大切にします。\n" +
-     "<span class='en'>Sensitive, expressive, creative, identity-seeking.</span>\n" +
-     "<p class='adv'><strong>アドバイス / Advice:</strong> ありふれた日常にも美しさを。<span class='en'>Appreciate ordinary moments; meaning lives in simplicity.</span></p>",
-
-  5: "タイプ5：知識探究者（The Investigator）\n" +
-     "冷静で観察力が高く、知識を得ることに安心感を持ちます。\n" +
-     "<span class='en'>Curious, analytical, independent, private.</span>\n" +
-     "<p class='adv'><strong>アドバイス / Advice:</strong> 知識は分かち合うほど深まる。<span class='en'>Share what you know—connection enriches insight.</span></p>",
-
-  6: "タイプ6：忠誠心のあるサポーター（The Loyalist）\n" +
-     "不安を抱きやすい反面、組織や仲間への貢献意識が高いです。\n" +
-     "<span class='en'>Loyal, responsible, vigilant, security-oriented.</span>\n" +
-     "<p class='adv'><strong>アドバイス / Advice:</strong> 直感を信じて一歩前へ。<span class='en'>Trust your inner wisdom and take a small courageous step.</span></p>",
-
-  7: "タイプ7：楽天的な冒険者（The Enthusiast）\n" +
-     "明るく前向きで、楽しいことに積極的に関わります。\n" +
-     "<span class='en'>Optimistic, spontaneous, possibility-seeking, versatile.</span>\n" +
-     "<p class='adv'><strong>アドバイス / Advice:</strong> いまここを味わう。<span class='en'>Slow down and savor the present—joy deepens.</span></p>",
-
-  8: "タイプ8：挑戦するリーダー（The Challenger）\n" +
-     "行動力があり、自分の力で状況を切り開いていきます。\n" +
-     "<span class='en'>Strong, decisive, protective, confronts challenges head-on.</span>\n" +
-     "<p class='adv'><strong>アドバイス / Advice:</strong> 脆さは力にもなる。<span class='en'>Showing vulnerability invites trust and true power.</span></p>",
-
-  9: "タイプ9：平和を愛する調停者（The Peacemaker）\n" +
-     "周囲との調和を大切にし、衝突を避ける傾向があります。\n" +
-     "<span class='en'>Calm, accepting, harmony-seeking, conflict-avoidant.</span>\n" +
-     "<p class='adv'><strong>アドバイス / Advice:</strong> やさしく、はっきり伝える。<span class='en'>Express your voice gently but clearly—it shapes a life true to you.</span></p>",
-};
-</script>
+      const descriptions = {
+        1: "タイプ1：理想主義者。高い理想を持ち、正しさや規律を大切にします。自己にも他者にも厳しくなりやすい傾向があります。\nアドバイス：完璧を求めすぎず、柔軟な視点を持つことで心が軽くなります。",
+        2: "タイプ2：献身的な援助者。人の役に立ちたい思いが強く、他者とのつながりを大切にします。\nアドバイス：自分のニーズを後回しにしがちなので、自分を満たす時間も意識しましょう。",
+        3: "タイプ3：達成者。成果を出すことに長け、効率や評価を意識するタイプです。\nアドバイス：自分の本心や感情を見つめ、他人の評価ではなく自分軸を大切に。",
+        4: "タイプ4：個性派ロマンチスト。感受性が豊かで独自性を大切にします。\nアドバイス：感情に振り回されすぎず、今ある日常に価値を見い出すことも意識して。",
+        5: "タイプ5：知識探究者。冷静で観察力が高く、知識を得ることに安心感を持ちます。\nアドバイス：感情表現や他者とのつながりも、少しずつ育ててみましょう。",
+        6: "タイプ6：忠誠心のあるサポーター。不安を抱きやすい反面、組織や仲間への貢献意識が高いです。\nアドバイス：自分の直感や判断にも自信を持ち、行動に移す練習を。",
+        7: "タイプ7：楽天的な冒険者。明るく前向きで、楽しいことに積極的に関わります。\nアドバイス：ひとつのことをじっくり味わい、今この瞬間に意識を向けてみましょう。",
+        8: "タイプ8：挑戦するリーダー。行動力があり、自分の力で状況を切り開いていきます。\nアドバイス：時には人に頼ることも大切。弱さを見せることで信頼が深まることも。",
+        9: "タイプ9：平和を愛する調停者。周囲との調和を大切にし、衝突を避ける傾向があります。\nアドバイス：自分の考えや希望を言葉にしていくことが、自分らしい人生につながります。",
+      };
 
       const images = {
         1: "img/type1.png",
@@ -437,3 +390,4 @@ const descriptions = {
     </script>
   </body>
 </html>
+ 
