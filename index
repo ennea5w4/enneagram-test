@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>エニアグラムタイプ簡易診断</title>
+    <style>
+      body {
+        font-family: "Helvetica Neue", sans-serif;
+        background-color: #f2fdf8;
+        color: #333;
+        max-width: 800px;
+        margin: auto;
+        padding: 20px;
+      }
+      h1 {
+        text-align: center;
+        color: #2c3e50;
+      }
+      .description-box {
+        background: #e8f8f2;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+      .description-box strong {
+        color: #27ae60;
+      }
+      .type-section {
+        margin-bottom: 15px;
+      }
+      .type-section label {
+        display: block;
+        margin-left: 1em;
+      }
+      #result {
+        background-color: #eafaf1;
+        border-left: 4px solid #2ecc71;
+        padding: 20px;
+        margin-top: 30px;
+        border-radius: 6px;
+      }
+      img.type-image {
+        max-width: 200px;
+        display: block;
+        margin-top: 10px;
+      }
+      button {
+        background-color: #2ecc71;
+        color: white;
+        padding: 10px 25px;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        margin-top: 20px;
+      }
+      button:hover {
+        background-color: #27ae60;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>エニアグラムタイプ簡易診断</h1>
+    <div class="description-box">
+      <strong>
+        📄
+        以下のキーワードの中から「自分に当てはまる」と思うものをチェックしてください。
+      </strong>
+      <p>あなたの気質に近いエニアグラムタイプの候補を知ることができます。</p>
+    </div>
+    <form id="enneagramForm"></form>
+    <button onclick="calculateResult()">診断する</button>
+    <div id="result"></div>
+    <button id="copyBtn" onclick="copyResult()" style="display: none">
+      診断結果をコピー
+    </button>
+    <div id="shareBtns" style="display: none; margin-top: 10px">
+      <a id="xShare" target="_blank">Xでシェア</a> |
+      <a id="lineShare" target="_blank">LINEで送る</a>
+    </div>
+
+    <script>
+      const data = {
+  1: [
+    ["完璧主義", "Perfectionism"],
+    ["規律", "Discipline"],
+    ["秩序", "Order"],
+    ["正義感", "Sense of Justice"],
+    ["責任感", "Responsibility"],
+    ["倫理観", "Ethics"],
+    ["自己抑制", "Self-control"],
+    ["理想主義", "Idealism"],
+    ["批判的", "Critical"],
+    ["真面目", "Serious"],
+    ["向上心", "Self-improvement"],
+    ["義務感", "Sense of Duty"],
+    ["緊張感", "Tension"],
+    ["律儀", "Honesty"],
+    ["内省的", "Reflective"],
+    ["常識重視", "Conventional"],
+    ["正直", "Integrity"],
+    ["自分に厳しい", "Self-demanding"],
+    ["厳格", "Strict"],
+    ["潔癖", "Purity"]
+  ],
+  2: [
+    ["思いやり", "Compassion"],
+    ["親切", "Kindness"],
+    ["助けたい", "Helpful"],
+    ["献身", "Devotion"],
+    ["優しい", "Gentle"],
+    ["面倒見がよい", "Caring"],
+    ["人懐っこい", "Friendly"],
+    ["感情豊か", "Emotional"],
+    ["共感的", "Empathetic"],
+    ["尽くす", "Giving"],
+    ["お節介", "Interfering"],
+    ["感謝されたい", "Desire for Appreciation"],
+    ["気遣い", "Consideration"],
+    ["過干渉", "Overinvolved"],
+    ["自己犠牲", "Self-sacrifice"],
+    ["愛されたい", "Desire to be Loved"],
+    ["依存的", "Dependent"],
+    ["NOが言えない", "Cannot Say No"],
+    ["他者優先", "Others-first"],
+    ["世話好き", "Nurturing"]
+  ],
+  3: [
+    ["目標達成", "Goal-oriented"],
+    ["努力家", "Hardworking"],
+    ["成果重視", "Achievement-focused"],
+    ["自信家", "Confident"],
+    ["実行力", "Action-oriented"],
+    ["成功志向", "Success-driven"],
+    ["競争心", "Competitive"],
+    ["スピード重視", "Fast-paced"],
+    ["評価を気にする", "Image-conscious"],
+    ["自己アピール", "Self-promotion"],
+    ["プレゼン上手", "Good Presenter"],
+    ["リーダーシップ", "Leadership"],
+    ["カリスマ性", "Charismatic"],
+    ["合理的", "Pragmatic"],
+    ["承認欲求", "Need for Recognition"],
+    ["自分磨き", "Self-improvement"],
+    ["有能さ", "Competence"],
+    ["結果主義", "Result-oriented"],
+    ["仕事好き", "Workaholic"],
+    ["パフォーマンス", "Performance"]
+  ],
+  4: [
+    ["個性的", "Unique"],
+    ["感受性豊か", "Sensitive"],
+    ["ロマンチスト", "Romantic"],
+    ["表現欲求", "Expressive"],
+    ["感情の起伏", "Emotional Swings"],
+    ["創造的", "Creative"],
+    ["美意識", "Aesthetic"],
+    ["孤独好き", "Solitary"],
+    ["内向的", "Introverted"],
+    ["ミステリアス", "Mysterious"],
+    ["妄想好き", "Imaginative"],
+    ["詩的", "Poetic"],
+    ["自意識過剰", "Self-conscious"],
+    ["傷つきやすい", "Vulnerable"],
+    ["繊細", "Delicate"],
+    ["複雑な感情", "Complex Emotions"],
+    ["悲観的", "Pessimistic"],
+    ["嫉妬", "Jealousy"],
+    ["特別でありたい", "Desire to be Special"],
+    ["憂鬱さ", "Melancholy"]
+  ],
+  5: [
+    ["知的", "Intellectual"],
+    ["冷静", "Calm"],
+    ["分析好き", "Analytical"],
+    ["探究心", "Inquisitive"],
+    ["一人が好き", "Solitary"],
+    ["専門家肌", "Specialist"],
+    ["観察好き", "Observant"],
+    ["独立的", "Independent"],
+    ["情報収集", "Information-oriented"],
+    ["論理的", "Logical"],
+    ["感情を抑える", "Emotionally Restrained"],
+    ["控えめ", "Reserved"],
+    ["無口", "Quiet"],
+    ["深く考える", "Deep Thinker"],
+    ["無駄を嫌う", "Efficient"],
+    ["集中力", "Focused"],
+    ["説明が得意", "Good at Explaining"],
+    ["時間管理", "Time Management"],
+    ["マイペース", "At Own Pace"],
+    ["事前準備", "Well-prepared"]
+  ],
+  6: [
+    ["慎重", "Cautious"],
+    ["心配性", "Worrier"],
+    ["安全第一", "Safety First"],
+    ["忠誠心", "Loyalty"],
+    ["用心深い", "Careful"],
+    ["責任感", "Responsible"],
+    ["サポート役", "Supportive"],
+    ["疑い深い", "Skeptical"],
+    ["チーム思考", "Team-oriented"],
+    ["規律遵守", "Rule-abiding"],
+    ["決断が遅い", "Slow to Decide"],
+    ["警戒心", "Alert"],
+    ["現実的", "Realistic"],
+    ["リスク回避", "Risk-averse"],
+    ["指示に従う", "Obedient"],
+    ["人に相談する", "Consultative"],
+    ["対立回避", "Conflict-avoidant"],
+    ["助けを求める", "Seeks Help"],
+    ["確認癖", "Double-checking"],
+    ["守りの姿勢", "Defensive"]
+  ],
+  7: [
+    ["楽観的", "Optimistic"],
+    ["活動的", "Active"],
+    ["刺激好き", "Thrill-seeking"],
+    ["多趣味", "Versatile"],
+    ["明るい性格", "Cheerful"],
+    ["ポジティブ", "Positive"],
+    ["自由人", "Free-spirited"],
+    ["好奇心旺盛", "Curious"],
+    ["未来志向", "Future-oriented"],
+    ["社交的", "Sociable"],
+    ["話好き", "Talkative"],
+    ["アイデア豊富", "Creative-minded"],
+    ["飽きっぽい", "Easily Bored"],
+    ["冒険好き", "Adventurous"],
+    ["切り替えが早い", "Quick to Switch"],
+    ["我慢が苦手", "Impatient"],
+    ["深刻を避ける", "Avoids Seriousness"],
+    ["チャレンジャー", "Challenger"],
+    ["エネルギッシュ", "Energetic"],
+    ["楽しいこと優先", "Pleasure-seeking"]
+  ],
+  8: [
+    ["リーダーシップ", "Leadership"],
+    ["自己主張", "Assertive"],
+    ["決断力", "Decisive"],
+    ["強い意志", "Strong-willed"],
+    ["支配的", "Dominant"],
+    ["怒りやすい", "Quick-tempered"],
+    ["行動的", "Action-oriented"],
+    ["パワフル", "Powerful"],
+    ["弱さを見せない", "Hides Weakness"],
+    ["攻撃的", "Aggressive"],
+    ["対立を恐れない", "Unafraid of Conflict"],
+    ["頼れる存在", "Reliable"],
+    ["白黒はっきり", "Black-and-white Thinker"],
+    ["挑戦好き", "Bold"],
+    ["恐れを隠す", "Masks Fear"],
+    ["堂々としている", "Confident"],
+    ["自己防衛", "Self-protective"],
+    ["支配欲", "Controlling"],
+    ["独立心", "Independent"],
+    ["正面突破", "Direct Approach"]
+  ],
+  9: [
+    ["平和主義", "Peace-loving"],
+    ["のんびり", "Easygoing"],
+    ["衝突回避", "Avoids Conflict"],
+    ["順応性", "Adaptable"],
+    ["優柔不断", "Indecisive"],
+    ["受け身", "Passive"],
+    ["協調性", "Cooperative"],
+    ["控えめ", "Modest"],
+    ["空気が読めない", "Unaware of Atmosphere"],
+    ["受容的", "Accepting"],
+    ["癒し系", "Soothing"],
+    ["穏やか", "Calm"],
+    ["自己主張が苦手", "Unassertive"],
+    ["後回しにする", "Procrastinating"],
+    ["人に合わせる", "People-pleasing"],
+    ["安定重視", "Stability-oriented"],
+    ["我慢する", "Enduring"],
+    ["受動的", "Passive"],
+    ["妥協しがち", "Compromising"],
+    ["自分の意見が薄い", "Indistinct Opinion"]
+  ]
+};
+
+
+      const descriptions = {
+        1: "タイプ1：理想主義者。高い理想を持ち、正しさや規律を大切にします。自己にも他者にも厳しくなりやすい傾向があります。\nアドバイス：完璧を求めすぎず、柔軟な視点を持つことで心が軽くなります。",
+        2: "タイプ2：献身的な援助者。人の役に立ちたい思いが強く、他者とのつながりを大切にします。\nアドバイス：自分のニーズを後回しにしがちなので、自分を満たす時間も意識しましょう。",
+        3: "タイプ3：達成者。成果を出すことに長け、効率や評価を意識するタイプです。\nアドバイス：自分の本心や感情を見つめ、他人の評価ではなく自分軸を大切に。",
+        4: "タイプ4：個性派ロマンチスト。感受性が豊かで独自性を大切にします。\nアドバイス：感情に振り回されすぎず、今ある日常に価値を見い出すことも意識して。",
+        5: "タイプ5：知識探究者。冷静で観察力が高く、知識を得ることに安心感を持ちます。\nアドバイス：感情表現や他者とのつながりも、少しずつ育ててみましょう。",
+        6: "タイプ6：忠誠心のあるサポーター。不安を抱きやすい反面、組織や仲間への貢献意識が高いです。\nアドバイス：自分の直感や判断にも自信を持ち、行動に移す練習を。",
+        7: "タイプ7：楽天的な冒険者。明るく前向きで、楽しいことに積極的に関わります。\nアドバイス：ひとつのことをじっくり味わい、今この瞬間に意識を向けてみましょう。",
+        8: "タイプ8：挑戦するリーダー。行動力があり、自分の力で状況を切り開いていきます。\nアドバイス：時には人に頼ることも大切。弱さを見せることで信頼が深まることも。",
+        9: "タイプ9：平和を愛する調停者。周囲との調和を大切にし、衝突を避ける傾向があります。\nアドバイス：自分の考えや希望を言葉にしていくことが、自分らしい人生につながります。",
+      };
+
+      const images = {
+        1: "img/type1.png",
+        2: "img/type2.png",
+        3: "img/type3.png",
+        4: "img/type4.png",
+        5: "img/type5.png",
+        6: "img/type6.png",
+        7: "img/type7.png",
+        8: "img/type8.png",
+        9: "img/type9.png",
+      };
+
+      window.onload = () => {
+        const form = document.getElementById("enneagramForm");
+        for (let type in data) {
+          const section = document.createElement("div");
+          section.className = "type-section";
+          const title = document.createElement("strong");
+          title.textContent = `タイプ${type}`;
+          section.appendChild(title);
+          data[type].forEach((keyword) => {
+            const label = document.createElement("label");
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.name = `type${type}`;
+            checkbox.value = keyword;
+            label.appendChild(checkbox);
+            label.appendChild(document.createTextNode(" " + keyword));
+            section.appendChild(label);
+          });
+          form.appendChild(section);
+        }
+      };
+
+      function calculateResult() {
+        const counts = {};
+        for (let type in data) {
+          const checkboxes = document.querySelectorAll(
+            `input[name='type${type}']:checked`
+          );
+          counts[type] = checkboxes.length;
+        }
+        const max = Math.max(...Object.values(counts));
+        const resultTypes = Object.keys(counts).filter(
+          (type) => counts[type] === max
+        );
+        resultTypes.sort((a, b) => parseInt(a) - parseInt(b));
+        const mainType = resultTypes[0];
+
+        let resultText = `あなたのタイプ候補は <strong>タイプ${mainType}</strong> です。<br><br>${descriptions[
+          mainType
+        ].replace(/\n/g, "<br>")}`;
+        if (resultTypes.length > 1) {
+          resultText += `<br><br>※他にもタイプ${resultTypes
+            .slice(1)
+            .join("・")}の傾向も見られます。`;
+        }
+        const resultHTML = `${resultText}<br><img src="${images[mainType]}" class="type-image" alt="タイプ${mainType}の画像">`;
+        document.getElementById("result").innerHTML = resultHTML;
+        document.getElementById("copyBtn").style.display = "block";
+        document.getElementById("shareBtns").style.display = "block";
+
+        const shareText = encodeURIComponent(
+          `エニアグラム簡易診断の結果 → タイプ${mainType}候補でした！`
+        );
+        const shareURL = encodeURIComponent(window.location.href);
+        document.getElementById(
+          "xShare"
+        ).href = `https://twitter.com/intent/tweet?text=${shareText}%0A${shareURL}`;
+        document.getElementById(
+          "lineShare"
+        ).href = `https://social-plugins.line.me/lineit/share?url=${shareURL}`;
+      }
+
+      function copyResult() {
+        const text = document.getElementById("result").innerText;
+        navigator.clipboard.writeText(text).then(() => {
+          alert("診断結果をコピーしました！");
+        });
+      }
+    </script>
+  </body>
+</html>
