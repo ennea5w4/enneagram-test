@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>2択 性格ゲーム</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #111;
+      color: #f7f7f7;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      min-height: 100vh;
+      align-items: center;
+      justify-content: center;
+    }
+    .card {
+      background: #181818;
+      padding: 24px 20px;
+      border-radius: 16px;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.6);
+      max-width: 520px;
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid #444;
+    }
+    h1 {
+      font-size: 1.5rem;
+      margin: 0 0 0.5rem;
+    }
+    .subtitle {
+      font-size: 0.9rem;
+      color: #ccc;
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .question-text {
+      font-size: 1.05rem;
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+    .progress {
+      font-size: 0.8rem;
+      color: #aaa;
+      margin-bottom: 0.5rem;
+    }
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 12px 18px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.15s ease, border-color 0.15s ease;
+    }
+    button:active {
+      transform: translateY(1px);
+      box-shadow: none;
+    }
+    .btn-main {
+      background: linear-gradient(135deg, #e50914, #f5b642);
+      color: #111;
+      font-weight: 600;
+      width: 100%;
+    }
+    .btn-choice {
+      width: 100%;
+      text-align: left;
+      background: #252525;
+      color: #f7f7f7;
+      border: 1px solid #444;
+      line-height: 1.4;
+    }
+    .btn-choice.selectedA {
+      border-color: #f5b642;
+      background: rgba(245, 182, 66, 0.2);
+    }
+    .btn-choice.selectedB {
+      border-color: #e50914;
+      background: rgba(229, 9, 20, 0.2);
+    }
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .btn-secondary {
+      background: #2a2a2a;
+      color: #f7f7f7;
+      border: 1px solid #444;
+      flex: 1;
+    }
+    .btn-secondary:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
+    .btn-next {
+      background: #e50914;
+      color: #fff;
+      flex: 1;
+    }
+    .result-block {
+      margin-bottom: 12px;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      margin-left: 4px;
+      background: #333;
+      color: #eee;
+    }
+    .rainy-highlight {
+      color: #f5b642;
+      font-weight: 600;
+    }
+    @media (max-width: 480px) {
+      .card {
+        border-radius: 0;
+        height: 100vh;
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="card" id="app">
+  <!-- JSで差し替え -->
+</div>
+
+<script>
+  // ===== 設定エリア ==================================
+  const questions = [
+    {
+      text: "一生外食禁止 vs 一生スマホ禁止",
+      choiceA: "A：一生外食禁止",
+      choiceB: "B：一生スマホ禁止",
+      rainyAnswer: "A"
+    },
+    {
+      text: "未来予知 vs 透明人間",
+      choiceA: "A：未来予知",
+      choiceB: "B：透明人間",
+      rainyAnswer: "A"
+    },
+    {
+      text: "毎日サウナ vs 毎日5分全力ダッシュ",
+      choiceA: "A：毎日サウナ",
+      choiceB: "B：毎日5分全力ダッシュ",
+      rainyAnswer: "A"
+    },
+    {
+      text: "月10万円自由に使える vs 週1日まるっと自由時間",
+      choiceA: "A：月10万円自由に使える",
+      choiceB: "B：週1日まるっと自由時間",
+      rainyAnswer: "B"
+    },
+    {
+      text: "毎日サプライズ vs サプライズ禁止",
+      choiceA: "A：毎日サプライズされる",
+      choiceB: "B：一生サプライズ禁止",
+      rainyAnswer: "B"
+    },
+    {
+      text: "10歳若くなる vs 10万円もらう",
+      choiceA: "A：10歳若くなる",
+      choiceB: "B：10万円もらう",
+      rainyAnswer: "B"
+    },
+    {
+      text: "毎日ちょっと幸せ vs 月1めっちゃ幸せ",
+      choiceA: "A：毎日ちょっと幸せ",
+      choiceB: "B：月1回めっちゃ幸せ",
+      rainyAnswer: "A"
+    },
+    {
+      text: "絶対にモテる vs 絶対に仕事で成功する",
+      choiceA: "A：一生モテる保証",
+      choiceB: "B：一生仕事で成功する保証",
+      rainyAnswer: "B"
+    },
+    {
+      text: "SNSを全てやめる vs 人前で毎日発表する",
+      choiceA: "A：SNSを全部やめる",
+      choiceB: "B：人前で毎日なにか発表する",
+      rainyAnswer: "A"
+    },
+    {
+      text: "毎日3時間散歩 vs 毎日30分全力掃除",
+      choiceA: "A：毎日3時間散歩",
+      choiceB: "B：毎日30分全力掃除",
+      rainyAnswer: "A"
+    },
+    {
+      text: "人の相談に一生乗り続ける vs 一生誰とも相談しない",
+      choiceA: "A：人の相談に一生乗り続ける",
+      choiceB: "B：一生誰とも相談せずに生きる",
+      rainyAnswer: "B"
+    },
+    {
+      text: "嫌いな人と毎日3時間過ごす vs 1人で1週間無人島",
+      choiceA: "A：嫌いな人と毎日3時間過ごす",
+      choiceB: "B：1人で1週間無人島生活",
+      rainyAnswer: "B"
+    },
+    {
+      text: "絶対にウソをつけない vs 絶対に本音しか言えない",
+      choiceA: "A：絶対にウソがつけない",
+      choiceB: "B：絶対に本音しか言えない",
+      rainyAnswer: "A"
+    },
+    {
+      text: "自分の意見を絶対曲げない vs 絶対に相手に合わせる",
+      choiceA: "A：自分の意見を絶対曲げない",
+      choiceB: "B：絶対に相手に合わせる",
+      rainyAnswer: "A"
+    },
+    {
+      text: "一生1つの場所で暮らす vs 3年ごとに引っ越す",
+      choiceA: "A：一生1つの場所で暮らす",
+      choiceB: "B：3年ごとに引っ越す",
+      rainyAnswer: "A"
+    },
+    {
+      text: "毎日1時間、誰かのために奉仕する vs 毎日1時間、自分だけの時間",
+      choiceA: "A：毎日1時間、誰かのために奉仕する",
+      choiceB: "B：毎日1時間、自分だけのために使う",
+      rainyAnswer: "B"
+    }
+  ];
+
+  const rainyType = "Rainy：タイプ5（合理・分析タイプ）";
+  // ===================================================
+
+  const appEl = document.getElementById("app");
+  let currentIndex = -1; // -1 = スタート画面
+  let answers = [];
+
+  function renderStart() {
+    appEl.innerHTML = `
+      <h1>2択 性格ゲーム</h1>
+      <p class="subtitle">
+        AかBを直感で選んでください。<br>
+        最後に「あなたの傾向」と<br>「Rainyポイント」が出ます。
+      </p>
+      <button class="btn-main" onclick="startGame()">スタート</button>
+    `;
+  }
+
+  function startGame() {
+    answers = new Array(questions.length).fill(null);
+    currentIndex = 0;
+    renderQuestion();
+  }
+
+  function renderQuestion() {
+    const q = questions[currentIndex];
+    const total = questions.length;
+    const answer = answers[currentIndex];
+
+    appEl.innerHTML = `
+      <div class="progress">Q${currentIndex + 1} / ${total}</div>
+      <h1>2択 性格ゲーム</h1>
+      <div class="question-text">${q.text}</div>
+      <div class="choices">
+        <button class="btn-choice ${answer === "A" ? "selectedA" : ""}"
+          onclick="selectAnswer('A')">
+          ${q.choiceA}
+        </button>
+        <button class="btn-choice ${answer === "B" ? "selectedB" : ""}"
+          onclick="selectAnswer('B')">
+          ${q.choiceB}
+        </button>
+      </div>
+      <div class="nav-buttons">
+        <button class="btn-secondary" onclick="prevQuestion()" ${currentIndex === 0 ? "disabled" : ""}>
+          ← もどる
+        </button>
+        <button class="btn-next" onclick="nextOrFinish()" ${answer === null ? "disabled" : ""}>
+          ${currentIndex === total - 1 ? "結果を見る →" : "次へ →"}
+        </button>
+      </div>
+    `;
+  }
+
+  function selectAnswer(choice) {
+    answers[currentIndex] = choice;
+    renderQuestion();
+  }
+
+  function prevQuestion() {
+    if (currentIndex > 0) {
+      currentIndex--;
+      renderQuestion();
+    }
+  }
+
+  function nextOrFinish() {
+    const total = questions.length;
+    if (currentIndex < total - 1) {
+      currentIndex++;
+      renderQuestion();
+    } else {
+      renderResult();
+    }
+  }
+
+  function renderResult() {
+    const total = questions.length;
+    const countA = answers.filter(a => a === "A").length;
+    const countB = answers.filter(a => a === "B").length;
+
+    let rainyPoint = 0;
+    answers.forEach((ans, i) => {
+      if (ans && ans === questions[i].rainyAnswer) rainyPoint++;
+    });
+
+    let modeComment = "";
+    if (rainyPoint === total) {
+      modeComment = "今日はほぼRainyクローンです（笑）";
+    } else if (rainyPoint > total * 0.6) {
+      modeComment = "Rainyと感覚がかなり近い日かも。冷静・合理モード強め。";
+    } else if (rainyPoint === 0) {
+      modeComment = "Rainyと真逆コース！ ぜんぜん違う視点を持ってるタイプです。";
+    } else if (rainyPoint < total * 0.3) {
+      modeComment = "Rainyとは違う選択が多め。個性派・オリジナル思考タイプ。";
+    } else {
+      modeComment = "ところどころRainyと重なりつつ、あなた独自の選択が光ってます。";
+    }
+
+    appEl.innerHTML = `
+      <h1>結果</h1>
+      <div class="result-block">
+        あなたの回答：<br>
+        A：${countA}問 ／ B：${countB}問
+      </div>
+      <div class="result-block">
+        <span class="rainy-highlight">Rainyポイント：</span>
+        ${rainyPoint} / ${total}
+        <span class="badge">${rainyType}</span>
+      </div>
+      <div class="result-block">
+        ${modeComment}
+      </div>
+      <p class="subtitle">
+        ※ このゲームは「当たり・ハズレ」ではなく、<br>
+        そのときの気分や価値観の“クセ”を楽しむためのものです。
+      </p>
+      <button class="btn-main" onclick="startGame()">もう一度やる</button>
+    `;
+  }
+
+  // 初期表示
+  renderStart();
+</script>
+</body>
+</html>
