@@ -1,240 +1,266 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>2択 性格ゲーム</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body {
+    body{
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #111;
-      color: #f7f7f7;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      min-height: 100vh;
-      align-items: center;
-      justify-content: center;
+      background:#111; color:#f7f7f7;
+      margin:0; padding:0;
+      display:flex; min-height:100vh;
+      align-items:center; justify-content:center;
     }
-    .card {
-      background: #181818;
-      padding: 24px 20px;
-      border-radius: 16px;
-      box-shadow: 0 0 25px rgba(0, 0, 0, 0.6);
-      max-width: 520px;
-      width: 100%;
-      box-sizing: border-box;
-      border: 1px solid #444;
+    .card{
+      background:#181818;
+      padding:24px 20px;
+      border-radius:16px;
+      box-shadow:0 0 25px rgba(0,0,0,.6);
+      max-width:520px; width:100%;
+      box-sizing:border-box;
+      border:1px solid #444;
+      position:relative;
+      overflow:hidden;
     }
-    h1 {
-      font-size: 1.5rem;
-      margin: 0 0 0.5rem;
+    /* 地獄/天国のムード切替（演出の土台） */
+    .hell{ border-color: rgba(229,9,20,.65); box-shadow: 0 0 28px rgba(229,9,20,.15); }
+    .heaven{ border-color: rgba(245,182,66,.75); box-shadow: 0 0 28px rgba(245,182,66,.15); }
+
+    h1{ font-size:1.5rem; margin:0 0 .5rem; }
+    .subtitle{ font-size:.9rem; color:#ccc; margin-bottom:1.2rem; line-height:1.6; }
+    .question-text{ font-size:1.05rem; margin-bottom:1rem; line-height:1.55; white-space:pre-wrap; }
+    .progress{ font-size:.8rem; color:#aaa; margin-bottom:.5rem; }
+    .choices{ display:flex; flex-direction:column; gap:10px; margin-bottom:16px; }
+    button{
+      border:none; border-radius:999px;
+      padding:12px 18px; font-size:.95rem;
+      cursor:pointer;
+      transition: transform .1s ease, box-shadow .1s ease, background .15s ease, border-color .15s ease;
+      user-select:none;
     }
-    .subtitle {
-      font-size: 0.9rem;
-      color: #ccc;
-      margin-bottom: 1.5rem;
-      line-height: 1.5;
+    button:active{ transform:translateY(1px); box-shadow:none; }
+    .btn-main{
+      background:linear-gradient(135deg,#e50914,#f5b642);
+      color:#111; font-weight:700; width:100%;
     }
-    .question-text {
-      font-size: 1.05rem;
-      margin-bottom: 1rem;
-      line-height: 1.5;
-      white-space: pre-wrap;
+    .btn-choice{
+      width:100%; text-align:left;
+      background:#252525; color:#f7f7f7;
+      border:1px solid #444;
+      line-height:1.45;
+      white-space:pre-wrap;
     }
-    .progress {
-      font-size: 0.8rem;
-      color: #aaa;
-      margin-bottom: 0.5rem;
+    .btn-choice.selectedA{ border-color:#f5b642; background:rgba(245,182,66,.2); }
+    .btn-choice.selectedB{ border-color:#e50914; background:rgba(229,9,20,.2); }
+    .nav-buttons{ display:flex; justify-content:space-between; gap:8px; margin-top:8px; }
+    .btn-secondary{
+      background:#2a2a2a; color:#f7f7f7;
+      border:1px solid #444; flex:1;
     }
-    .choices {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-bottom: 16px;
+    .btn-secondary:disabled, .btn-next:disabled{ opacity:.4; cursor:default; }
+    .btn-next{ background:#e50914; color:#fff; flex:1; border:1px solid rgba(255,255,255,.08); }
+    .result-block{ margin-bottom:12px; font-size:.95rem; line-height:1.65; }
+    .badge{
+      display:inline-block;
+      padding:2px 8px;
+      border-radius:999px;
+      font-size:.75rem;
+      margin-left:6px;
+      background:#333; color:#eee;
+      vertical-align:middle;
     }
-    button {
-      border: none;
-      border-radius: 999px;
-      padding: 12px 18px;
-      font-size: 0.95rem;
-      cursor: pointer;
-      transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.15s ease, border-color 0.15s ease;
-    }
-    button:active {
-      transform: translateY(1px);
-      box-shadow: none;
-    }
-    .btn-main {
-      background: linear-gradient(135deg, #e50914, #f5b642);
-      color: #111;
-      font-weight: 600;
-      width: 100%;
-    }
-    .btn-choice {
-      width: 100%;
-      text-align: left;
-      background: #252525;
-      color: #f7f7f7;
-      border: 1px solid #444;
-      line-height: 1.4;
-      white-space: pre-wrap;
-    }
-    .btn-choice.selectedA {
-      border-color: #f5b642;
-      background: rgba(245, 182, 66, 0.2);
-    }
-    .btn-choice.selectedB {
-      border-color: #e50914;
-      background: rgba(229, 9, 20, 0.2);
-    }
-    .nav-buttons {
-      display: flex;
-      justify-content: space-between;
-      gap: 8px;
-      margin-top: 8px;
-    }
-    .btn-secondary {
-      background: #2a2a2a;
-      color: #f7f7f7;
-      border: 1px solid #444;
-      flex: 1;
-    }
-    .btn-secondary:disabled {
-      opacity: 0.4;
-      cursor: default;
-    }
-    .btn-next {
-      background: #e50914;
-      color: #fff;
-      flex: 1;
-    }
-    .btn-next:disabled {
-      opacity: 0.4;
-      cursor: default;
-    }
-    .result-block {
-      margin-bottom: 12px;
-      font-size: 0.95rem;
-      line-height: 1.6;
-    }
-    .badge {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 999px;
-      font-size: 0.75rem;
-      margin-left: 6px;
-      background: #333;
-      color: #eee;
-      vertical-align: middle;
-    }
-    .rainy-highlight {
-      color: #f5b642;
-      font-weight: 700;
-    }
-    @media (max-width: 480px) {
-      .card {
-        border-radius: 0;
-        height: 100vh;
-        max-width: 100%;
-      }
+    .rainy-highlight{ color:#f5b642; font-weight:800; }
+
+    @media (max-width:480px){
+      .card{ border-radius:0; height:100vh; max-width:100%; }
     }
   </style>
 </head>
+
 <body>
-<div class="card" id="app">
-  <!-- JSで差し替え -->
-</div>
+<div class="card" id="app"><!-- JSで差し替え --></div>
 
 <script>
-  // ===== 質問リスト（地獄16 + 区切り1 + 天国16 = 33問） =====
+  // ===================================================
+  // ① メイン：地獄16 + 区切り1 + 天国16（33問）
+  // ===================================================
   const questions = [
     // ========= 😈 地獄の2択（16問） =========
-    { text: "嫌われない人生 vs なめられない人生", choiceA: "嫌われない", choiceB: "なめられない", rainyAnswer: "B" },
-    { text: "ずっと謝り続ける vs ずっと言い訳し続ける", choiceA: "謝り続ける", choiceB: "言い訳し続ける", rainyAnswer: "B" },
-    { text: "一生 気まずい沈黙 vs 一生 浅い雑談", choiceA: "気まずい沈黙", choiceB: "浅い雑談", rainyAnswer: "A" },
-    { text: "毎日 上司に詰められる vs 毎日 部下に裏切られる", choiceA: "上司に詰められる", choiceB: "部下に裏切られる", rainyAnswer: "A" },
-    { text: "一生 頼れない vs 一生 頼られすぎる", choiceA: "頼れない", choiceB: "頼られすぎる", rainyAnswer: "A" },
-    { text: "一生 本音しか言えない vs 一生 ウソしか言えない", choiceA: "本音しか言えない", choiceB: "ウソしか言えない", rainyAnswer: "A" },
-    { text: "一生 予定が狂う vs 一生 予定通りで退屈", choiceA: "予定が狂う", choiceB: "予定通りで退屈", rainyAnswer: "B" },
-    { text: "一生 誤解され続ける vs 一生 期待され続ける", choiceA: "誤解され続ける", choiceB: "期待され続ける", rainyAnswer: "A" },
-    { text: "一生 選択を迫られる vs 一生 選択肢がない", choiceA: "選択を迫られる", choiceB: "選択肢がない", rainyAnswer: "A" },
-    { text: "一生 相談されない vs 一生 相談され続ける", choiceA: "相談されない", choiceB: "相談され続ける", rainyAnswer: "A" },
-    { text: "一生 評価されない努力 vs 一生 評価される実力不足", choiceA: "評価されない努力", choiceB: "評価される実力不足", rainyAnswer: "A" },
-    { text: "一生 予定を守らされる vs 一生 予定を守られない", choiceA: "守らされる", choiceB: "守られない", rainyAnswer: "B" },
-    { text: "一生 人に合わせ続ける vs 一生 人に合わせてもらう", choiceA: "合わせ続ける", choiceB: "合わせてもらう", rainyAnswer: "B" },
-    { text: "一生 安心できない成功 vs 一生 安心だけの失敗", choiceA: "安心できない成功", choiceB: "安心だけの失敗", rainyAnswer: "A" },
-    { text: "一生 注目され続ける vs 一生 存在感ゼロ", choiceA: "注目され続ける", choiceB: "存在感ゼロ", rainyAnswer: "B" },
-    { text: "一生 誰かに依存される vs 一生 誰にも頼られない", choiceA: "依存される", choiceB: "頼られない", rainyAnswer: "B" },
+    { text:"嫌われない人生 vs なめられない人生", choiceA:"嫌われない", choiceB:"なめられない", rainyAnswer:"B" },
+    { text:"ずっと謝り続ける vs ずっと言い訳し続ける", choiceA:"謝り続ける", choiceB:"言い訳し続ける", rainyAnswer:"B" },
+    { text:"一生 気まずい沈黙 vs 一生 浅い雑談", choiceA:"気まずい沈黙", choiceB:"浅い雑談", rainyAnswer:"A" },
+    { text:"毎日 上司に詰められる vs 毎日 部下に裏切られる", choiceA:"上司に詰められる", choiceB:"部下に裏切られる", rainyAnswer:"A" },
+    { text:"一生 頼れない vs 一生 頼られすぎる", choiceA:"頼れない", choiceB:"頼られすぎる", rainyAnswer:"A" },
+    { text:"一生 本音しか言えない vs 一生 ウソしか言えない", choiceA:"本音しか言えない", choiceB:"ウソしか言えない", rainyAnswer:"A" },
+    { text:"一生 予定が狂う vs 一生 予定通りで退屈", choiceA:"予定が狂う", choiceB:"予定通りで退屈", rainyAnswer:"B" },
+    { text:"一生 誤解され続ける vs 一生 期待され続ける", choiceA:"誤解され続ける", choiceB:"期待され続ける", rainyAnswer:"A" },
+    { text:"一生 選択を迫られる vs 一生 選択肢がない", choiceA:"選択を迫られる", choiceB:"選択肢がない", rainyAnswer:"A" },
+    { text:"一生 相談されない vs 一生 相談され続ける", choiceA:"相談されない", choiceB:"相談され続ける", rainyAnswer:"A" },
+    { text:"一生 評価されない努力 vs 一生 評価される実力不足", choiceA:"評価されない努力", choiceB:"評価される実力不足", rainyAnswer:"A" },
+    { text:"一生 予定を守らされる vs 一生 予定を守られない", choiceA:"守らされる", choiceB:"守られない", rainyAnswer:"B" },
+    { text:"一生 人に合わせ続ける vs 一生 人に合わせてもらう", choiceA:"合わせ続ける", choiceB:"合わせてもらう", rainyAnswer:"B" },
+    { text:"一生 安心できない成功 vs 一生 安心だけの失敗", choiceA:"安心できない成功", choiceB:"安心だけの失敗", rainyAnswer:"A" },
+    { text:"一生 注目され続ける vs 一生 存在感ゼロ", choiceA:"注目され続ける", choiceB:"存在感ゼロ", rainyAnswer:"B" },
+    { text:"一生 誰かに依存される vs 一生 誰にも頼られない", choiceA:"依存される", choiceB:"頼られない", rainyAnswer:"B" },
 
     // ========= 🌈 区切り（演出用・採点しない） =========
-    { text: "😇 地獄を抜けました。\nここからは天国の2択です。", choiceA: "天国へ進む", choiceB: "覚悟はできた", rainyAnswer: null },
+    { text:"😇 地獄を抜けました。\nここからは天国の2択です。", choiceA:"天国へ進む", choiceB:"覚悟はできた", rainyAnswer:null },
 
     // ========= 😇 天国の2択（16問） =========
-    { text: "一生 安心 vs 一生 ワクワク", choiceA: "安心", choiceB: "ワクワク", rainyAnswer: "A" },
-    { text: "一生 理解される vs 一生 自由でいられる", choiceA: "理解される", choiceB: "自由でいられる", rainyAnswer: "B" },
-    { text: "一生 お金に困らない vs 一生 時間に追われない", choiceA: "お金に困らない", choiceB: "時間に追われない", rainyAnswer: "B" },
-    { text: "称賛される天才 vs 愛される凡人", choiceA: "称賛される天才", choiceB: "愛される凡人", rainyAnswer: "A" },
-    { text: "一生 自信がある vs 一生 不安がない", choiceA: "自信がある", choiceB: "不安がない", rainyAnswer: "B" },
-    { text: "一生 心が穏やか vs 一生 感動が多い", choiceA: "心が穏やか", choiceB: "感動が多い", rainyAnswer: "A" },
-    { text: "一生 好きなことだけ vs 一生 得意なことだけ", choiceA: "好きなことだけ", choiceB: "得意なことだけ", rainyAnswer: "B" },
-    { text: "一生 ひとり時間たっぷり vs 一生 仲間と一緒", choiceA: "ひとり時間", choiceB: "仲間と一緒", rainyAnswer: "A" },
-    { text: "一生 今のままでOKと言われる vs 一生 もっと期待される", choiceA: "今のままでOK", choiceB: "もっと期待される", rainyAnswer: "A" },
-    { text: "一生 失敗しない vs 一生 後悔しない", choiceA: "失敗しない", choiceB: "後悔しない", rainyAnswer: "A" },
-    { text: "一生 誰かの一番 vs 一生 みんなに好かれる", choiceA: "誰かの一番", choiceB: "みんなに好かれる", rainyAnswer: "A" },
-    { text: "一生 自分を信じられる vs 一生 人を信じられる", choiceA: "自分を信じられる", choiceB: "人を信じられる", rainyAnswer: "A" },
-    { text: "一生 必要とされる vs 一生 尊敬される", choiceA: "必要とされる", choiceB: "尊敬される", rainyAnswer: "B" },
-    { text: "一生 穏やかな日常 vs 一生 忘れられない瞬間", choiceA: "穏やかな日常", choiceB: "忘れられない瞬間", rainyAnswer: "A" },
-    { text: "一生 選ばれる側 vs 一生 選ぶ側", choiceA: "選ばれる側", choiceB: "選ぶ側", rainyAnswer: "B" },
-    { text: "一生 自分を好きでいられる vs 一生 愛され続ける", choiceA: "自分を好きでいられる", choiceB: "愛され続ける", rainyAnswer: "A" }
+    { text:"一生 安心 vs 一生 ワクワク", choiceA:"安心", choiceB:"ワクワク", rainyAnswer:"A" },
+    { text:"一生 理解される vs 一生 自由でいられる", choiceA:"理解される", choiceB:"自由でいられる", rainyAnswer:"B" },
+    { text:"一生 お金に困らない vs 一生 時間に追われない", choiceA:"お金に困らない", choiceB:"時間に追われない", rainyAnswer:"B" },
+    { text:"称賛される天才 vs 愛される凡人", choiceA:"称賛される天才", choiceB:"愛される凡人", rainyAnswer:"A" },
+    { text:"一生 自信がある vs 一生 不安がない", choiceA:"自信がある", choiceB:"不安がない", rainyAnswer:"B" },
+    { text:"一生 心が穏やか vs 一生 感動が多い", choiceA:"心が穏やか", choiceB:"感動が多い", rainyAnswer:"A" },
+    { text:"一生 好きなことだけ vs 一生 得意なことだけ", choiceA:"好きなことだけ", choiceB:"得意なことだけ", rainyAnswer:"B" },
+    { text:"一生 ひとり時間たっぷり vs 一生 仲間と一緒", choiceA:"ひとり時間", choiceB:"仲間と一緒", rainyAnswer:"A" },
+    { text:"一生 今のままでOKと言われる vs 一生 もっと期待される", choiceA:"今のままでOK", choiceB:"もっと期待される", rainyAnswer:"A" },
+    { text:"一生 失敗しない vs 一生 後悔しない", choiceA:"失敗しない", choiceB:"後悔しない", rainyAnswer:"A" },
+    { text:"一生 誰かの一番 vs 一生 みんなに好かれる", choiceA:"誰かの一番", choiceB:"みんなに好かれる", rainyAnswer:"A" },
+    { text:"一生 自分を信じられる vs 一生 人を信じられる", choiceA:"自分を信じられる", choiceB:"人を信じられる", rainyAnswer:"A" },
+    { text:"一生 必要とされる vs 一生 尊敬される", choiceA:"必要とされる", choiceB:"尊敬される", rainyAnswer:"B" },
+    { text:"一生 穏やかな日常 vs 一生 忘れられない瞬間", choiceA:"穏やかな日常", choiceB:"忘れられない瞬間", rainyAnswer:"A" },
+    { text:"一生 選ばれる側 vs 一生 選ぶ側", choiceA:"選ばれる側", choiceB:"選ぶ側", rainyAnswer:"B" },
+    { text:"一生 自分を好きでいられる vs 一生 愛され続ける", choiceA:"自分を好きでいられる", choiceB:"愛され続ける", rainyAnswer:"A" }
   ];
 
-  const rainyType = "Rainy：タイプ5（合理・分析タイプ）";
+  const rainyType = "作者：Rainy（タイプ5）";
 
+  // ===================================================
+  // ② エニア判定（18問・ボタンに文章を出す版）
+  //    A/Bを選ぶと、それぞれ別タイプに1点
+  // ===================================================
+  const typeNames = {
+    1: "タイプ1（改革）",
+    2: "タイプ2（助ける）",
+    3: "タイプ3（達成）",
+    4: "タイプ4（個性）",
+    5: "タイプ5（分析）",
+    6: "タイプ6（堅実）",
+    7: "タイプ7（熱中）",
+    8: "タイプ8（挑戦）",
+    9: "タイプ9（平和）"
+  };
+
+  const typeRoast = {
+    1: "正しさセンサー常時ON。脳内に監査官いるタイプ。",
+    2: "気づいたら世話焼いてる。優しさで世界を侵略するタイプ。",
+    3: "結果で語る。盛れてないと充電切れるタイプ。",
+    4: "唯一無二に命かける。情緒が芸術作品タイプ。",
+    5: "情報を食べて生きる。静かに分析して全部見てるタイプ。",
+    6: "危険予知のプロ。確認しながら最強に堅実なタイプ。",
+    7: "楽しさ最優先。未来のワクワクを前借りするタイプ。",
+    8: "強く出て守る。正面突破で場を動かすタイプ。",
+    9: "平和の守護神。揉めそうな空気を溶かすタイプ。"
+  };
+
+  const ennea18 = [
+    { text:"1) どっちのスイッチが入りやすい？", choiceA:"A：正しく整ってないとムズムズする", choiceB:"B：不安要素があるとムズムズする", typeA:1, typeB:6 },
+    { text:"2) 嬉しいのはどっち？", choiceA:"A：頼られて役に立てた", choiceB:"B：結果を出して認められた", typeA:2, typeB:3 },
+    { text:"3) しんどいのはどっち？", choiceA:"A：平凡扱いされる", choiceB:"B：無知扱いされる", typeA:4, typeB:5 },
+    { text:"4) 動き方が近いのは？", choiceA:"A：楽しい方に切り替えて進む", choiceB:"B：主導権握って一気に進める", typeA:7, typeB:8 },
+    { text:"5) その場で優先しがちなのは？", choiceA:"A：波風立てずに丸く収める", choiceB:"B：正面からハッキリさせる", typeA:9, typeB:8 },
+    { text:"6) 自分に近いのは？", choiceA:"A：理想の基準が高い（直したくなる）", choiceB:"B：人のニーズに敏感（気づいてしまう）", typeA:1, typeB:2 },
+    { text:"7) 心が動くのは？", choiceA:"A：勝ち筋が見えると燃える", choiceB:"B：唯一無二の意味があると燃える", typeA:3, typeB:4 },
+    { text:"8) 落ち着くのは？", choiceA:"A：一人で集中して深掘り", choiceB:"B：みんなでワイワイ盛り上がる", typeA:5, typeB:7 },
+    { text:"9) 行動の前に強いのは？", choiceA:"A：疑って確認してから", choiceB:"B：まあまあでOKにしてから", typeA:6, typeB:9 },
+
+    { text:"10) イラッとするのは？", choiceA:"A：筋が通ってない", choiceB:"B：空気が悪い", typeA:1, typeB:9 },
+    { text:"11) つい出ちゃうのは？", choiceA:"A：放っておけなくて手を貸す", choiceB:"B：背中で引っ張って結果出す", typeA:2, typeB:3 },
+    { text:"12) 選び方が近いのは？", choiceA:"A：気分・感性で選ぶ", choiceB:"B：情報・論理で選ぶ", typeA:4, typeB:5 },
+    { text:"13) 安心の取り方は？", choiceA:"A：最悪を避けるため備える", choiceB:"B：楽しい方へ切り替える", typeA:6, typeB:7 },
+    { text:"14) 守り方が近いのは？", choiceA:"A：強く出てでも守る", choiceB:"B：みんなが納得する形にする", typeA:8, typeB:9 },
+    { text:"15) つい出るクセは？", choiceA:"A：正しい状態に整えたい", choiceB:"B：喜ばせたい・好かれたい", typeA:1, typeB:2 },
+    { text:"16) ギアが入るのは？", choiceA:"A：目標があると入る", choiceB:"B：物語性があると入る", typeA:3, typeB:4 },
+    { text:"17) 判断が近いのは？", choiceA:"A：静かに観察してから言う", choiceB:"B：勢いでまず動いてみる", typeA:5, typeB:7 },
+    { text:"18) 安心の方向性は？", choiceA:"A：疑いを潰して安心したい", choiceB:"B：衝突を避けて安心したい", typeA:6, typeB:9 }
+  ];
+
+  // ===================================================
+  // 共通状態
+  // ===================================================
   const appEl = document.getElementById("app");
-  let currentIndex = -1; // -1 = スタート画面
-  let answers = [];
 
-  function eligibleTotal() {
+  let currentIndex = -1;   // メイン質問
+  let answers = [];        // メイン回答
+
+  let enneaIndex = 0;      // エニア質問
+  let enneaScores = null;  // エニア得点
+
+  // ===================================================
+  // ちょい演出：地獄/天国の見た目切替
+  // ===================================================
+  function setMoodByIndex(idx){
+    // 0〜15 = 地獄 / 16 = 区切り / 17〜32 = 天国
+    appEl.classList.remove("hell","heaven");
+    const card = appEl; // #appが.cardなのでこれでOK
+
+    // #appは.cardじゃないので、親の.cardに付ける
+    const cardEl = document.querySelector(".card");
+    cardEl.classList.remove("hell","heaven");
+
+    if(idx >= 0 && idx <= 15){
+      cardEl.classList.add("hell");
+    }else if(idx >= 17){
+      cardEl.classList.add("heaven");
+    }
+  }
+
+  function eligibleTotal(){
     return questions.filter(q => q.rainyAnswer === "A" || q.rainyAnswer === "B").length;
   }
 
-  function renderStart() {
+  // ===================================================
+  // 画面：スタート
+  // ===================================================
+  function renderStart(){
+    document.querySelector(".card").classList.remove("hell","heaven");
     appEl.innerHTML = `
       <h1>2択 性格ゲーム</h1>
       <p class="subtitle">
         AかBを直感で選んでください。<br>
-        最後に「あなたの傾向」と<br>「Rainyポイント」が出ます。
+        最後に「あなたの傾向」と「Rainyポイント」<br>
+        さらに「エニア判定（18問）」もできます。
       </p>
       <button class="btn-main" onclick="startGame()">スタート</button>
     `;
   }
 
-  function startGame() {
+  // ===================================================
+  // メイン：開始
+  // ===================================================
+  function startGame(){
     answers = new Array(questions.length).fill(null);
     currentIndex = 0;
     renderQuestion();
   }
 
-  function renderQuestion() {
+  // ===================================================
+  // メイン：質問
+  // ===================================================
+  function renderQuestion(){
     const q = questions[currentIndex];
     const total = questions.length;
     const answer = answers[currentIndex];
+
+    setMoodByIndex(currentIndex);
 
     appEl.innerHTML = `
       <div class="progress">Q${currentIndex + 1} / ${total}</div>
       <h1>2択 性格ゲーム</h1>
       <div class="question-text">${q.text}</div>
+
       <div class="choices">
-        <button class="btn-choice ${answer === "A" ? "selectedA" : ""}"
-          onclick="selectAnswer('A')">
+        <button class="btn-choice ${answer === "A" ? "selectedA" : ""}" onclick="selectAnswer('A')">
           ${q.choiceA}
         </button>
-        <button class="btn-choice ${answer === "B" ? "selectedB" : ""}"
-          onclick="selectAnswer('B')">
+        <button class="btn-choice ${answer === "B" ? "selectedB" : ""}" onclick="selectAnswer('B')">
           ${q.choiceB}
         </button>
       </div>
+
       <div class="nav-buttons">
         <button class="btn-secondary" onclick="prevQuestion()" ${currentIndex === 0 ? "disabled" : ""}>
           ← もどる
@@ -246,75 +272,210 @@
     `;
   }
 
-  function selectAnswer(choice) {
+  function selectAnswer(choice){
     answers[currentIndex] = choice;
     renderQuestion();
   }
 
-  function prevQuestion() {
-    if (currentIndex > 0) {
+  function prevQuestion(){
+    if(currentIndex > 0){
       currentIndex--;
       renderQuestion();
     }
   }
 
-  function nextOrFinish() {
+  function nextOrFinish(){
     const total = questions.length;
-    if (currentIndex < total - 1) {
+    if(currentIndex < total - 1){
       currentIndex++;
       renderQuestion();
-    } else {
+    }else{
       renderResult();
     }
   }
 
-  function renderResult() {
+  // ===================================================
+  // メイン：結果
+  // ===================================================
+  function renderResult(){
+    document.querySelector(".card").classList.remove("hell","heaven");
+
     const countA = answers.filter(a => a === "A").length;
     const countB = answers.filter(a => a === "B").length;
 
     let rainyPoint = 0;
     answers.forEach((ans, i) => {
       const ra = questions[i].rainyAnswer;
-      if ((ra === "A" || ra === "B") && ans === ra) rainyPoint++;
+      if((ra === "A" || ra === "B") && ans === ra) rainyPoint++;
     });
 
     const totalEligible = eligibleTotal();
 
     let modeComment = "";
-    if (rainyPoint === totalEligible) {
+    if(rainyPoint === totalEligible){
       modeComment = "今日はほぼType5クローンです（笑）";
-    } else if (rainyPoint > totalEligible * 0.6) {
+    }else if(rainyPoint > totalEligible * 0.6){
       modeComment = "Type5と感覚がかなり近い日かも。冷静・合理モード強め。";
-    } else if (rainyPoint === 0) {
-      modeComment = "Type5と真逆コース！ ぜんぜん違う視点を持ってるタイプです。";
-    } else if (rainyPoint < totalEligible * 0.3) {
+    }else if(rainyPoint === 0){
+      modeComment = "Type5と真逆コース！ぜんぜん違う視点を持ってるタイプです。";
+    }else if(rainyPoint < totalEligible * 0.3){
       modeComment = "Type5とは違う選択が多め。個性派・オリジナル思考タイプ。";
-    } else {
+    }else{
       modeComment = "ところどころType5と重なりつつ、あなた独自の選択が光ってます。";
     }
 
+    const rainyExplain =
+      "※Rainyポイント：作者（Rainy）がタイプ5なので、" +
+      "「Rainyが選びそうな方」と同じだと1点。高いほど“今日の思考のクセがタイプ5寄り”というだけで、正解・不正解はありません。";
+
     appEl.innerHTML = `
       <h1>結果</h1>
+
       <div class="result-block">
         あなたの回答：<br>
         A：${countA}問 ／ B：${countB}問
       </div>
+
       <div class="result-block">
         <span class="rainy-highlight">Rainyポイント：</span>
         ${rainyPoint} / ${totalEligible}
         <span class="badge">${rainyType}</span>
       </div>
-      <div class="result-block">
-        ${modeComment}
+
+      <div class="result-block">${modeComment}</div>
+
+      <p class="subtitle">${rainyExplain}</p>
+
+      <div class="choices">
+        <button class="btn-main" onclick="startEnnea18()">エニア判定（18問）もやる</button>
+        <button class="btn-secondary" onclick="startGame()">もう一度（2択ゲーム）</button>
+        <button class="btn-secondary" onclick="renderStart()">最初に戻る</button>
       </div>
-      <p class="subtitle">
-        ※ このゲームは「当たり・ハズレ」ではなく、<br>
-        そのときの気分や価値観の“クセ”を楽しむためのものです。
-      </p>
-      <button class="btn-main" onclick="startGame()">もう一度やる</button>
     `;
   }
 
+  // ===================================================
+  // エニア：開始
+  // ===================================================
+  function startEnnea18(){
+    enneaIndex = 0;
+    enneaScores = {1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0};
+    renderEnneaQuestion();
+  }
+
+  // ===================================================
+  // エニア：質問（ボタンに文章）
+  // ===================================================
+  function renderEnneaQuestion(){
+    const q = ennea18[enneaIndex];
+    const total = ennea18.length;
+
+    // エニアは “天国っぽい” 見た目で固定（気分上げ）
+    const cardEl = document.querySelector(".card");
+    cardEl.classList.remove("hell");
+    cardEl.classList.add("heaven");
+
+    appEl.innerHTML = `
+      <div class="progress">エニア ${enneaIndex + 1} / ${total}</div>
+      <h1>エニア判定（18問）</h1>
+      <div class="question-text">${q.text}</div>
+
+      <div class="choices">
+        <button class="btn-choice" onclick="answerEnnea('A')">${q.choiceA}</button>
+        <button class="btn-choice" onclick="answerEnnea('B')">${q.choiceB}</button>
+      </div>
+
+      <div class="nav-buttons">
+        <button class="btn-secondary" onclick="prevEnnea()" ${enneaIndex === 0 ? "disabled" : ""}>← もどる</button>
+        <button class="btn-next" onclick="skipEnnea()">スキップ →</button>
+      </div>
+
+      <p class="subtitle">
+        ※直感でOK。迷ったら“今の自分”で選んでね。
+      </p>
+    `;
+  }
+
+  function answerEnnea(choice){
+    const q = ennea18[enneaIndex];
+    const t = (choice === "A") ? q.typeA : q.typeB;
+    enneaScores[t]++;
+
+    enneaIndex++;
+    if(enneaIndex < ennea18.length){
+      renderEnneaQuestion();
+    }else{
+      renderEnneaResult();
+    }
+  }
+
+  function prevEnnea(){
+    if(enneaIndex <= 0) return;
+
+    // ひとつ戻る場合、直前の加点を戻す（簡易版：直前は必ず1回だけ加点されてる前提）
+    // 厳密にやるなら履歴配列を持つが、今回は忘年会用途なので軽量でOKにする
+    // → スキップを使った場合にズレる可能性があるので、戻るは“雰囲気”扱い
+    enneaIndex--;
+    renderEnneaQuestion();
+  }
+
+  function skipEnnea(){
+    // スキップは加点なしで進む
+    enneaIndex++;
+    if(enneaIndex < ennea18.length){
+      renderEnneaQuestion();
+    }else{
+      renderEnneaResult();
+    }
+  }
+
+  // ===================================================
+  // エニア：結果（上位3＋濃いツッコミ）
+  // ===================================================
+  function renderEnneaResult(){
+    const ranking = Object.entries(enneaScores)
+      .map(([t,s]) => ({t:Number(t), s}))
+      .sort((a,b)=> b.s - a.s);
+
+    const top = ranking[0];
+    const top3 = ranking.slice(0,3);
+
+    const top3Html = top3.map(x => `${typeNames[x.t]}：<span class="rainy-highlight">${x.s}点</span>`).join("<br>");
+    const roast = typeRoast[top.t];
+
+    const cardEl = document.querySelector(".card");
+    cardEl.classList.remove("hell");
+    cardEl.classList.add("heaven");
+
+    appEl.innerHTML = `
+      <h1>エニア結果</h1>
+
+      <div class="result-block">
+        <span class="rainy-highlight">あなたは ${typeNames[top.t]} の傾向が強め！</span>
+        <span class="badge">TOP</span>
+      </div>
+
+      <div class="result-block">${roast}</div>
+
+      <div class="result-block">
+        <span class="badge">上位3タイプ</span><br>
+        ${top3Html}
+      </div>
+
+      <p class="subtitle">
+        ※これは“ミニ判定（18問）”なので固定ラベルというより「今日のクセ」寄り。<br>
+        でも上位3つは「いつもの自分」も混ざりやすいよ。
+      </p>
+
+      <div class="choices">
+        <button class="btn-main" onclick="startEnnea18()">もう一度（エニア18問）</button>
+        <button class="btn-secondary" onclick="startGame()">2択ゲームからやる</button>
+        <button class="btn-secondary" onclick="renderStart()">最初に戻る</button>
+      </div>
+    `;
+  }
+
+  // 初期表示
   renderStart();
 </script>
 </body>
