@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8" />
-<title>2択 性格ゲーム（地獄×天国 + エニア18問）</title>
+<title>究極の2択 性格ゲーム（地獄×天国 + エニア18問）</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <style>
   body{
@@ -303,7 +303,7 @@ let ans18 = []; // "A"/"B" の配列（18）
 function renderStart(){
   mode = "start";
   app.innerHTML = `
-    <h1>2択 性格ゲーム</h1>
+    <h1>究極の2択 性格ゲーム</h1>
     <img class="hero" src="${getDogImg(5)}" alt="タイプ5の犬">
     <p class="subtitle">
       AかBを直感で選んでください。<br>
@@ -382,7 +382,7 @@ function renderQuestion32(){
 
   app.innerHTML = `
     <div class="progress">Q${index32 + 1} / ${questions32.length}</div>
-    <h1>2択 性格ゲーム</h1>
+    <h1>究極の2択 性格ゲーム</h1>
 
     <div class="question">${escapeHtml(q.q)}</div>
 
