@@ -68,6 +68,24 @@ img.hero{
 <script>
 // ================= 設定 =================
 const rainyTypeLabel = "作者：Rainy（タイプ5）";
+<script>
+  // ===== 犬画像（タイプ別） ===========================
+  const dogImages = {
+    1: "img/dog_type01.png",
+    2: "img/dog_type02.png",
+    3: "img/dog_type03.png",
+    4: "img/dog_type04.png",
+    5: "img/dog_type05.png",
+    6: "img/dog_type06.png",
+    7: "img/dog_type07.png",
+    8: "img/dog_type08.png",
+    9: "img/dog_type09.png"
+  };
+
+  function getDogImg(typeNum) {
+    return dogImages[typeNum] || "img/dog_type05.png"; // 保険
+  }
+</script>
 
 // 地獄16 + 天国16 = 32問
 const questions = [
@@ -192,24 +210,25 @@ function renderResult(){
     rainy > 16 ? "Type5寄り。考えてから動くタイプ。" :
     rainy > 8  ? "バランス型。感情と理性が半々。" :
                  "Type5とは真逆！感覚派・行動派。";
-
-  app.innerHTML = `
-    <h1>結果</h1>
-    <img class="hero" src="img/dog_type05.png">
-    <p>
-      <span class="highlight">Rainyポイント：</span>
-      ${rainy} / ${questions.length}
-      <span class="badge">${rainyTypeLabel}</span>
-    </p>
-    <p>${comment}</p>
-    <p style="font-size:.85rem;color:#ccc;">
-      ※ Rainyポイントは「作者がタイプ5なので、同じ選択だと1点」。
-      正解・不正解はありません。
-    </p>
-    <button class="btn main" onclick="penalty()">次へ</button>
-  `;
+const dogHtml = `
+  <img class="hero" src="${getDogImg(topType)}" alt="タイプ${topType}の犬">
+`;
+app.innerHTML = `
+  <h1>結果</h1>
+  ${dogHtml}
+  <p>
+    <span class="highlight">Rainyポイント：</span>
+    ${rainy} / ${questions.length}
+    <span class="badge">${rainyTypeLabel}</span>
+  </p>
+  <p>${comment}</p>
+  <p style="font-size:.85rem;color:#ccc;">
+    ※ Rainyポイントは「作者がタイプ5なので、同じ選択だと1点」。
+    正解・不正解はありません。
+  </p>
+  <button class="btn-main" onclick="penalty()">次へ</button>
+`;
 }
-
 function penalty(){
   app.innerHTML = `
     <h1>罰ゲーム</h1>
@@ -219,7 +238,6 @@ function penalty(){
     <button class="btn main" onclick="start()">最初に戻る</button>
   `;
 }
-
 renderStart();
 </script>
 </body>
