@@ -1,95 +1,71 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF-8" />
 <title>2択 性格ゲーム</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <style>
-body{
-  margin:0;
-  background:#111;
-  color:#f7f7f7;
-  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  min-height:100vh;
-}
-.card{
-  background:#181818;
-  border:1px solid #444;
-  border-radius:16px;
-  padding:22px 20px;
-  max-width:520px;
-  width:100%;
-  box-shadow:0 0 25px rgba(0,0,0,.6);
-}
-h1{margin:.2em 0 .4em;font-size:1.5rem;}
-.progress{color:#aaa;font-size:.8rem;margin-bottom:.3em;}
-.question{margin:1em 0;font-size:1.05rem;line-height:1.5;}
-.choices{display:flex;flex-direction:column;gap:10px;margin:16px 0;}
-.btn{
-  border:none;
-  border-radius:999px;
-  padding:14px 18px;
-  font-size:.95rem;
-  cursor:pointer;
-}
-.choice{background:#252525;color:#fff;border:1px solid #444;text-align:left;}
-.choice.selectedA{border-color:#f5b642;background:rgba(245,182,66,.2);}
-.choice.selectedB{border-color:#e50914;background:rgba(229,9,20,.2);}
-.main{
-  background:linear-gradient(135deg,#e50914,#f5b642);
-  color:#111;font-weight:600;width:100%;
-}
-.sub{background:#2a2a2a;color:#fff;border:1px solid #444;}
-.nav{display:flex;gap:8px;margin-top:8px;}
-img.hero{
-  width:100%;
-  max-width:260px;
-  display:block;
-  margin:10px auto;
-}
-.badge{
-  display:inline-block;
-  background:#333;
-  padding:2px 8px;
-  border-radius:999px;
-  font-size:.75rem;
-  margin-left:6px;
-}
-.highlight{color:#f5b642;font-weight:600;}
+  body{
+    margin:0; background:#111; color:#f7f7f7;
+    font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    display:flex; justify-content:center; align-items:center; min-height:100vh;
+  }
+  .card{
+    background:#181818; border:1px solid #444; border-radius:16px;
+    padding:22px 20px; max-width:520px; width:100%;
+    box-shadow:0 0 25px rgba(0,0,0,.6);
+  }
+  h1{margin:.2em 0 .4em;font-size:1.5rem;}
+  .progress{color:#aaa;font-size:.8rem;margin-bottom:.3em;}
+  .question{margin:1em 0;font-size:1.05rem;line-height:1.5;white-space:normal;}
+  .choices{display:flex;flex-direction:column;gap:10px;margin:16px 0;}
+  .btn{
+    border:none; border-radius:999px; padding:14px 18px;
+    font-size:.95rem; cursor:pointer;
+  }
+  .btn:disabled{opacity:.45; cursor:default;}
+  .choice{background:#252525;color:#fff;border:1px solid #444;text-align:left;}
+  .choice.selectedA{border-color:#f5b642;background:rgba(245,182,66,.2);}
+  .choice.selectedB{border-color:#e50914;background:rgba(229,9,20,.2);}
+  .main{background:linear-gradient(135deg,#e50914,#f5b642); color:#111; font-weight:600; width:100%;}
+  .sub{background:#2a2a2a;color:#fff;border:1px solid #444;}
+  .nav{display:flex;gap:8px;margin-top:8px;}
+  img.hero{width:100%; max-width:260px; display:block; margin:10px auto;}
+  .badge{
+    display:inline-block;background:#333;padding:2px 8px;border-radius:999px;
+    font-size:.75rem;margin-left:6px;
+  }
+  .highlight{color:#f5b642;font-weight:600;}
 </style>
 </head>
 
 <body>
-<div class="card" id="app"></div>
+  <div class="card" id="app"></div>
 
 <script>
 // ================= 設定 =================
 const rainyTypeLabel = "作者：Rainy（タイプ5）";
-<script>
-  // ===== 犬画像（タイプ別） ===========================
-  const dogImages = {
-    1: "img/dog_type01.png",
-    2: "img/dog_type02.png",
-    3: "img/dog_type03.png",
-    4: "img/dog_type04.png",
-    5: "img/dog_type05.png",
-    6: "img/dog_type06.png",
-    7: "img/dog_type07.png",
-    8: "img/dog_type08.png",
-    9: "img/dog_type09.png"
-  };
 
-  function getDogImg(typeNum) {
-    return dogImages[typeNum] || "img/dog_type05.png"; // 保険
-  }
-</script>
+// 犬画像（タイプ別）※この32問では基本はtype5固定で使う想定
+const dogImages = {
+  1: "img/dog_type01.png",
+  2: "img/dog_type02.png",
+  3: "img/dog_type03.png",
+  4: "img/dog_type04.png",
+  5: "img/dog_type05.png",
+  6: "img/dog_type06.png",
+  7: "img/dog_type07.png",
+  8: "img/dog_type08.png",
+  9: "img/dog_type09.png"
+};
+function getDogImg(typeNum){
+  return dogImages[typeNum] || "img/dog_type05.png";
+}
 
-// 地獄16 + 天国16 = 32問
+// ================= 質問（32問） =================
+// ※キーは q / A / B に統一
 const questions = [
-  // 地獄
+  // 地獄16
   {q:"嫌われない人生 vs なめられない人生",A:"嫌われない",B:"なめられない"},
   {q:"ずっと謝り続ける vs ずっと言い訳し続ける",A:"謝る",B:"言い訳"},
   {q:"一生 気まずい沈黙 vs 一生 浅い雑談",A:"沈黙",B:"雑談"},
@@ -107,7 +83,7 @@ const questions = [
   {q:"注目され続ける vs 存在感ゼロ",A:"注目",B:"ゼロ"},
   {q:"誰かに依存される vs 誰にも頼られない",A:"依存",B:"孤立"},
 
-  // 天国
+  // 天国16
   {q:"一生 安心 vs 一生 ワクワク",A:"安心",B:"ワクワク"},
   {q:"一生 理解される vs 自由",A:"理解",B:"自由"},
   {q:"お金に困らない vs 時間に追われない",A:"お金",B:"時間"},
@@ -126,7 +102,7 @@ const questions = [
   {q:"自分を好きでいられる vs 愛され続ける",A:"自己肯定",B:"愛"}
 ];
 
-// Rainy（タイプ5）が選びそうな答え
+// Rainy（タイプ5）が選びそうな答え（32個）
 const rainyAnswers = [
   "B","A","A","A","A","A","B","A","A","A","A","A","A","A","B","B",
   "A","B","B","A","B","A","A","A","A","B","B","B","B","A","B","A"
@@ -134,19 +110,22 @@ const rainyAnswers = [
 
 // ================= ロジック =================
 const app = document.getElementById("app");
-let index = -1;
-let answers = [];
+
+let index = -1;              // -1:スタート、0〜31:質問
+let answers = [];            // A/B
+let showTransition = false;  // 地獄→天国演出フラグ
 
 function start(){
-  answers = [];
+  answers = new Array(questions.length).fill(null);
   index = -1;
+  showTransition = false;
   renderStart();
 }
 
 function renderStart(){
   app.innerHTML = `
     <h1>2択 性格ゲーム</h1>
-    <img class="hero" src="img/dog_type05.png">
+    <img class="hero" src="${getDogImg(5)}" alt="タイプ5の犬">
     <p>
       AかBを直感で選んでください。<br>
       最後に<strong>Rainyポイント</strong>と<br>
@@ -157,42 +136,62 @@ function renderStart(){
 }
 
 function next(){
-  index++;
-  if(index === 16){
-    app.innerHTML = `
-      <img class="hero" src="img/transition_hell_to_heaven.png">
-      <p>地獄を抜けました。<br><strong>ここから天国の2択です。</strong></p>
-      <button class="btn main" onclick="next()">続ける</button>
-    `;
+  // スタート → Q1へ
+  if(index === -1){
+    index = 0;
+    renderQuestion();
     return;
   }
+
+  // 演出画面中 → そのまま天国1問目へ（indexは増やさない）
+  if(showTransition){
+    showTransition = false;
+    renderQuestion();
+    return;
+  }
+
+  // 通常：次の質問へ
+  index++;
+
+  // 地獄16問が終わった直後に演出（= 次は questions[16] だが、ここでは進めない）
+  if(index === 16){
+    showTransition = true;
+    renderTransition();
+    return;
+  }
+
   if(index >= questions.length){
     renderResult();
     return;
   }
+
   renderQuestion();
 }
 
-function renderQuestion() {
+function renderTransition(){
+  app.innerHTML = `
+    <img class="hero" src="img/transition_hell_to_heaven.png" alt="地獄→天国">
+    <p>地獄を抜けました。<br><strong>ここから天国の2択です。</strong></p>
+    <button class="btn main" onclick="next()">続ける</button>
+  `;
+}
+
+function renderQuestion(){
   const q = questions[index];
   const a = answers[index];
-
-  // 改行が入ってるquestion（地獄→天国の説明など）を <br> に変換
-  const qText = (q.question || "").replace(/\n/g, "<br>");
 
   app.innerHTML = `
     <div class="progress">Q${index + 1} / ${questions.length}</div>
     <h1>2択 性格ゲーム</h1>
 
-    <div class="question">${qText}</div>
+    <div class="question">${q.q}</div>
 
     <div class="choices">
       <button class="btn choice ${a === "A" ? "selectedA" : ""}" onclick="choose('A')">
-        ${q.a ?? ""}
+        ${q.A}
       </button>
-
       <button class="btn choice ${a === "B" ? "selectedB" : ""}" onclick="choose('B')">
-        ${q.b ?? ""}
+        ${q.B}
       </button>
     </div>
 
@@ -209,48 +208,64 @@ function choose(v){
 }
 
 function prev(){
-  index--;
+  // 演出地点をまたぐ「戻る」も安全にする
+  if(index === 16){
+    // 天国1問目から戻るときは演出へ戻したいならここで制御可能
+    // 今回は単純に地獄最後の問題へ戻す
+    index = 15;
+  }else{
+    index--;
+  }
   renderQuestion();
 }
 
 function renderResult(){
   let rainy = 0;
-  answers.forEach((a,i)=>{ if(a===rainyAnswers[i]) rainy++; });
+  answers.forEach((a,i)=>{ if(a && a === rainyAnswers[i]) rainy++; });
 
-  let comment =
+  const comment =
     rainy > 24 ? "Type5とかなり近い日。冷静・合理モード最強。" :
     rainy > 16 ? "Type5寄り。考えてから動くタイプ。" :
     rainy > 8  ? "バランス型。感情と理性が半々。" :
                  "Type5とは真逆！感覚派・行動派。";
-const dogHtml = `
-  <img class="hero" src="${getDogImg(topType)}" alt="タイプ${topType}の犬">
-`;
-app.innerHTML = `
-  <h1>結果</h1>
-  ${dogHtml}
-  <p>
-    <span class="highlight">Rainyポイント：</span>
-    ${rainy} / ${questions.length}
-    <span class="badge">${rainyTypeLabel}</span>
-  </p>
-  <p>${comment}</p>
-  <p style="font-size:.85rem;color:#ccc;">
-    ※ Rainyポイントは「作者がタイプ5なので、同じ選択だと1点」。
-    正解・不正解はありません。
-  </p>
-  <button class="btn-main" onclick="penalty()">次へ</button>
-`;
+
+  // この32問は「相性」なので犬はタイプ5固定（エニア判定側で topType を出す）
+  const dogHtml = `<img class="hero" src="${getDogImg(5)}" alt="タイプ5の犬">`;
+
+  app.innerHTML = `
+    <h1>結果</h1>
+    ${dogHtml}
+
+    <p>
+      <span class="highlight">Rainyポイント：</span>
+      ${rainy} / ${questions.length}
+      <span class="badge">${rainyTypeLabel}</span>
+    </p>
+
+    <p>${comment}</p>
+
+    <p style="font-size:.85rem;color:#ccc;">
+      ※ Rainyポイントは「作者がタイプ5なので、同じ選択だと1点」。
+      正解・不正解はありません。
+    </p>
+
+    <button class="btn main" onclick="penalty()">次へ</button>
+  `;
 }
+
 function penalty(){
   app.innerHTML = `
     <h1>罰ゲーム</h1>
-    <img class="hero" src="img/enneagram_penalty_lightstick.png">
+    <img class="hero" src="img/enneagram_penalty_lightstick.png" alt="罰ゲーム">
     <p>Type5との相性が一番低い人、<br>
-    <strong>ペンライト芸、お願いします！</strong></p>
+      <strong>ペンライト芸、お願いします！</strong>
+    </p>
     <button class="btn main" onclick="start()">最初に戻る</button>
   `;
 }
-renderStart();
+
+// 初期表示
+start();
 </script>
 </body>
 </html>
