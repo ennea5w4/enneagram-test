@@ -336,12 +336,10 @@ function next32(){
   if(index32 === 16){
     app.innerHTML = `
       <div class="progress">演出</div>
-      <h1>究極の2択 性格ゲーム</h1>      src="img/transition_hell_to_heaven.png" alt="地獄から天国へ">
-      <p class="subtitle">
-        地獄の2択を抜けました。<br>
-        <strong>ここからは天国の2択です。</strong>
-      </p>
-      <button class="btn main" onclick="next32()">続ける</button>
+      <h1>究極の2択 性格ゲーム</h1>
+      <img class="hero" src="img/transition_hell_to_heaven.png" alt="地獄→天国">
+    <p>地獄を抜けました。<br><strong>ここから天国の2択です。</strong></p>
+    <button class="btn main" onclick="next()">続ける</button>
       <div class="nav">
         <button class="btn sub" onclick="prev32()">← 戻る</button>
         <button class="btn sub" onclick="renderStart()">最初に戻る</button>
