@@ -173,20 +173,31 @@ function next(){
   renderQuestion();
 }
 
-function renderQuestion(){
+function renderQuestion() {
   const q = questions[index];
   const a = answers[index];
+
+  // 改行が入ってるquestion（地獄→天国の説明など）を <br> に変換
+  const qText = (q.question || "").replace(/\n/g, "<br>");
+
   app.innerHTML = `
-    <div class="progress">Q${index+1} / ${questions.length}</div>
+    <div class="progress">Q${index + 1} / ${questions.length}</div>
     <h1>2択 性格ゲーム</h1>
-    <div class="question">${q.q}</div>
+
+    <div class="question">${qText}</div>
+
     <div class="choices">
-      <button class="btn choice ${a==="A"?"selectedA":""}" onclick="choose('A')">${q.A}</button>
-      <button class="btn choice ${a==="B"?"selectedB":""}" onclick="choose('B')">${q.B}</button>
+      <button class="btn choice ${a === "A" ? "selectedA" : ""}" onclick="choose('A')">
+        ${q.a ?? ""}
+      </button>
+      <button class="btn choice ${a === "B" ? "selectedB" : ""}" onclick="choose('B')">
+        ${q.b ?? ""}
+      </button>
     </div>
+
     <div class="nav">
-      <button class="btn sub" onclick="prev()" ${index===0?"disabled":""}>← もどる</button>
-      <button class="btn main" onclick="next()" ${!a?"disabled":""}>次へ →</button>
+      <button class="btn sub" onclick="prev()" ${index === 0 ? "disabled" : ""}>← もどる</button>
+      <button class="btn main" onclick="next()" ${!a ? "disabled" : ""}>次へ →</button>
     </div>
   `;
 }
