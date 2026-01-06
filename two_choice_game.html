@@ -40,7 +40,8 @@
   .choice.selectedB{ border-color:#e50914; background:rgba(229,9,20,.15); }
 
   .main{ background:linear-gradient(135deg,#e50914,#f5b642); color:#111; font-weight:700; width:100%; }
-  .line-btn{ background:#06C755; color:#fff; font-weight:700; width:100%; margin-bottom: 15px; display: block; text-decoration: none; text-align: center; line-height: 1.2;}
+  /* LINEボタンのスタイルを少し変更して目立たせます */
+  .line-btn{ background:#06C755; color:#fff; font-weight:700; width:100%; margin-bottom: 15px; display: block; text-decoration: none; text-align: center; line-height: 1.2; padding: 18px;}
   .sub{ background:#2a2a2a; color:#fff; border:1px solid #444; flex:1; }
   .danger{ background:#e50914; color:#fff; font-weight:700; width:100%; }
   .nav{ display:flex; gap:8px; margin-top:10px; }
@@ -77,9 +78,9 @@ const dogImages = {
 function getDogImg(t){ return dogImages[t] || dogImages[5]; }
 
 /* =========================================================
-   データ（2択32問 & エにあ18問）
+   データ（2択32問 & エニア18問）
 ========================================================= */
-// ... (前回の設問データ questions32 / ennea18 等はそのまま利用します)
+// ... (設問データは前回のものをそのまま利用します)
 const questions32 = [
   {q:"嫌われない人生 vs なめられない人生",A:"嫌われない",B:"なめられない"},
   {q:"ずっと謝り続ける vs ずっと言い訳し続ける",A:"謝り続ける",B:"言い訳し続ける"},
@@ -194,7 +195,7 @@ function renderTransition(){
 }
 
 /* =========================================================
-   2択結果表示（宣伝 & 紙吹雪 & 円形グラフ）
+   2択結果表示（修正：途中のLINEリンク削除）
 ========================================================= */
 function renderResult32(){
   let rainy = 0; ans32.forEach((a,i)=>{ if(a === rainyAnswers32[i]) rainy++; });
@@ -215,10 +216,6 @@ function renderResult32(){
     </div>
     <p class="subtitle">Rainyとのシンクロ率：<strong>${percent}%</strong></p>
     
-    <a href="${STICKER_URL}" class="btn line-btn" target="_blank">
-      作者Rainyの<br>LINEスタンプを見に行く！
-    </a>
-
     <div class="nav"><button class="btn main" onclick="startEnnea18()">エニア判定（18問）へ →</button></div>
     <div class="nav"><button class="btn sub" onclick="renderStart()">TOPへ戻る</button></div>
   `;
@@ -245,6 +242,9 @@ function renderQuestion18(){
   `;
 }
 
+/* =========================================================
+   エニア結果表示（修正：途中のLINEリンク削除）
+========================================================= */
 function renderResult18(){
   const score = {1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0};
   ans18.forEach((p, i)=>{ const types = (p === "A") ? ennea18[i].Atypes : ennea18[i].Btypes; types.forEach(t => score[t]++); });
@@ -255,28 +255,29 @@ function renderResult18(){
     <h1>判定結果：${escapeHtml(typeLabel[top])}</h1>
     <img class="hero" src="${getDogImg(top)}">
     <div class="subtitle"><strong>${escapeHtml(typeOneLiner[top])}</strong></div>
-    
-    <a href="${STICKER_URL}" class="btn line-btn" target="_blank">
-      このキャラの<br>LINEスタンプをチェック！
-    </a>
-
     <hr class="sep">
     <div class="small">上位3タイプ：${ranked.slice(0,3).map(r=>`${r.t}(${r.p}点)`).join(', ')}</div>
     <div class="nav"><button class="btn danger" onclick="renderPenalty()">罰ゲーム発表へ →</button></div>
   `;
 }
 
+/* =========================================================
+   罰ゲーム画面（修正：最後にLINEリンクボタンを設置）
+========================================================= */
 function renderPenalty(){
+  stopConfetti();
   app.innerHTML = `
     <h1>罰ゲーム発表</h1>
     <img class="hero" src="img/enneagram_penalty_lightstick.png">
     <p class="subtitle">対象の方は覚悟してください…！</p>
-    <button class="btn main" onclick="renderStart()">終了してTOPへ</button>
+    <a href="${STICKER_URL}" class="btn line-btn" target="_blank">
+      LINEスタンプを見て終了！
+    </a>
   `;
 }
 
 /* =========================================================
-   紙吹雪アニメーション
+   紙吹雪アニメーション & その他
 ========================================================= */
 const canvas = document.getElementById('confetti-canvas');
 const ctx = canvas.getContext('2d');
