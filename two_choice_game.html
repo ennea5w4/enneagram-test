@@ -28,7 +28,7 @@
   }
   h1{ margin:.2em 0 .5em; font-size:1.55rem; letter-spacing:.02em; }
   .progress{ color:#aaa; font-size:.85rem; margin-bottom:.35em; text-align: left; }
-  .question{ margin:1em 0; font-size:1.05rem; line-height:1.55; white-space:normal; text-align: left; }
+  .question{ margin:1em 0; font-size:1.1rem; line-height:1.55; white-space:normal; text-align: center; font-weight:700;}
   .subtitle{ color:#ccc; font-size:.95rem; line-height:1.55; margin:.2em 0 1em; }
   .choices{ display:flex; flex-direction:column; gap:10px; margin:16px 0; }
   .btn{
@@ -90,17 +90,6 @@
   }
   .highlight{ color:#f5b642; font-weight:700; }
   .small{ font-size:.88rem; color:#ccc; line-height:1.55; text-align: center; }
-  .topTag{
-    display:inline-block;
-    margin-left:8px;
-    padding:2px 8px;
-    border-radius:999px;
-    font-size:.72rem;
-    background:#222;
-    border:1px solid #444;
-    color:#f5b642;
-    vertical-align:middle;
-  }
   hr.sep{
     border:none;
     height:1px;
@@ -120,25 +109,17 @@
 const rainyTypeLabel = "作者：Rainy（タイプ5）";
 
 const dogImages = {
-  1: "img/dog_type01.png",
-  2: "img/dog_type02.png",
-  3: "img/dog_type03.png",
-  4: "img/dog_type04.png",
-  5: "img/dog_type05.png",
-  6: "img/dog_type06.png",
-  7: "img/dog_type07.png",
-  8: "img/dog_type08.png",
-  9: "img/dog_type09.png"
+  1: "img/dog_type01.png", 2: "img/dog_type02.png", 3: "img/dog_type03.png",
+  4: "img/dog_type04.png", 5: "img/dog_type05.png", 6: "img/dog_type06.png",
+  7: "img/dog_type07.png", 8: "img/dog_type08.png", 9: "img/dog_type09.png"
 };
-function getDogImg(typeNum){
-  return dogImages[typeNum] || dogImages[5];
-}
+function getDogImg(typeNum){ return dogImages[typeNum] || dogImages[5]; }
 
 /* =========================================================
-   ① 2択ゲーム（32問）
+   ① 2択ゲームデータ（32問）
 ========================================================= */
 const questions32 = [
-  // 地獄16
+  // 地獄16 (Index 0-15)
   {q:"嫌われない人生 vs なめられない人生",A:"嫌われない",B:"なめられない"},
   {q:"ずっと謝り続ける vs ずっと言い訳し続ける",A:"謝り続ける",B:"言い訳し続ける"},
   {q:"一生気まずい沈黙 vs 一生浅い雑談",A:"気まずい沈黙",B:"浅い雑談"},
@@ -155,7 +136,7 @@ const questions32 = [
   {q:"一生安心できない成功 vs 一生安心だけの失敗",A:"安心できない成功",B:"安心だけの失敗"},
   {q:"一生注目され続ける vs 一生存在感ゼロ",A:"注目され続ける",B:"存在感ゼロ"},
   {q:"一生誰かに依存される vs 一生誰にも頼られない",A:"誰かに依存される",B:"誰にも頼られない"},
-  // 天国16
+  // 天国16 (Index 16-31)
   {q:"一生安心 vs 一生ワクワク",A:"安心",B:"ワクワク"},
   {q:"一生理解される vs 一生自由でいられる",A:"理解される",B:"自由でいられる"},
   {q:"一生お金に困らない vs 一生時間に追われない",A:"お金に困らない",B:"時間に追われない"},
@@ -180,7 +161,7 @@ const rainyAnswers32 = [
 ];
 
 /* =========================================================
-   ② エニア判定（18問）
+   ② エニア18問データ
 ========================================================= */
 const ennea18 = [
   {q:"ミスを見つけたとき、まず出る反応は？",A:"正しく直したくなる", B:"波風を立てずに流したくなる",Atypes:[1], Btypes:[9]},
@@ -222,44 +203,60 @@ const typeOneLiner = {
 };
 
 /* =========================================================
-   メインロジック
+   メインロジック：2択ゲーム（32問）
 ========================================================= */
-let mode = "start";
-let index32 = -1;
+let index32 = 0;
 let ans32 = [];
-let index18 = 0;
-let ans18 = [];
 
 function renderStart(){
-  mode = "start";
   app.innerHTML = `
     <h1>究極の2択 性格ゲーム</h1>
     <img class="hero" src="${getDogImg(5)}" alt="タイプ5の犬">
-    <p class="subtitle">直感で選んでください。最後にRainy（作者）との相性判定とエニア判定ができます。</p>
+    <p class="subtitle">新年会特別版！Rainy（作者）との相性判定＆エニア判定ゲームです。</p>
     <button class="btn main" onclick="startTwoChoice()">スタート</button>
   `;
 }
 
 function startTwoChoice(){
-  mode = "twoChoice";
+  index32 = 0;
   ans32 = [];
-  index32 = -1;
-  next32();
+  renderQuestion32();
 }
 
-function next32(){
-  index32++;
-  if(index32 === 16){
-    app.innerHTML = `
-      <div class="progress">演出</div>
-      <h1>地獄終了 → 天国開始</h1>
-      <img class="hero" src="img/transition_hell_to_heaven.png" alt="地獄から天国へ">
-      <p class="subtitle">ここからは天国の2択です。</p>
-      <button class="btn main" onclick="next32()">天国へ進む</button>
-    `;
+// 次へボタンの処理（修正：インデックスを正しく管理）
+function next32() {
+  if (index32 === 15) {
+    renderTransition(); // 地獄終了後の演出
     return;
   }
-  if(index32 >= questions32.length){ renderResult32(); return; }
+  index32++;
+  if (index32 >= questions32.length) {
+    renderResult32();
+  } else {
+    renderQuestion32();
+  }
+}
+
+// 戻るボタンの処理（修正：演出画面にも戻れるように）
+function prev32() {
+  if (index32 === 0) { renderStart(); return; }
+  if (index32 === 16) {
+    renderTransition(); // 天国1問目から戻る時は演出画面へ
+    return;
+  }
+  index32--;
+  renderQuestion32();
+}
+
+// 天国へ進むボタン（ここがスキップ防止の鍵）
+function proceedToHeaven() {
+  index32 = 16; // 天国の1問目（Index 16）をセット
+  renderQuestion32();
+}
+
+// 地獄へ戻るボタン
+function backToHell() {
+  index32 = 15; // 地獄の最後（Index 15）へ戻る
   renderQuestion32();
 }
 
@@ -268,28 +265,41 @@ function choose32(v){ ans32[index32] = v; renderQuestion32(); }
 function renderQuestion32(){
   const q = questions32[index32];
   const a = ans32[index32];
+  const modeLabel = index32 < 16 ? "【地獄モード】" : "【天国モード】";
+  
   app.innerHTML = `
-    <div class="progress">Q${index32 + 1} / ${questions32.length}</div>
+    <div class="progress">Q${index32 + 1} / ${questions32.length} ${modeLabel}</div>
     <h1>性格ゲーム</h1>
-    <div class="question" style="text-align:center; font-weight:700;">${escapeHtml(q.q)}</div>
+    <div class="question">${escapeHtml(q.q)}</div>
     <div class="choices">
       <button class="btn choice ${a === 'A' ? 'selectedA' : ''}" onclick="choose32('A')">${escapeHtml(q.A)}</button>
       <button class="btn choice ${a === 'B' ? 'selectedB' : ''}" onclick="choose32('B')">${escapeHtml(q.B)}</button>
     </div>
     <div class="nav">
-      <button class="btn sub" onclick="prev32()" ${index32===0?'disabled':''}>戻る</button>
+      <button class="btn sub" onclick="prev32()">戻る</button>
       <button class="btn danger" onclick="next32()" ${!a?'disabled':''}>${index32===questions32.length-1?'結果へ':'次へ'}</button>
     </div>
   `;
 }
-function prev32(){ index32--; if(index32===16) index32=15; renderQuestion32(); }
+
+// 演出画面（スキップされないように独立）
+function renderTransition(){
+  app.innerHTML = `
+    <div class="progress">演出</div>
+    <h1>地獄終了！</h1>
+    <img class="hero" src="img/transition_hell_to_heaven.png" alt="地獄から天国へ">
+    <p class="subtitle">嫌な選択肢（地獄）はここまでです。<br>ここからは<strong>天国の2択</strong>が始まります！</p>
+    <button class="btn main" onclick="proceedToHeaven()">天国へ進む →</button>
+    <div class="nav">
+      <button class="btn sub" onclick="backToHell()">← 地獄に戻る</button>
+    </div>
+  `;
+}
 
 /* =========================================================
-   【重要】新年会用：2択結果表示（差し込み済み）
+   新年会用：2択結果表示
 ========================================================= */
 function renderResult32(){
-  const countA = ans32.filter(x=>x==="A").length;
-  const countB = ans32.filter(x=>x==="B").length;
   let rainy = 0;
   ans32.forEach((a,i)=>{ if(a === rainyAnswers32[i]) rainy++; });
 
@@ -321,7 +331,6 @@ function renderResult32(){
       </p>
     </div>
     <p class="subtitle" style="font-weight:700; color:${statusColor}">${escapeHtml(comment)}</p>
-    <p class="small">A回答：${countA} ／ B回答：${countB}</p>
     <div class="nav">
       <button class="btn main" onclick="startEnnea18()">エニア判定（18問）へ →</button>
     </div>
@@ -335,7 +344,10 @@ function renderResult32(){
 /* =========================================================
    エニア18問ロジック
 ========================================================= */
-function startEnnea18(){ mode="ennea"; index18=0; ans18=new Array(ennea18.length).fill(null); renderQuestion18(); }
+let index18 = 0;
+let ans18 = [];
+
+function startEnnea18(){ index18=0; ans18=new Array(ennea18.length).fill(null); renderQuestion18(); }
 function choose18(v){ ans18[index18]=v; renderQuestion18(); }
 function next18(){ if(index18<ennea18.length-1){ index18++; renderQuestion18(); } else { renderResult18(); } }
 function prev18(){ if(index18<=0){ renderResult32(); return; } index18--; renderQuestion18(); }
@@ -346,7 +358,7 @@ function renderQuestion18(){
   app.innerHTML = `
     <div class="progress">エニア Q${index18 + 1} / ${ennea18.length}</div>
     <h1>エニア判定</h1>
-    <div class="question" style="text-align:center;">${escapeHtml(item.q)}</div>
+    <div class="question">${escapeHtml(item.q)}</div>
     <div class="choices">
       <button class="btn choice ${a==='A'?'selectedA':''}" onclick="choose18('A')">${escapeHtml(item.A)}</button>
       <button class="btn choice ${a==='B'?'selectedB':''}" onclick="choose18('B')">${escapeHtml(item.B)}</button>
@@ -381,7 +393,7 @@ function renderResult18(){
 
 function renderPenalty(){
   app.innerHTML = `
-    <h1>罰ゲーム</h1>
+    <h1>罰ゲーム発表</h1>
     <img class="hero" src="img/enneagram_penalty_lightstick.png" alt="罰ゲーム">
     <p class="subtitle">今回対象の方への<br><strong>罰ゲームを発表します！</strong></p>
     <button class="btn main" onclick="renderStart()">終了してTOPへ</button>
