@@ -2,110 +2,71 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8" />
-<title>究極の2択 性格ゲーム（新年会・余興SP）</title>
+<title>究極の2択 性格ゲーム（新年会・宣伝SP）</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <style>
   body{
-    margin:0;
-    background:#111;
-    color:#f7f7f7;
+    margin:0; background:#111; color:#f7f7f7;
     font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    min-height:100vh;
+    display:flex; justify-content:center; align-items:center; min-height:100vh;
+    overflow-x: hidden;
+  }
+  #confetti-canvas {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 999;
   }
   .card{
-    background:#181818;
-    border:1px solid #444;
-    border-radius:16px;
-    padding:22px 20px;
-    max-width:560px;
-    width:100%;
-    box-shadow:0 0 25px rgba(0,0,0,.6);
-    box-sizing:border-box;
-    text-align: center;
+    background:#181818; border:1px solid #444; border-radius:16px;
+    padding:22px 20px; max-width:560px; width:95%;
+    box-shadow:0 0 25px rgba(0,0,0,.6); box-sizing:border-box; text-align: center;
+    position: relative; z-index: 10;
+    animation: fadeIn 0.5s ease-out;
   }
-  h1{ margin:.2em 0 .5em; font-size:1.55rem; letter-spacing:.02em; }
-  .progress{ color:#aaa; font-size:.85rem; margin-bottom:.35em; text-align: left; }
-  .question{ margin:1em 0; font-size:1.1rem; line-height:1.55; white-space:normal; text-align: center; font-weight:700;}
-  .subtitle{ color:#ccc; font-size:.95rem; line-height:1.55; margin:.2em 0 1em; }
-  .choices{ display:flex; flex-direction:column; gap:10px; margin:16px 0; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  
+  h1{ margin:.2em 0 .5em; font-size:1.4rem; letter-spacing:.02em; }
+  .progress{ color:#aaa; font-size:.8rem; margin-bottom:.35em; text-align: left; }
+  .question{ margin:1em 0; font-size:1.1rem; line-height:1.5; font-weight:700; min-height: 3em; display: flex; align-items: center; justify-content: center;}
+  .choices{ display:flex; flex-direction:column; gap:12px; margin:16px 0; }
+  
   .btn{
-    border:none;
-    border-radius:999px;
-    padding:14px 18px;
-    font-size:.98rem;
-    cursor:pointer;
-    transition: transform 0.1s;
+    border:none; border-radius:999px; padding:15px 18px;
+    font-size:1rem; cursor:pointer; transition: transform 0.1s, background 0.2s;
+    -webkit-tap-highlight-color: transparent;
   }
-  .btn:active { transform: scale(0.98); }
-  .choice{
-    background:#252525;
-    color:#fff;
-    border:1px solid #444;
-    text-align:left;
-    line-height:1.4;
-  }
-  .choice.selectedA{ border-color:#f5b642; background:rgba(245,182,66,.18); }
-  .choice.selectedB{ border-color:#e50914; background:rgba(229,9,20,.18); }
+  .btn:active { transform: scale(0.96); }
+  .choice{ background:#252525; color:#fff; border:1px solid #444; text-align:left; line-height:1.4; }
+  .choice.selectedA{ border-color:#f5b642; background:rgba(245,182,66,.15); }
+  .choice.selectedB{ border-color:#e50914; background:rgba(229,9,20,.15); }
 
-  .main{
-    background:linear-gradient(135deg,#e50914,#f5b642);
-    color:#111;
-    font-weight:700;
-    width:100%;
-  }
-  .sub{
-    background:#2a2a2a;
-    color:#fff;
-    border:1px solid #444;
-    flex:1;
-  }
-  .danger{
-    background:#e50914;
-    color:#fff;
-    font-weight:700;
-    width:100%;
-  }
+  .main{ background:linear-gradient(135deg,#e50914,#f5b642); color:#111; font-weight:700; width:100%; }
+  .line-btn{ background:#06C755; color:#fff; font-weight:700; width:100%; margin-bottom: 15px; display: block; text-decoration: none; text-align: center; line-height: 1.2;}
+  .sub{ background:#2a2a2a; color:#fff; border:1px solid #444; flex:1; }
+  .danger{ background:#e50914; color:#fff; font-weight:700; width:100%; }
   .nav{ display:flex; gap:8px; margin-top:10px; }
-  .nav .main, .nav .danger{ flex:1; }
-  .btn[disabled]{ opacity:.4; cursor:default; }
-
-  img.hero{
-    width:100%;
-    max-width:300px;
-    display:block;
-    margin:10px auto 14px;
-    border-radius:10px;
-  }
-  .badge{
-    display:inline-block;
-    background:#333;
-    padding:2px 10px;
-    border-radius:999px;
-    font-size:.78rem;
-    margin-left:8px;
-    vertical-align:middle;
-  }
+  
+  img.hero{ width:100%; max-width:280px; display:block; margin:10px auto; border-radius:10px; }
   .highlight{ color:#f5b642; font-weight:700; }
-  .small{ font-size:.88rem; color:#ccc; line-height:1.55; text-align: center; }
-  hr.sep{
-    border:none;
-    height:1px;
-    background:#333;
-    margin:16px 0;
-  }
+  .small{ font-size:.8rem; color:#ccc; margin-top: 10px; }
+  
+  /* 円形チャート用スタイル */
+  .chart-container { position: relative; width: 180px; height: 180px; margin: 15px auto; }
+  .chart-svg { transform: rotate(-90deg); }
+  .chart-bg { fill: none; stroke: #333; stroke-width: 15; }
+  .chart-bar { fill: none; stroke: #f5b642; stroke-width: 15; stroke-linecap: round; transition: stroke-dasharray 1s ease-out; }
+  .chart-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: 700; font-size: 1.2rem; }
 </style>
 </head>
 
 <body>
+<canvas id="confetti-canvas"></canvas>
 <div class="card" id="app"></div>
 
 <script>
 /* =========================================================
-   設定：画像
+   基本設定 & LINEリンク
 ========================================================= */
+const STICKER_URL = "https://line.me/S/shop/sticker/author/5729491";
 const rainyTypeLabel = "作者：Rainy（タイプ5）";
 
 const dogImages = {
@@ -113,13 +74,13 @@ const dogImages = {
   4: "img/dog_type04.png", 5: "img/dog_type05.png", 6: "img/dog_type06.png",
   7: "img/dog_type07.png", 8: "img/dog_type08.png", 9: "img/dog_type09.png"
 };
-function getDogImg(typeNum){ return dogImages[typeNum] || dogImages[5]; }
+function getDogImg(t){ return dogImages[t] || dogImages[5]; }
 
 /* =========================================================
-   ① 2択ゲームデータ（32問）
+   データ（2択32問 & エにあ18問）
 ========================================================= */
+// ... (前回の設問データ questions32 / ennea18 等はそのまま利用します)
 const questions32 = [
-  // 地獄16 (Index 0-15)
   {q:"嫌われない人生 vs なめられない人生",A:"嫌われない",B:"なめられない"},
   {q:"ずっと謝り続ける vs ずっと言い訳し続ける",A:"謝り続ける",B:"言い訳し続ける"},
   {q:"一生気まずい沈黙 vs 一生浅い雑談",A:"気まずい沈黙",B:"浅い雑談"},
@@ -136,7 +97,6 @@ const questions32 = [
   {q:"一生安心できない成功 vs 一生安心だけの失敗",A:"安心できない成功",B:"安心だけの失敗"},
   {q:"一生注目され続ける vs 一生存在感ゼロ",A:"注目され続ける",B:"存在感ゼロ"},
   {q:"一生誰かに依存される vs 一生誰にも頼られない",A:"誰かに依存される",B:"誰にも頼られない"},
-  // 天国16 (Index 16-31)
   {q:"一生安心 vs 一生ワクワク",A:"安心",B:"ワクワク"},
   {q:"一生理解される vs 一生自由でいられる",A:"理解される",B:"自由でいられる"},
   {q:"一生お金に困らない vs 一生時間に追われない",A:"お金に困らない",B:"時間に追われない"},
@@ -154,15 +114,7 @@ const questions32 = [
   {q:"一生選ばれる側 vs 一生選ぶ側",A:"選ばれる側",B:"選ぶ側"},
   {q:"一生自分を好きでいられる vs 一生愛され続ける",A:"自分を好きでいられる",B:"愛され続ける"}
 ];
-
-const rainyAnswers32 = [
-  "B","A","A","A","A","A","B","A","A","A","A","A","A","A","B","B",
-  "A","B","B","A","B","A","A","A","A","B","B","B","B","A","B","A"
-];
-
-/* =========================================================
-   ② エニア18問データ
-========================================================= */
+const rainyAnswers32 = ["B","A","A","A","A","A","B","A","A","A","A","A","A","A","B","B","A","B","B","A","B","A","A","A","A","B","B","B","B","A","B","A"];
 const ennea18 = [
   {q:"ミスを見つけたとき、まず出る反応は？",A:"正しく直したくなる", B:"波風を立てずに流したくなる",Atypes:[1], Btypes:[9]},
   {q:"誰かが落ち込んでる。あなたの最初の動きは？",A:"手伝えることを探して動く", B:"距離を保ちつつ状況を分析する",Atypes:[2], Btypes:[5]},
@@ -183,225 +135,177 @@ const ennea18 = [
   {q:"“自分らしさ”で譲れないのは？",A:"センス・個性・意味", B:"結果・実利・効率",Atypes:[4], Btypes:[3,5]},
   {q:"疲れているときの回復法",A:"一人になって充電", B:"誰かと話して回復",Atypes:[5,4], Btypes:[2,7,9]}
 ];
-
-const typeLabel = {
-  1:"タイプ1：改革タイプ", 2:"タイプ2：援助タイプ", 3:"タイプ3：達成タイプ", 
-  4:"タイプ4：個性タイプ", 5:"タイプ5：分析タイプ", 6:"タイプ6：安全タイプ", 
-  7:"タイプ7：熱中タイプ", 8:"タイプ8：挑戦タイプ", 9:"タイプ9：平和タイプ"
-};
-
-const typeOneLiner = {
-  1:"『正しさ』に命をかける。脳内に監査部が常駐してる。",
-  2:"人の役に立つと元気。気づいたら世話焼きが発動してる。",
-  3:"勝ち筋を見つけて最短で取りにいく。成果が酸素。",
-  4:"“私だけの世界”がある。センスと情緒が武器。",
-  5:"情報を食べて生きる。静かに全部見てるタイプ。",
-  6:"危機管理がプロ級。確認してから進む安心設計。",
-  7:"楽しさ最優先。ワクワクを見つける嗅覚が強い。",
-  8:"強くて頼れる。守るために前に出るボス気質。",
-  9:"場を和ませる天才。争いを丸く収める達人。"
-};
+const typeLabel = {1:"タイプ1：改革タイプ", 2:"タイプ2：援助タイプ", 3:"タイプ3：達成タイプ", 4:"タイプ4：個性タイプ", 5:"タイプ5：分析タイプ", 6:"タイプ6：安全タイプ", 7:"タイプ7：熱中タイプ", 8:"タイプ8：挑戦タイプ", 9:"タイプ9：平和タイプ"};
+const typeOneLiner = {1:"『正しさ』に命をかける。脳内に監査部が常駐。",2:"人の役に立つと元気。世話焼きが発動中。",3:"勝ち筋を見つけて最短で取りにいく。",4:"“私だけの世界”がある。情緒が武器。",5:"情報を食べて生きる。静かに全部見てる。",6:"危機管理がプロ級。安心設計の守り神。",7:"楽しさ最優先。ワクワク嗅覚が最強。",8:"強くて頼れる。守るために前に出るボス。",9:"場を和ませる天才。争いを丸く収める。"};
 
 /* =========================================================
-   メインロジック：2択ゲーム（32問）
+   メインロジック
 ========================================================= */
-let index32 = 0;
-let ans32 = [];
+let index32 = 0; let ans32 = [];
+let index18 = 0; let ans18 = [];
 
 function renderStart(){
+  stopConfetti();
   app.innerHTML = `
     <h1>究極の2択 性格ゲーム</h1>
-    <img class="hero" src="${getDogImg(5)}" alt="タイプ5の犬">
-    <p class="subtitle">新年会特別版！Rainy（作者）との相性判定＆エニア判定ゲームです。</p>
-    <button class="btn main" onclick="startTwoChoice()">スタート</button>
+    <img class="hero" src="${getDogImg(5)}" alt="タイプ5">
+    <p class="subtitle">新年会を盛り上げる「思考シンクロ診断」<br>あなたの考えは作者Rainyと一致するか？</p>
+    <button class="btn main" onclick="startTwoChoice()">ゲーム開始</button>
   `;
 }
 
-function startTwoChoice(){
-  index32 = 0;
-  ans32 = [];
-  renderQuestion32();
-}
+function startTwoChoice(){ index32 = 0; ans32 = []; renderQuestion32(); }
 
-// 次へボタンの処理（修正：インデックスを正しく管理）
 function next32() {
-  if (index32 === 15) {
-    renderTransition(); // 地獄終了後の演出
-    return;
-  }
+  if (index32 === 15) { renderTransition(); return; }
   index32++;
-  if (index32 >= questions32.length) {
-    renderResult32();
-  } else {
-    renderQuestion32();
-  }
+  if (index32 >= questions32.length) { renderResult32(); } else { renderQuestion32(); }
 }
-
-// 戻るボタンの処理（修正：演出画面にも戻れるように）
 function prev32() {
   if (index32 === 0) { renderStart(); return; }
-  if (index32 === 16) {
-    renderTransition(); // 天国1問目から戻る時は演出画面へ
-    return;
-  }
-  index32--;
-  renderQuestion32();
+  if (index32 === 16) { renderTransition(); return; }
+  index32--; renderQuestion32();
 }
-
-// 天国へ進むボタン（ここがスキップ防止の鍵）
-function proceedToHeaven() {
-  index32 = 16; // 天国の1問目（Index 16）をセット
-  renderQuestion32();
-}
-
-// 地獄へ戻るボタン
-function backToHell() {
-  index32 = 15; // 地獄の最後（Index 15）へ戻る
-  renderQuestion32();
-}
-
-function choose32(v){ ans32[index32] = v; renderQuestion32(); }
 
 function renderQuestion32(){
-  const q = questions32[index32];
-  const a = ans32[index32];
-  const modeLabel = index32 < 16 ? "【地獄モード】" : "【天国モード】";
-  
+  const q = questions32[index32]; const a = ans32[index32];
+  const mode = index32 < 16 ? "地獄" : "天国";
   app.innerHTML = `
-    <div class="progress">Q${index32 + 1} / ${questions32.length} ${modeLabel}</div>
-    <h1>性格ゲーム</h1>
+    <div class="progress">Q${index32 + 1} / 32 [${mode}]</div>
     <div class="question">${escapeHtml(q.q)}</div>
     <div class="choices">
-      <button class="btn choice ${a === 'A' ? 'selectedA' : ''}" onclick="choose32('A')">${escapeHtml(q.A)}</button>
-      <button class="btn choice ${a === 'B' ? 'selectedB' : ''}" onclick="choose32('B')">${escapeHtml(q.B)}</button>
+      <button class="btn choice ${a === 'A' ? 'selectedA' : ''}" onclick="ans32[index32]='A';renderQuestion32()">${escapeHtml(q.A)}</button>
+      <button class="btn choice ${a === 'B' ? 'selectedB' : ''}" onclick="ans32[index32]='B';renderQuestion32()">${escapeHtml(q.B)}</button>
     </div>
     <div class="nav">
       <button class="btn sub" onclick="prev32()">戻る</button>
-      <button class="btn danger" onclick="next32()" ${!a?'disabled':''}>${index32===questions32.length-1?'結果へ':'次へ'}</button>
+      <button class="btn danger" onclick="next32()" ${!a?'disabled':''}>${index32===31?'結果へ':'次へ'}</button>
     </div>
   `;
 }
 
-// 演出画面（スキップされないように独立）
 function renderTransition(){
   app.innerHTML = `
-    <div class="progress">演出</div>
-    <h1>地獄終了！</h1>
-    <img class="hero" src="img/transition_hell_to_heaven.png" alt="地獄から天国へ">
-    <p class="subtitle">嫌な選択肢（地獄）はここまでです。<br>ここからは<strong>天国の2択</strong>が始まります！</p>
-    <button class="btn main" onclick="proceedToHeaven()">天国へ進む →</button>
-    <div class="nav">
-      <button class="btn sub" onclick="backToHell()">← 地獄に戻る</button>
-    </div>
+    <h1>地獄モード終了！</h1>
+    <img class="hero" src="img/transition_hell_to_heaven.png" alt="天国へ">
+    <p class="subtitle">ここからは「究極の幸せ」を選ぶ<br><strong>天国モード</strong>突入です！</p>
+    <button class="btn main" onclick="index32=16;renderQuestion32()">天国へ進む →</button>
   `;
 }
 
 /* =========================================================
-   新年会用：2択結果表示
+   2択結果表示（宣伝 & 紙吹雪 & 円形グラフ）
 ========================================================= */
 function renderResult32(){
-  let rainy = 0;
-  ans32.forEach((a,i)=>{ if(a === rainyAnswers32[i]) rainy++; });
-
-  let statusTitle = "";
-  let statusColor = "#f7f7f7";
-  let comment = "";
+  let rainy = 0; ans32.forEach((a,i)=>{ if(a === rainyAnswers32[i]) rainy++; });
+  const percent = Math.round((rainy / 32) * 100);
   
-  if (rainy >= 26) {
-    statusTitle = "【景品対象】Rainyのソウルメイト";
-    statusColor = "#f5b642";
-    comment = "すごすぎる！僕の思考を完全にコピーしていますね。豪華景品を受け取ってください！";
-  } else if (rainy <= 8) {
-    statusTitle = "【罰ゲーム対象】未知の生命体";
-    statusColor = "#e50914";
-    comment = "逆に天才！僕と1ミリも噛み合わないあなたは、迷わず罰ゲームへGO！";
-  } else {
-    statusTitle = "【一般人】普通の人";
-    statusColor = "#aaa";
-    comment = "絶妙に普通！似ているようで似ていない、一番コメントに困るスコアです（笑）";
-  }
+  let status = "普通の人"; let color = "#aaa";
+  if (rainy >= 26) { status = "景品対象！ソウルメイト"; color = "#f5b642"; startConfetti(); }
+  else if (rainy <= 8) { status = "罰ゲーム対象！異星人"; color = "#e50914"; }
 
   app.innerHTML = `
-    <h1 style="color:${statusColor}">${statusTitle}</h1>
-    <img class="hero" src="${getDogImg(5)}" style="border: 4px solid ${statusColor}">
-    <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:10px; margin-bottom:20px;">
-      <p class="subtitle" style="margin:0;">
-        <span class="highlight" style="font-size:1.5rem;">Rainyポイント：${rainy} / ${questions32.length}</span>
-        <br><span class="badge" style="margin-top:5px;">${rainyTypeLabel}</span>
-      </p>
+    <h1 style="color:${color}">${status}</h1>
+    <div class="chart-container">
+      <svg class="chart-svg" width="180" height="180">
+        <circle class="chart-bg" cx="90" cy="90" r="75"></circle>
+        <circle class="chart-bar" cx="90" cy="90" r="75" style="stroke-dasharray: ${471 * (percent/100)} 471; stroke: ${color}"></circle>
+      </svg>
+      <div class="chart-text">${rainy} pt</div>
     </div>
-    <p class="subtitle" style="font-weight:700; color:${statusColor}">${escapeHtml(comment)}</p>
-    <div class="nav">
-      <button class="btn main" onclick="startEnnea18()">エニア判定（18問）へ →</button>
-    </div>
-    <div class="nav">
-      <button class="btn sub" onclick="startTwoChoice()">もう一度</button>
-      <button class="btn sub" onclick="renderStart()">TOPへ</button>
-    </div>
+    <p class="subtitle">Rainyとのシンクロ率：<strong>${percent}%</strong></p>
+    
+    <a href="${STICKER_URL}" class="btn line-btn" target="_blank">
+      作者Rainyの<br>LINEスタンプを見に行く！
+    </a>
+
+    <div class="nav"><button class="btn main" onclick="startEnnea18()">エニア判定（18問）へ →</button></div>
+    <div class="nav"><button class="btn sub" onclick="renderStart()">TOPへ戻る</button></div>
   `;
 }
 
 /* =========================================================
    エニア18問ロジック
 ========================================================= */
-let index18 = 0;
-let ans18 = [];
-
-function startEnnea18(){ index18=0; ans18=new Array(ennea18.length).fill(null); renderQuestion18(); }
-function choose18(v){ ans18[index18]=v; renderQuestion18(); }
-function next18(){ if(index18<ennea18.length-1){ index18++; renderQuestion18(); } else { renderResult18(); } }
-function prev18(){ if(index18<=0){ renderResult32(); return; } index18--; renderQuestion18(); }
-
+function startEnnea18(){ index18=0; ans18=new Array(18).fill(null); renderQuestion18(); }
 function renderQuestion18(){
-  const item = ennea18[index18];
-  const a = ans18[index18];
+  const item = ennea18[index18]; const a = ans18[index18];
   app.innerHTML = `
-    <div class="progress">エニア Q${index18 + 1} / ${ennea18.length}</div>
+    <div class="progress">エニア Q${index18 + 1} / 18</div>
     <h1>エニア判定</h1>
     <div class="question">${escapeHtml(item.q)}</div>
     <div class="choices">
-      <button class="btn choice ${a==='A'?'selectedA':''}" onclick="choose18('A')">${escapeHtml(item.A)}</button>
-      <button class="btn choice ${a==='B'?'selectedB':''}" onclick="choose18('B')">${escapeHtml(item.B)}</button>
+      <button class="btn choice ${a==='A'?'selectedA':''}" onclick="ans18[index18]='A';renderQuestion18()">${escapeHtml(item.A)}</button>
+      <button class="btn choice ${a==='B'?'selectedB':''}" onclick="ans18[index18]='B';renderQuestion18()">${escapeHtml(item.B)}</button>
     </div>
     <div class="nav">
-      <button class="btn sub" onclick="prev18()">戻る</button>
-      <button class="btn danger" onclick="next18()" ${!a?'disabled':''}>${index18===ennea18.length-1?'結果表示':'次へ'}</button>
+      <button class="btn sub" onclick="index18===0?renderResult32():(index18--,renderQuestion18())">戻る</button>
+      <button class="btn danger" onclick="index18===17?renderResult18():(index18++,renderQuestion18())" ${!a?'disabled':''}>次へ</button>
     </div>
   `;
 }
 
 function renderResult18(){
   const score = {1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0};
-  ans18.forEach((pick, i)=>{
-    const addTypes = (pick === "A") ? ennea18[i].Atypes : ennea18[i].Btypes;
-    (addTypes || []).forEach(t => { score[t]++; });
-  });
-  const ranked = Object.keys(score).map(k=>({type:Number(k),pts:score[k]})).sort((a,b)=>b.pts-a.pts);
-  const topType = ranked[0].type;
+  ans18.forEach((p, i)=>{ const types = (p === "A") ? ennea18[i].Atypes : ennea18[i].Btypes; types.forEach(t => score[t]++); });
+  const ranked = Object.keys(score).map(k=>({t:Number(k),p:score[k]})).sort((a,b)=>b.p-a.p);
+  const top = ranked[0].t;
 
   app.innerHTML = `
-    <h1>エニア判定結果</h1>
-    <p class="subtitle">あなたの傾向が強いのは…<br><span class="highlight" style="font-size:1.4rem;">${escapeHtml(typeLabel[topType])}</span></p>
-    <img class="hero" src="${getDogImg(topType)}">
-    <div class="subtitle" style="padding:0 10px;">${escapeHtml(typeOneLiner[topType])}</div>
+    <h1>判定結果：${escapeHtml(typeLabel[top])}</h1>
+    <img class="hero" src="${getDogImg(top)}">
+    <div class="subtitle"><strong>${escapeHtml(typeOneLiner[top])}</strong></div>
+    
+    <a href="${STICKER_URL}" class="btn line-btn" target="_blank">
+      このキャラの<br>LINEスタンプをチェック！
+    </a>
+
     <hr class="sep">
-    <div class="subtitle">上位3タイプ：${ranked.slice(0,3).map(r=>`${r.type}(${r.pts}点)`).join(', ')}</div>
+    <div class="small">上位3タイプ：${ranked.slice(0,3).map(r=>`${r.t}(${r.p}点)`).join(', ')}</div>
     <div class="nav"><button class="btn danger" onclick="renderPenalty()">罰ゲーム発表へ →</button></div>
-    <div class="nav"><button class="btn sub" onclick="renderStart()">最初に戻る</button></div>
   `;
 }
 
 function renderPenalty(){
   app.innerHTML = `
     <h1>罰ゲーム発表</h1>
-    <img class="hero" src="img/enneagram_penalty_lightstick.png" alt="罰ゲーム">
-    <p class="subtitle">今回対象の方への<br><strong>罰ゲームを発表します！</strong></p>
+    <img class="hero" src="img/enneagram_penalty_lightstick.png">
+    <p class="subtitle">対象の方は覚悟してください…！</p>
     <button class="btn main" onclick="renderStart()">終了してTOPへ</button>
   `;
 }
 
-function escapeHtml(str){ return String(str??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;"); }
+/* =========================================================
+   紙吹雪アニメーション
+========================================================= */
+const canvas = document.getElementById('confetti-canvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
+function startConfetti() {
+  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+  particles = Array.from({length:100}, () => ({
+    x: Math.random()*canvas.width, y: Math.random()*canvas.height - canvas.height,
+    r: Math.random()*6+4, d: Math.random()*10,
+    color: `hsl(${Math.random()*360}, 100%, 50%)`,
+    tilt: Math.random()*10-10
+  }));
+  animateConfetti();
+}
+function animateConfetti() {
+  if (particles.length === 0) return;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  particles.forEach(p => {
+    p.y += Math.cos(p.d) + 1 + p.r/2; p.tilt = Math.sin(p.d) * 15;
+    ctx.beginPath(); ctx.lineWidth = p.r; ctx.strokeStyle = p.color;
+    ctx.moveTo(p.x + p.tilt + p.r/4, p.y); ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r/4);
+    ctx.stroke();
+    if(p.y > canvas.height) p.y = -20;
+  });
+  requestAnimationFrame(animateConfetti);
+}
+function stopConfetti() { particles = []; ctx.clearRect(0,0,canvas.width,canvas.height); }
 
+function escapeHtml(s){ return String(s??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;"); }
 renderStart();
 </script>
 </body>
