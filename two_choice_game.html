@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8" />
-<title>究極の2択 性格ゲーム（地獄×天国 + エニア18問）</title>
+<title>究極の2択 性格ゲーム（新年会・余興SP）</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <style>
   body{
@@ -24,10 +24,11 @@
     width:100%;
     box-shadow:0 0 25px rgba(0,0,0,.6);
     box-sizing:border-box;
+    text-align: center;
   }
   h1{ margin:.2em 0 .5em; font-size:1.55rem; letter-spacing:.02em; }
-  .progress{ color:#aaa; font-size:.85rem; margin-bottom:.35em; }
-  .question{ margin:1em 0; font-size:1.05rem; line-height:1.55; white-space:normal; }
+  .progress{ color:#aaa; font-size:.85rem; margin-bottom:.35em; text-align: left; }
+  .question{ margin:1em 0; font-size:1.05rem; line-height:1.55; white-space:normal; text-align: left; }
   .subtitle{ color:#ccc; font-size:.95rem; line-height:1.55; margin:.2em 0 1em; }
   .choices{ display:flex; flex-direction:column; gap:10px; margin:16px 0; }
   .btn{
@@ -36,7 +37,9 @@
     padding:14px 18px;
     font-size:.98rem;
     cursor:pointer;
+    transition: transform 0.1s;
   }
+  .btn:active { transform: scale(0.98); }
   .choice{
     background:#252525;
     color:#fff;
@@ -86,7 +89,7 @@
     vertical-align:middle;
   }
   .highlight{ color:#f5b642; font-weight:700; }
-  .small{ font-size:.88rem; color:#ccc; line-height:1.55; }
+  .small{ font-size:.88rem; color:#ccc; line-height:1.55; text-align: center; }
   .topTag{
     display:inline-block;
     margin-left:8px;
@@ -116,7 +119,6 @@
 ========================================================= */
 const rainyTypeLabel = "作者：Rainy（タイプ5）";
 
-/** imgフォルダに入れた犬画像（あなたのファイル名に合わせ済み） */
 const dogImages = {
   1: "img/dog_type01.png",
   2: "img/dog_type02.png",
@@ -133,8 +135,7 @@ function getDogImg(typeNum){
 }
 
 /* =========================================================
-   ① 地獄16 + 天国16 = 32問（2択ゲーム）
-   ※ ここは「q / A / B」表記で統一
+   ① 2択ゲーム（32問）
 ========================================================= */
 const questions32 = [
   // 地獄16
@@ -154,7 +155,6 @@ const questions32 = [
   {q:"一生安心できない成功 vs 一生安心だけの失敗",A:"安心できない成功",B:"安心だけの失敗"},
   {q:"一生注目され続ける vs 一生存在感ゼロ",A:"注目され続ける",B:"存在感ゼロ"},
   {q:"一生誰かに依存される vs 一生誰にも頼られない",A:"誰かに依存される",B:"誰にも頼られない"},
-
   // 天国16
   {q:"一生安心 vs 一生ワクワク",A:"安心",B:"ワクワク"},
   {q:"一生理解される vs 一生自由でいられる",A:"理解される",B:"自由でいられる"},
@@ -174,106 +174,41 @@ const questions32 = [
   {q:"一生自分を好きでいられる vs 一生愛され続ける",A:"自分を好きでいられる",B:"愛され続ける"}
 ];
 
-/** Rainy（タイプ5）が選びそうな答え（32個） */
 const rainyAnswers32 = [
   "B","A","A","A","A","A","B","A","A","A","A","A","A","A","B","B",
   "A","B","B","A","B","A","A","A","A","B","B","B","B","A","B","A"
 ];
 
 /* =========================================================
-   ② エニア判定（18問）— 超シンプル採点
-   ・各問：A/Bどっちかで「寄りやすいタイプ」に1点
-   ・Wing/健全度は入れない（スッキリ）
+   ② エニア判定（18問）
 ========================================================= */
 const ennea18 = [
-  // 1
-  {q:"ミスを見つけたとき、まず出る反応は？",
-   A:"正しく直したくなる（基準・正しさ）", B:"波風を立てずに流したくなる（平和）",
-   Atypes:[1], Btypes:[9]},
-  // 2
-  {q:"誰かが落ち込んでる。あなたの最初の動きは？",
-   A:"手伝えることを探して動く", B:"距離を保ちつつ状況を分析する",
-   Atypes:[2], Btypes:[5]},
-  // 3
-  {q:"結果が必要な場面。あなたが選ぶのは？",
-   A:"成果を出して評価を取りにいく", B:"自分らしさ・世界観を守る",
-   Atypes:[3], Btypes:[4]},
-  // 4
-  {q:"集団の中でのあなたは？",
-   A:"空気を整えて“普通に”合わせる", B:"あえて独自路線でいく",
-   Atypes:[9,6], Btypes:[4,7]},
-  // 5
-  {q:"不安なときのクセは？",
-   A:"最悪パターンを想定して備える", B:"とにかく動いて切り抜ける",
-   Atypes:[6], Btypes:[8]},
-  // 6
-  {q:"揉め事が起きたとき",
-   A:"白黒つけて前に進める", B:"みんなの妥協点を探す",
-   Atypes:[8], Btypes:[9]},
-  // 7
-  {q:"休日の理想は？",
-   A:"予定を詰めて楽しいこと全部やる", B:"整えて、質を上げて満足する",
-   Atypes:[7], Btypes:[1,5]},
-  // 8
-  {q:"人に頼まれたとき",
-   A:"つい引き受けがち（期待に応えたい）", B:"条件を確認してから決める（境界線）",
-   Atypes:[2,9], Btypes:[8,5]},
-  // 9
-  {q:"評価されると嬉しいのは？",
-   A:"すごいね！結果出したね！", B:"わかってるね…深いね…",
-   Atypes:[3], Btypes:[5,4]},
-  // 10
-  {q:"初対面が多い場",
-   A:"まず周りを観察して安全確認", B:"とりあえず話しかけて場を作る",
-   Atypes:[6,5], Btypes:[7,3]},
-  // 11
-  {q:"ルールが曖昧なとき",
-   A:"こうあるべき基準を作る", B:"状況に合わせて柔軟にいく",
-   Atypes:[1], Btypes:[9,7]},
-  // 12
-  {q:"気づいたらやってること",
-   A:"人の役に立つ行動（世話/フォロー）", B:"効率化・省力化・仕組み化",
-   Atypes:[2], Btypes:[5,3]},
-  // 13
-  {q:"怒りが出る瞬間",
-   A:"筋が通ってない/ズルい", B:"支配される/舐められる",
-   Atypes:[1], Btypes:[8]},
-  // 14
-  {q:"落ち込んだとき",
-   A:"自分の世界に潜って感情を味わう", B:"とにかく前向きイベントで上書き",
-   Atypes:[4], Btypes:[7]},
-  // 15
-  {q:"責任が重いとき",
-   A:"ちゃんとやる（完璧寄り）", B:"守りを固める（確認/保険）",
-   Atypes:[1,3], Btypes:[6]},
-  // 16
-  {q:"人間関係でよく言われがち",
-   A:"優しい/合わせてくれる", B:"クール/ドライ/一線引く",
-   Atypes:[9,2], Btypes:[5,8]},
-  // 17
-  {q:"“自分らしさ”で譲れないのは？",
-   A:"センス・個性・意味", B:"結果・実利・効率",
-   Atypes:[4], Btypes:[3,5]},
-  // 18
-  {q:"疲れているときの回復法",
-   A:"一人になって充電", B:"誰かと話して回復",
-   Atypes:[5,4], Btypes:[2,7,9]}
+  {q:"ミスを見つけたとき、まず出る反応は？",A:"正しく直したくなる", B:"波風を立てずに流したくなる",Atypes:[1], Btypes:[9]},
+  {q:"誰かが落ち込んでる。あなたの最初の動きは？",A:"手伝えることを探して動く", B:"距離を保ちつつ状況を分析する",Atypes:[2], Btypes:[5]},
+  {q:"結果が必要な場面。あなたが選ぶのは？",A:"成果を出して評価を取りにいく", B:"自分らしさ・世界観を守る",Atypes:[3], Btypes:[4]},
+  {q:"集団の中でのあなたは？",A:"空気を整えて“普通に”合わせる", B:"あえて独自路線でいく",Atypes:[9,6], Btypes:[4,7]},
+  {q:"不安なときのクセは？",A:"最悪パターンを想定して備える", B:"とにかく動いて切り抜ける",Atypes:[6], Btypes:[8]},
+  {q:"揉め事が起きたとき",A:"白黒つけて前に進める", B:"みんなの妥協点を探す",Atypes:[8], Btypes:[9]},
+  {q:"休日の理想は？",A:"予定を詰めて楽しいこと全部やる", B:"整えて、質を上げて満足する",Atypes:[7], Btypes:[1,5]},
+  {q:"人に頼まれたとき",A:"つい引き受けがち（期待に応えたい）", B:"条件を確認してから決める",Atypes:[2,9], Btypes:[8,5]},
+  {q:"評価されると嬉しいのは？",A:"すごいね！結果出したね！", B:"わかってるね…深いね…",Atypes:[3], Btypes:[5,4]},
+  {q:"初対面が多い場",A:"まず周りを観察して安全確認", B:"とりあえず話しかけて場を作る",Atypes:[6,5], Btypes:[7,3]},
+  {q:"ルールが曖昧なとき",A:"こうあるべき基準を作る", B:"状況に合わせて柔軟にいく",Atypes:[1], Btypes:[9,7]},
+  {q:"気づいたらやってること",A:"人の役に立つ行動（世話/フォロー）", B:"効率化・省力化・仕組み化",Atypes:[2], Btypes:[5,3]},
+  {q:"怒りが出る瞬間",A:"筋が通ってない/ズルい", B:"支配される/舐められる",Atypes:[1], Btypes:[8]},
+  {q:"落ち込んだとき",A:"自分の世界に潜って感情を味わう", B:"とにかく前向きイベントで上書き",Atypes:[4], Btypes:[7]},
+  {q:"責任が重いとき",A:"ちゃんとやる（完璧寄り）", B:"守りを固める（確認/保険）",Atypes:[1,3], Btypes:[6]},
+  {q:"人間関係でよく言われがち",A:"優しい/合わせてくれる", B:"クール/ドライ/一線引く",Atypes:[9,2], Btypes:[5,8]},
+  {q:"“自分らしさ”で譲れないのは？",A:"センス・個性・意味", B:"結果・実利・効率",Atypes:[4], Btypes:[3,5]},
+  {q:"疲れているときの回復法",A:"一人になって充電", B:"誰かと話して回復",Atypes:[5,4], Btypes:[2,7,9]}
 ];
 
-/** タイプ名（表記はRainyの好みで“タイプ〇：○○タイプ”） */
 const typeLabel = {
-  1:"タイプ1：改革タイプ",
-  2:"タイプ2：援助タイプ",
-  3:"タイプ3：達成タイプ",
-  4:"タイプ4：個性タイプ",
-  5:"タイプ5：分析タイプ",
-  6:"タイプ6：安全タイプ",
-  7:"タイプ7：熱中タイプ",
-  8:"タイプ8：挑戦タイプ",
-  9:"タイプ9：平和タイプ"
+  1:"タイプ1：改革タイプ", 2:"タイプ2：援助タイプ", 3:"タイプ3：達成タイプ", 
+  4:"タイプ4：個性タイプ", 5:"タイプ5：分析タイプ", 6:"タイプ6：安全タイプ", 
+  7:"タイプ7：熱中タイプ", 8:"タイプ8：挑戦タイプ", 9:"タイプ9：平和タイプ"
 };
 
-/** タイプ一言（毒舌は司会用に別で作るとして、ここは“表向きエンタメ”） */
 const typeOneLiner = {
   1:"『正しさ』に命をかける。脳内に監査部が常駐してる。",
   2:"人の役に立つと元気。気づいたら世話焼きが発動してる。",
@@ -287,37 +222,24 @@ const typeOneLiner = {
 };
 
 /* =========================================================
-   状態：画面（モード）
+   メインロジック
 ========================================================= */
-const app = document.getElementById("app");
-let mode = "start"; // start / twoChoice / ennea / penalty
+let mode = "start";
 let index32 = -1;
 let ans32 = [];
-
 let index18 = 0;
-let ans18 = []; // "A"/"B" の配列（18）
+let ans18 = [];
 
-/* =========================================================
-   画面：スタート
-========================================================= */
 function renderStart(){
   mode = "start";
   app.innerHTML = `
     <h1>究極の2択 性格ゲーム</h1>
     <img class="hero" src="${getDogImg(5)}" alt="タイプ5の犬">
-    <p class="subtitle">
-      AかBを直感で選んでください。<br>
-      最後に<strong>Rainyポイント</strong>と<br>
-      「タイプ5との距離感（相性っぽいもの）」が出ます。<br><br>
-      その後、<strong>エニア判定（18問）</strong>もできます。
-    </p>
+    <p class="subtitle">直感で選んでください。最後にRainy（作者）との相性判定とエニア判定ができます。</p>
     <button class="btn main" onclick="startTwoChoice()">スタート</button>
   `;
 }
 
-/* =========================================================
-   2択(32)：開始
-========================================================= */
 function startTwoChoice(){
   mode = "twoChoice";
   ans32 = [];
@@ -325,284 +247,149 @@ function startTwoChoice(){
   next32();
 }
 
-/* =========================================================
-   2択(32)：次へ
-   ※ 16問目の後に「地獄→天国」演出を1画面挟む（index32===16）
-========================================================= */
 function next32(){
   index32++;
-
-  // 地獄→天国の演出（16を踏んだタイミングで表示）
   if(index32 === 16){
     app.innerHTML = `
       <div class="progress">演出</div>
-      <h1>2択 性格ゲーム</h1>
+      <h1>地獄終了 → 天国開始</h1>
       <img class="hero" src="img/transition_hell_to_heaven.png" alt="地獄から天国へ">
-      <p class="subtitle">
-        地獄を抜けました。<br>
-        <strong>ここから天国の2択です。</strong>
-      </p>
-      <button class="btn main" onclick="next32()">続ける</button>
-      <div class="nav">
-        <button class="btn sub" onclick="prev32()">← もどる</button>
-        <button class="btn sub" onclick="renderStart()">最初に戻る</button>
-      </div>
+      <p class="subtitle">ここからは天国の2択です。</p>
+      <button class="btn main" onclick="next32()">天国へ進む</button>
     `;
     return;
   }
-
-  if(index32 >= questions32.length){
-    renderResult32();
-    return;
-  }
+  if(index32 >= questions32.length){ renderResult32(); return; }
   renderQuestion32();
 }
 
-function prev32(){
-  if(index32 <= 0){
-    renderStart();
-    return;
-  }
-  index32--;
-  // ちょうど演出の直後に戻ったら、演出画面に戻す
-  if(index32 === 16){
-    index32 = 15; // 直前の設問へ戻す
-  }
-  renderQuestion32();
-}
-
-function choose32(v){
-  ans32[index32] = v;
-  renderQuestion32();
-}
+function choose32(v){ ans32[index32] = v; renderQuestion32(); }
 
 function renderQuestion32(){
   const q = questions32[index32];
   const a = ans32[index32];
-
   app.innerHTML = `
     <div class="progress">Q${index32 + 1} / ${questions32.length}</div>
-    <h1>究極の2択 性格ゲーム</h1>
-
-    <div class="question">${escapeHtml(q.q)}</div>
-
+    <h1>性格ゲーム</h1>
+    <div class="question" style="text-align:center; font-weight:700;">${escapeHtml(q.q)}</div>
     <div class="choices">
-      <button class="btn choice ${a === "A" ? "selectedA" : ""}" onclick="choose32('A')">
-        ${escapeHtml(q.A)}
-      </button>
-      <button class="btn choice ${a === "B" ? "selectedB" : ""}" onclick="choose32('B')">
-        ${escapeHtml(q.B)}
-      </button>
+      <button class="btn choice ${a === 'A' ? 'selectedA' : ''}" onclick="choose32('A')">${escapeHtml(q.A)}</button>
+      <button class="btn choice ${a === 'B' ? 'selectedB' : ''}" onclick="choose32('B')">${escapeHtml(q.B)}</button>
     </div>
-
     <div class="nav">
-      <button class="btn sub" onclick="prev32()" ${index32 === 0 ? "disabled" : ""}>← 戻る</button>
-      <button class="btn danger" onclick="next32()" ${!a ? "disabled" : ""}>
-        ${index32 === questions32.length - 1 ? "結果を見る →" : "次へ →"}
-      </button>
+      <button class="btn sub" onclick="prev32()" ${index32===0?'disabled':''}>戻る</button>
+      <button class="btn danger" onclick="next32()" ${!a?'disabled':''}>${index32===questions32.length-1?'結果へ':'次へ'}</button>
     </div>
   `;
 }
+function prev32(){ index32--; if(index32===16) index32=15; renderQuestion32(); }
 
+/* =========================================================
+   【重要】新年会用：2択結果表示（差し込み済み）
+========================================================= */
 function renderResult32(){
   const countA = ans32.filter(x=>x==="A").length;
   const countB = ans32.filter(x=>x==="B").length;
-
   let rainy = 0;
   ans32.forEach((a,i)=>{ if(a === rainyAnswers32[i]) rainy++; });
 
-  let comment =
-    rainy === questions32.length ? "今日はほぼType5クローンです（笑）" :
-    rainy > 24 ? "Type5と感覚がかなり近い日かも。冷静・合理モード強め。" :
-    rainy > 16 ? "Type5寄り。考えてから動くタイプ。" :
-    rainy > 8  ? "バランス型。感情と理性が半々。" :
-                 "Type5とは真逆！感覚派・行動派。";
+  let statusTitle = "";
+  let statusColor = "#f7f7f7";
+  let comment = "";
+  
+  if (rainy >= 26) {
+    statusTitle = "【景品対象】Rainyのソウルメイト";
+    statusColor = "#f5b642";
+    comment = "すごすぎる！僕の思考を完全にコピーしていますね。豪華景品を受け取ってください！";
+  } else if (rainy <= 8) {
+    statusTitle = "【罰ゲーム対象】未知の生命体";
+    statusColor = "#e50914";
+    comment = "逆に天才！僕と1ミリも噛み合わないあなたは、迷わず罰ゲームへGO！";
+  } else {
+    statusTitle = "【一般人】普通の人";
+    statusColor = "#aaa";
+    comment = "絶妙に普通！似ているようで似ていない、一番コメントに困るスコアです（笑）";
+  }
 
   app.innerHTML = `
-    <h1>結果</h1>
-    <img class="hero" src="${getDogImg(5)}" alt="タイプ5の犬">
-
-    <p class="subtitle">
-      あなたの回答：<br>
-      A：${countA}問 ／ B：${countB}問
-    </p>
-
-    <p class="subtitle">
-      <span class="highlight">Rainyポイント：</span>
-      ${rainy} / ${questions32.length}
-      <span class="badge">${rainyTypeLabel}</span>
-    </p>
-
-    <p class="subtitle">${escapeHtml(comment)}</p>
-
-    <p class="small">
-      ※ Rainyポイント：作者がタイプ5なので、<br>
-      「タイプ5が選びそうな方」と同じだと1点。高いほど“今日の思考のクセ”がタイプ5寄り。<br>
-      正解・不正解はありません。
-    </p>
-
+    <h1 style="color:${statusColor}">${statusTitle}</h1>
+    <img class="hero" src="${getDogImg(5)}" style="border: 4px solid ${statusColor}">
+    <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:10px; margin-bottom:20px;">
+      <p class="subtitle" style="margin:0;">
+        <span class="highlight" style="font-size:1.5rem;">Rainyポイント：${rainy} / ${questions32.length}</span>
+        <br><span class="badge" style="margin-top:5px;">${rainyTypeLabel}</span>
+      </p>
+    </div>
+    <p class="subtitle" style="font-weight:700; color:${statusColor}">${escapeHtml(comment)}</p>
+    <p class="small">A回答：${countA} ／ B回答：${countB}</p>
     <div class="nav">
       <button class="btn main" onclick="startEnnea18()">エニア判定（18問）へ →</button>
-      <button class="btn sub" onclick="startTwoChoice()">もう一度（2択32問）</button>
     </div>
-
     <div class="nav">
-      <button class="btn sub" onclick="renderStart()">最初に戻る</button>
+      <button class="btn sub" onclick="startTwoChoice()">もう一度</button>
+      <button class="btn sub" onclick="renderStart()">TOPへ</button>
     </div>
   `;
 }
 
 /* =========================================================
-   エニア18：開始
+   エニア18問ロジック
 ========================================================= */
-function startEnnea18(){
-  mode = "ennea";
-  index18 = 0;
-  ans18 = new Array(ennea18.length).fill(null);
-  renderQuestion18();
-}
-
-function choose18(v){
-  ans18[index18] = v;
-  renderQuestion18();
-}
-
-function next18(){
-  if(index18 < ennea18.length - 1){
-    index18++;
-    renderQuestion18();
-  }else{
-    renderResult18();
-  }
-}
-
-function prev18(){
-  if(index18 <= 0){
-    // 18問の最初で戻ったら、2択結果へ戻す（司会的に気持ちいい）
-    renderResult32();
-    return;
-  }
-  index18--;
-  renderQuestion18();
-}
+function startEnnea18(){ mode="ennea"; index18=0; ans18=new Array(ennea18.length).fill(null); renderQuestion18(); }
+function choose18(v){ ans18[index18]=v; renderQuestion18(); }
+function next18(){ if(index18<ennea18.length-1){ index18++; renderQuestion18(); } else { renderResult18(); } }
+function prev18(){ if(index18<=0){ renderResult32(); return; } index18--; renderQuestion18(); }
 
 function renderQuestion18(){
   const item = ennea18[index18];
   const a = ans18[index18];
-
   app.innerHTML = `
     <div class="progress">エニア Q${index18 + 1} / ${ennea18.length}</div>
-    <h1>エニア判定（18問）</h1>
-
-    <div class="question">${escapeHtml(item.q)}</div>
-
+    <h1>エニア判定</h1>
+    <div class="question" style="text-align:center;">${escapeHtml(item.q)}</div>
     <div class="choices">
-      <button class="btn choice ${a === "A" ? "selectedA" : ""}" onclick="choose18('A')">
-        ${escapeHtml(item.A)}
-      </button>
-      <button class="btn choice ${a === "B" ? "selectedB" : ""}" onclick="choose18('B')">
-        ${escapeHtml(item.B)}
-      </button>
+      <button class="btn choice ${a==='A'?'selectedA':''}" onclick="choose18('A')">${escapeHtml(item.A)}</button>
+      <button class="btn choice ${a==='B'?'selectedB':''}" onclick="choose18('B')">${escapeHtml(item.B)}</button>
     </div>
-
     <div class="nav">
-      <button class="btn sub" onclick="prev18()">← 戻る</button>
-      <button class="btn danger" onclick="next18()" ${!a ? "disabled" : ""}>
-        ${index18 === ennea18.length - 1 ? "エニア結果を見る →" : "次へ →"}
-      </button>
+      <button class="btn sub" onclick="prev18()">戻る</button>
+      <button class="btn danger" onclick="next18()" ${!a?'disabled':''}>${index18===ennea18.length-1?'結果表示':'次へ'}</button>
     </div>
   `;
 }
 
 function renderResult18(){
-  // スコア初期化
   const score = {1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0};
-
-  // 採点
   ans18.forEach((pick, i)=>{
-    const item = ennea18[i];
-    const addTypes = (pick === "A") ? item.Atypes : item.Btypes;
+    const addTypes = (pick === "A") ? ennea18[i].Atypes : ennea18[i].Btypes;
     (addTypes || []).forEach(t => { score[t]++; });
   });
-
-  // ランキング
-  const ranked = Object.keys(score)
-    .map(k => ({type: Number(k), pts: score[k]}))
-    .sort((a,b)=> b.pts - a.pts);
-
+  const ranked = Object.keys(score).map(k=>({type:Number(k),pts:score[k]})).sort((a,b)=>b.pts-a.pts);
   const topType = ranked[0].type;
-  const top3 = ranked.slice(0,3);
-
-  const top3Html = top3.map((r, idx)=>{
-    const tag = idx===0 ? `<span class="topTag">TOP</span>` : "";
-    return `<div class="subtitle">${escapeHtml(typeLabel[r.type])}：<span class="highlight">${r.pts}点</span>${tag}</div>`;
-  }).join("");
 
   app.innerHTML = `
-    <h1>エニア結果</h1>
-    <div class="subtitle">
-      あなたは <span class="highlight">${escapeHtml(typeLabel[topType])}</span> の傾向が強め！
-      <span class="topTag">TOP</span>
-    </div>
-
-    <img class="hero" src="${getDogImg(topType)}" alt="タイプ${topType}の犬">
-
-    <div class="subtitle">${escapeHtml(typeOneLiner[topType])}</div>
-
+    <h1>エニア判定結果</h1>
+    <p class="subtitle">あなたの傾向が強いのは…<br><span class="highlight" style="font-size:1.4rem;">${escapeHtml(typeLabel[topType])}</span></p>
+    <img class="hero" src="${getDogImg(topType)}">
+    <div class="subtitle" style="padding:0 10px;">${escapeHtml(typeOneLiner[topType])}</div>
     <hr class="sep">
-
-    <div class="subtitle"><strong>上位3タイプ</strong></div>
-    ${top3Html}
-
-    <p class="small">
-      ※これは“ミニ判定（18問）”なので固定ラベルというより「今日のクセ寄り」<br>
-      でも上位3つは“いつもの自分”とも関係が深いかも。
-    </p>
-
-    <div class="nav">
-      <button class="btn main" onclick="startEnnea18()">もう一度（エニア18問）</button>
-      <button class="btn sub" onclick="startTwoChoice()">2択ゲームからやる</button>
-    </div>
-
-    <div class="nav">
-      <button class="btn danger" onclick="renderPenalty()">罰ゲームへ →</button>
-      <button class="btn sub" onclick="renderStart()">最初に戻る</button>
-    </div>
+    <div class="subtitle">上位3タイプ：${ranked.slice(0,3).map(r=>`${r.type}(${r.pts}点)`).join(', ')}</div>
+    <div class="nav"><button class="btn danger" onclick="renderPenalty()">罰ゲーム発表へ →</button></div>
+    <div class="nav"><button class="btn sub" onclick="renderStart()">最初に戻る</button></div>
   `;
 }
 
-/* =========================================================
-   罰ゲーム
-========================================================= */
 function renderPenalty(){
-  mode = "penalty";
   app.innerHTML = `
     <h1>罰ゲーム</h1>
     <img class="hero" src="img/enneagram_penalty_lightstick.png" alt="罰ゲーム">
-    <p class="subtitle">
-      今回の…<br><strong>罰ゲームを発表します！</strong>
-    </p>
-    <div class="nav">
-      <button class="btn main" onclick="renderStart()">最初に戻る</button>
-    </div>
+    <p class="subtitle">今回対象の方への<br><strong>罰ゲームを発表します！</strong></p>
+    <button class="btn main" onclick="renderStart()">終了してTOPへ</button>
   `;
 }
 
-  /* =========================================================
-   ユーティリティ
-========================================================= */
-function escapeHtml(str){
-  return String(str ?? "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-}
+function escapeHtml(str){ return String(str??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;"); }
 
-/* =========================================================
-   初期表示
-========================================================= */
 renderStart();
 </script>
 </body>
