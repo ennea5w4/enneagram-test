@@ -3,64 +3,168 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>エニアグラムタイプ簡易診断（詳細版）</title>
+  <title>エニアグラムタイプ簡易診断</title>
   <style>
-    /* デザイン設定は前回と同様のものをベースに微調整 */
     :root {
-      --primary: #2ecc71; --primary-dark: #27ae60; --bg: #f4f7f6; --text: #333;
+      --primary: #2ecc71;
+      --primary-dark: #27ae60;
+      --bg: #f4f7f6;
+      --text: #333;
+      --white: #ffffff;
+      --x-color: #000000;
+      --line-color: #00c300;
     }
-    body { font-family: sans-serif; background-color: var(--bg); color: var(--text); padding: 20px; line-height: 1.6; }
-    .container { max-width: 800px; margin: auto; background: #fff; padding: 30px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-    h1 { text-align: center; color: #2c3e50; }
-    .description-box { background: #e8f8f2; padding: 20px; border-radius: 10px; margin-bottom: 30px; border-left: 5px solid var(--primary); }
-    .type-section { margin-bottom: 25px; padding: 15px; background: #f9f9f9; border-radius: 8px; }
-    .checkbox-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-    .checkbox-label { cursor: pointer; }
-    .checkbox-label input { display: none; }
-    .checkbox-custom { display: inline-block; padding: 8px 12px; border: 1px solid #ddd; border-radius: 20px; background: #fff; transition: 0.2s; font-size: 0.9em; }
-    .checkbox-label input:checked ~ .checkbox-custom { background: var(--primary); color: #fff; border-color: var(--primary); }
-    
+
+    body {
+      font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: var(--white);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    }
+
+    h1 { text-align: center; color: #2c3e50; margin-bottom: 20px; }
+
+    .description-box {
+      background: #e8f8f2;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      border-left: 5px solid var(--primary);
+    }
+
+    .type-section {
+      margin-bottom: 30px;
+      padding: 20px;
+      background-color: #f9f9f9;
+      border-radius: 10px;
+    }
+
+    .type-title {
+      font-weight: bold;
+      color: var(--primary-dark);
+      display: block;
+      margin-bottom: 15px;
+      font-size: 1.1em;
+    }
+
+    /* ボタン風チェックボックス */
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .checkbox-label { cursor: pointer; position: relative; }
+    .checkbox-label input { position: absolute; opacity: 0; cursor: pointer; }
+    .checkbox-custom {
+      display: inline-block;
+      padding: 8px 14px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 20px;
+      font-size: 0.85em;
+      transition: all 0.2s;
+    }
+    .checkbox-label input:checked ~ .checkbox-custom {
+      background-color: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+
+    /* 結果表示エリア */
     #result-container { margin-top: 40px; display: none; }
-    #result { background: #eafaf1; padding: 30px; border-radius: 10px; border: 1px solid var(--primary); }
-    .result-header { border-bottom: 2px solid var(--primary); padding-bottom: 10px; margin-bottom: 20px; }
-    .result-title { font-size: 1.4em; font-weight: bold; color: var(--primary-dark); }
-    .section-title { font-weight: bold; color: var(--primary-dark); display: block; margin-top: 15px; margin-bottom: 5px; }
-    .advice-box { background: #fff; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #3498db; }
-    img.type-image { width: 100%; max-width: 350px; display: block; margin: 25px auto; border-radius: 10px; }
-    .btn-primary { width: 100%; padding: 15px; background: var(--primary); color: #fff; border: none; border-radius: 30px; font-size: 1.1em; cursor: pointer; margin-top: 20px; }
-    .btn-secondary { background: #95a5a6; color: #fff; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px; }
+    #result {
+      background-color: #eafaf1;
+      border-left: 5px solid var(--primary);
+      padding: 30px;
+      border-radius: 10px;
+    }
+
+    .result-main-type { font-size: 1.5em; font-weight: bold; color: var(--primary-dark); margin-bottom: 15px; }
+    .section-title { font-weight: bold; color: var(--primary-dark); display: block; margin-top: 20px; margin-bottom: 5px; }
+    .advice-box { background: #fff; padding: 15px; border-radius: 8px; margin-top: 15px; border: 1px solid #ddd; }
+
+    img.type-image {
+      width: 100%; max-width: 400px; height: auto;
+      display: block; margin: 30px auto; border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    /* ボタン類 */
+    .btn-run {
+      background-color: var(--primary); color: white;
+      padding: 15px 30px; border: none; border-radius: 30px;
+      font-size: 1.2em; font-weight: bold; cursor: pointer;
+      display: block; width: 100%; max-width: 300px; margin: 30px auto;
+      box-shadow: 0 4px 6px rgba(46, 204, 113, 0.3);
+    }
+    .btn-copy { background: #95a5a6; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-top: 10px; }
+
+    /* シェアボタン */
+    .share-area { margin-top: 25px; text-align: center; border-top: 1px solid #eee; padding-top: 20px; }
+    .share-btn {
+      display: inline-block; margin: 5px 10px; padding: 10px 20px;
+      border-radius: 5px; text-decoration: none; color: white; font-weight: bold; font-size: 0.9em;
+    }
+    #x-share { background: var(--x-color); }
+    #line-share { background: var(--line-color); }
+
+    @media (max-width: 600px) {
+      .container { padding: 15px; }
+      .checkbox-custom { padding: 6px 10px; font-size: 0.8em; }
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>エニアグラムタイプ簡易診断</h1>
-    <div class="description-box">
-      <strong>📄 診断方法</strong>
-      <p>各タイプから自分に当てはまるキーワードを直感で選んでください。チェック数が多いものがあなたのタイプ候補です。IT講座での自己分析のヒントとして活用しましょう。</p>
+
+<div class="container">
+  <h1>エニアグラムタイプ簡易診断</h1>
+  
+  <div class="description-box">
+    <strong>📄 診断方法</strong>
+    <p>以下のキーワードの中から、今の自分に「当てはまる」と感じるものを自由にチェックしてください（複数回答可）。直感で選ぶのがコツです。</p>
+  </div>
+
+  <form id="enneagramForm"></form>
+
+  <button class="btn-run" onclick="calculateResult()">診断結果を見る</button>
+
+  <div id="result-container">
+    <div id="result"></div>
+    <div style="text-align: center;">
+      <button class="btn-copy" onclick="copyResult()">結果をコピーする</button>
     </div>
     
-    <form id="enneagramForm"></form>
-    <button class="btn-primary" onclick="calculateResult()">診断結果を表示する</button>
-
-    <div id="result-container">
-      <div id="result"></div>
-      <div style="text-align:center;">
-        <button class="btn-secondary" onclick="copyResult()">診断結果をコピー</button>
-      </div>
+    <div class="share-area">
+      <p style="font-size: 0.9em; color: #666;">結果をシェアする</p>
+      <a id="x-share" class="share-btn" target="_blank">X (Twitter)</a>
+      <a id="line-share" class="share-btn" target="_blank">LINE</a>
     </div>
   </div>
+</div>
 
 <script>
 const data = {
-  1: ["完璧主義", "規律重視", "正義感", "責任感", "自己改善", "誠実", "正直", "合理的", "厳格", "几帳面"],
-  2: ["思いやり", "親切", "献身的", "世話好き", "共感的", "人懐っこい", "感謝されたい", "寛大", "愛情深い", "感受性"],
-  3: ["目標達成", "効率的", "自信家", "実行力", "成功志向", "競争心", "称賛されたい", "適応力", "実用的", "精力的"],
-  4: ["個性的", "芸術的", "感受性", "ロマンチスト", "独自性", "内省的", "ミステリアス", "繊細", "表現力", "本質追求"],
-  5: ["知的探究", "冷静沈着", "分析力", "客観的", "専門性", "独立的", "無駄を嫌う", "集中力", "慎重", "論理的"],
-  6: ["慎重", "忠実", "責任感", "安全重視", "準備周到", "協力的", "信頼感", "リスク管理", "疑い深い", "真面目"],
-  7: ["楽観的", "活動的", "多趣味", "明るい", "好奇心旺盛", "社交的", "アイデア豊富", "自由人", "刺激好き", "ポジティブ"],
-  8: ["強い意志", "決断力", "行動的", "パワフル", "リーダーシップ", "自己主張", "率直", "独立心", "保護意識", "正面突破"],
-  9: ["平和主義", "穏やか", "調和重視", "順応性", "寛容", "癒し系", "衝突回避", "マイペース", "忍耐強い", "受容的"]
+  1: ["完璧主義", "規律", "秩序", "正義感", "責任感", "倫理観", "自己抑制", "理想主義", "批判的", "真面目", "向上心", "義務感", "緊張感", "律儀", "内省的", "常識重視", "正直", "自分に厳しい", "厳格", "潔癖"],
+  2: ["思いやり", "親切", "助けたい", "献身", "優しい", "面倒見がよい", "人懐っこい", "感情豊か", "共感的", "尽くす", "お節介", "感謝されたい", "気遣い", "過干渉", "自己犠牲", "愛されたい", "依存的", "NOが言えない", "他者優先", "世話好き"],
+  3: ["目標達成", "努力家", "成果重視", "自信家", "実行力", "成功志向", "競争心", "スピード重視", "評価を気にする", "自己アピール", "プレゼン上手", "リーダーシップ", "カリスマ性", "合理的", "承認欲求", "自分磨き", "有能さ", "結果主義", "仕事好き", "パフォーマンス"],
+  4: ["個性的", "感受性豊か", "ロマンチスト", "表現欲求", "感情の起伏", "創造的", "美意識", "孤独好き", "内向的", "ミステリアス", "妄想好き", "詩的", "自意識過剰", "傷つきやすい", "繊細", "複雑な感情", "悲観的", "嫉妬", "特別でありたい", "憂鬱さ"],
+  5: ["知的", "冷静", "分析好き", "探究心", "一人が好き", "専門家肌", "観察好き", "独立的", "情報収集", "論理的", "感情を抑える", "控えめ", "無口", "深く考える", "無駄を嫌う", "集中力", "説明が得意", "時間管理", "マイペース", "事前準備"],
+  6: ["慎重", "心配性", "安全第一", "忠誠心", "用心深い", "責任感", "サポート役", "疑い深い", "チーム思考", "規律遵守", "決断が遅い", "警戒心", "現実的", "リスク回避", "指示に従う", "人に相談する", "対立回避", "助けを求める", "確認癖", "守りの姿勢"],
+  7: ["楽観的", "活動的", "刺激好き", "多趣味", "明るい性格", "ポジティブ", "自由人", "好奇心旺盛", "未来志向", "社交的", "話好き", "アイデア豊富", "飽きっぽい", "冒険好き", "切り替えが早い", "我慢が苦手", "深刻を避ける", "チャレンジャー", "エネルギッシュ", "楽しいこと優先"],
+  8: ["リーダーシップ", "自己主張", "決断力", "強い意志", "支配的", "怒りやすい", "行動的", "パワフル", "弱さを見せない", "攻撃的", "対立を恐れない", "頼れる存在", "白黒はっきり", "挑戦好き", "恐れを隠す", "堂々としている", "自己防衛", "支配欲", "独立心", "正面突破"],
+  9: ["平和主義", "のんびり", "衝突回避", "順応性", "優柔不断", "受け身", "協調性", "控えめ", "空気が読めない", "受容的", "癒し系", "穏やか", "自己主張が苦手", "後回しにする", "人に合わせる", "安定重視", "我慢する", "受動的", "妥協しがち", "自分の意見が薄い"]
 };
 
 const descriptions = {
@@ -107,22 +211,32 @@ const descriptions = {
   9: {
     title: "タイプ9：平和を好む人 (The Peacemaker)",
     detail: "穏やかで寛容、周囲との調和を何よりも大切にする平和主義者です。人を受け入れる能力が高く、癒やしの存在となります。一方で、自分自身の意見や欲求を抑えがちで、衝突を避けるために物事を先延ばしにしたり、周囲に合わせすぎて自分を見失うことがあります。",
-    advice: "あなたの意見や存在には大きな価値があります。「私はこれがいい」「これが嫌だ」と自分の声をはっきり出す練習をしましょう。あなたが主体的になることで、本当の意味での調和と深い絆が生まれます。"
+    advice: "あなたの意見や存在には大きな価値があります。「私はこれがいい」「これが嫌だ」と自分の声をはっきり出す練習をしましょう。あなたが主体的になることで、本当の意味での調和と深い絆が生まります。"
   }
 };
 
-const images = { 1:"img/type1.png", 2:"img/type2.png", 3:"img/type3.png", 4:"img/type4.png", 5:"img/type5.png", 6:"img/type6.png", 7:"img/type7.png", 8:"img/type8.png", 9:"img/type9.png" };
+const images = {
+  1: "img/type1.png", 2: "img/type2.png", 3: "img/type3.png",
+  4: "img/type4.png", 5: "img/type5.png", 6: "img/type6.png",
+  7: "img/type7.png", 8: "img/type8.png", 9: "img/type9.png"
+};
 
+// フォーム生成
 window.onload = () => {
   const form = document.getElementById("enneagramForm");
   for (let type in data) {
     const section = document.createElement("div");
     section.className = "type-section";
-    section.innerHTML = `<strong>タイプ${type}の要素</strong>`;
+    section.innerHTML = `<span class="type-title">タイプ${type}の傾向</span>`;
+    
     const group = document.createElement("div");
     group.className = "checkbox-group";
+    
     data[type].forEach(word => {
-      group.innerHTML += `<label class="checkbox-label"><input type="checkbox" name="type${type}" value="${word}"><span class="checkbox-custom">${word}</span></label>`;
+      const label = document.createElement("label");
+      label.className = "checkbox-label";
+      label.innerHTML = `<input type="checkbox" name="type${type}" value="${word}"><span class="checkbox-custom">${word}</span>`;
+      group.appendChild(label);
     });
     section.appendChild(group);
     form.appendChild(section);
@@ -131,45 +245,57 @@ window.onload = () => {
 
 function calculateResult() {
   const counts = {};
-  let max = 0;
+  let maxScore = 0;
+  
   for (let type in data) {
-    const c = document.querySelectorAll(`input[name='type${type}']:checked`).length;
-    counts[type] = c;
-    if (c > max) max = c;
+    const score = document.querySelectorAll(`input[name='type${type}']:checked`).length;
+    counts[type] = score;
+    if (score > maxScore) maxScore = score;
   }
-  if (max === 0) { alert("当てはまるキーワードをいくつか選択してください"); return; }
 
-  const topTypes = Object.keys(counts).filter(t => counts[t] === max);
-  const mainType = topTypes[0];
+  if (maxScore === 0) {
+    alert("当てはまるキーワードをいくつか選んでください。");
+    return;
+  }
+
+  const resultTypes = Object.keys(counts).filter(t => counts[t] === maxScore);
+  const mainType = resultTypes[0];
   const info = descriptions[mainType];
 
   let resultHTML = `
-    <div class="result-header">
-      <div class="result-title">候補：${info.title}</div>
-    </div>
-    <span class="section-title">✨ 特徴・心の動機</span>
+    <div class="result-main-type">あなたのタイプ候補：${info.title}</div>
+    <span class="section-title">💡 特徴と心の動機</span>
     <p>${info.detail}</p>
     <div class="advice-box">
-      <span class="section-title">💡 成長へのアドバイス</span>
+      <span class="section-title" style="margin-top:0;">🌱 成長のアドバイス</span>
       <p>${info.advice}</p>
     </div>
     <img src="${images[mainType]}" class="type-image" alt="タイプイメージ">
   `;
 
-  if (topTypes.length > 1) {
-    resultHTML += `<p style="font-size:0.9em; color:#666; margin-top:20px;">※同点で <strong>タイプ${topTypes.slice(1).join("・")}</strong> の傾向も強く出ています。これらの説明も参考にしてください。</p>`;
+  if (resultTypes.length > 1) {
+    resultHTML += `<p style="font-size:0.85em; color:#666; margin-top:15px;">※他にも タイプ${resultTypes.slice(1).join("・")} の傾向が同等に見られます。</p>`;
   }
 
   const container = document.getElementById("result-container");
   document.getElementById("result").innerHTML = resultHTML;
   container.style.display = "block";
   container.scrollIntoView({ behavior: 'smooth' });
+
+  // シェアボタンのURL設定
+  const shareText = encodeURIComponent(`エニアグラム診断の結果、私は「${info.title}」の傾向が強いようです！`);
+  const shareUrl = encodeURIComponent(window.location.href);
+  document.getElementById("x-share").href = `https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}`;
+  document.getElementById("line-share").href = `https://social-plugins.line.me/lineit/share?url=${shareUrl}`;
 }
 
 function copyResult() {
   const text = document.getElementById("result").innerText;
-  navigator.clipboard.writeText(text).then(() => alert("診断結果をコピーしました！ワークシート等に貼り付けてください。"));
+  navigator.clipboard.writeText(text).then(() => {
+    alert("結果をクリップボードにコピーしました。");
+  });
 }
 </script>
+
 </body>
 </html>
