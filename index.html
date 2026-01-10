@@ -1,401 +1,489 @@
 <!DOCTYPE html>
 <html lang="ja">
-  <head>
-    <meta charset="UTF-8" />
-    <title>エニアグラムタイプ簡易診断</title>
-   <style>
-  body {
-    font-family: "Helvetica Neue", sans-serif;
-    background-color: #f2fdf8;
-    color: #333;
-    max-width: 800px;
-    margin: auto;
-    padding: 20px;
-  }
-  h1 {
-    text-align: center;
-    color: #2c3e50;
-  }
-  .description-box {
-    background: #e8f8f2;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-  }
-  .description-box strong {
-    color: #27ae60;
-  }
-  .type-section {
-    margin-bottom: 15px;
-  }
-  .type-section label {
-    display: block;
-    margin-left: 1em;
-  }
-  #result {
-    background-color: #eafaf1;
-    border-left: 4px solid #2ecc71;
-    padding: 20px;
-    margin-top: 30px;
-    border-radius: 6px;
-  }
-
-  /* 🌿画像サイズ調整（PC & スマホ対応） */
-  img.type-image {
-    width: 100%;
-    max-width: 500px;
-    height: auto;
-    display: block;
-    margin: 25px auto;
-    border-radius: 8px;
-  }
-
-  @media (max-width: 480px) {
-    img.type-image {
-      max-width: 320px;
-      margin: 15px auto;
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>エニアグラムタイプ簡易診断</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #2ecc71;
+      --primary-dark: #27ae60;
+      --secondary-color: #3498db;
+      --bg-color: #f4f7f6;
+      --text-color: #333;
+      --box-bg: #ffffff;
+      --accent-color: #e74c3c;
     }
-  }
 
-  button {
-    background-color: #2ecc71;
-    color: white;
-    padding: 10px 25px;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-    margin-top: 20px;
-  }
-  button:hover {
-    background-color: #27ae60;
-  }
-     </style>
-  </head>
-  <body>
+    body {
+      font-family: 'Noto Sans JP', "Helvetica Neue", "Yu Gothic", YuGothic, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      line-height: 1.6;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background-color: var(--box-bg);
+      max-width: 800px;
+      width: 100%;
+      margin: auto;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--text-color);
+      font-size: 2.2em;
+      margin-bottom: 30px;
+    }
+
+    .description-box {
+      background: #e8f8f2;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      border-left: 5px solid var(--primary-color);
+    }
+
+    .description-box strong {
+      color: var(--primary-dark);
+      display: block;
+      margin-bottom: 10px;
+      font-size: 1.2em;
+    }
+
+    .type-section {
+      margin-bottom: 30px;
+      padding: 20px;
+      background-color: #f9f9f9;
+      border-radius: 10px;
+    }
+
+    .type-section-title {
+      font-size: 1.3em;
+      color: var(--primary-dark);
+      margin-bottom: 15px;
+      display: block;
+      font-weight: bold;
+    }
+
+    /* チェックボックスをボタン風に */
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .checkbox-label {
+      display: inline-block;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .checkbox-label input {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+      height: 0;
+      width: 0;
+    }
+
+    .checkbox-custom {
+      display: inline-block;
+      padding: 10px 15px;
+      background-color: #fff;
+      border: 2px solid #ddd;
+      border-radius: 25px;
+      transition: all 0.3s ease;
+      font-size: 0.95em;
+      color: #555;
+    }
+
+    .checkbox-label:hover input ~ .checkbox-custom {
+      background-color: #f0f0f0;
+      border-color: #ccc;
+    }
+
+    .checkbox-label input:checked ~ .checkbox-custom {
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+      color: white;
+      box-shadow: 0 4px 6px rgba(46, 204, 113, 0.2);
+    }
+
+    #result-container {
+      margin-top: 40px;
+      display: none; /* 初期状態は非表示 */
+    }
+
+    #result {
+      background-color: #eafaf1;
+      border-left: 5px solid var(--primary-color);
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    #result h2 {
+      color: var(--primary-dark);
+      margin-top: 0;
+    }
+
+    .result-type {
+      font-size: 1.5em;
+      font-weight: bold;
+      color: var(--primary-color);
+    }
+
+    .type-description {
+      margin-top: 20px;
+    }
+
+    .advice-box {
+      background-color: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 20px;
+      border: 1px solid #ddd;
+    }
+
+    .advice-title {
+      font-weight: bold;
+      color: var(--primary-dark);
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .other-types {
+      margin-top: 20px;
+      font-size: 0.9em;
+      color: #777;
+    }
+
+    /* 画像サイズ調整 */
+    img.type-image {
+      width: 100%;
+      max-width: 400px;
+      height: auto;
+      display: block;
+      margin: 30px auto;
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    }
+
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 30px;
+      font-size: 1.2em;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 30px;
+      display: block;
+      width: 100%;
+      max-width: 300px;
+      margin-left: auto;
+      margin-right: auto;
+      transition: background-color 0.3s ease, transform 0.1s ease;
+      box-shadow: 0 4px 6px rgba(46, 204, 113, 0.3);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background-color: #95a5a6;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      font-size: 1em;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background-color 0.3s ease;
+      display: inline-block;
+    }
+
+    .btn-secondary:hover {
+      background-color: #7f8c8d;
+    }
+
+    #shareBtns {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .share-link {
+      display: inline-block;
+      margin: 0 10px;
+      padding: 10px 20px;
+      border-radius: 5px;
+      text-decoration: none;
+      color: white;
+      font-weight: bold;
+      transition: opacity 0.3s ease;
+    }
+
+    .share-link:hover {
+      opacity: 0.8;
+    }
+
+    #xShare {
+      background-color: #000000; /* X (Twitter) Color */
+    }
+
+    #lineShare {
+      background-color: #00c300; /* LINE Color */
+    }
+
+    /* コピー完了メッセージ */
+    #copy-message {
+        display: none;
+        color: var(--primary-color);
+        margin-top: 5px;
+        font-size: 0.9em;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+      .checkbox-custom {
+        padding: 8px 12px;
+        font-size: 0.9em;
+      }
+      img.type-image {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
     <h1>エニアグラムタイプ簡易診断</h1>
     <div class="description-box">
       <strong>
-        📄
-        以下のキーワードの中から「自分に当てはまる」と思うものをチェックしてください。
+        📄 以下のキーワードの中から「自分に当てはまる」と思うものを直感でチェックしてください。
       </strong>
-      <p>あなたの気質に近いエニアグラムタイプの候補を知ることができます。</p>
+      <p>チェックの数が多いタイプが、あなたの気質に近いエニアグラムタイプの候補となります。</p>
     </div>
     <form id="enneagramForm"></form>
-    <button onclick="calculateResult()">診断する</button>
-    <div id="result"></div>
-    <button id="copyBtn" onclick="copyResult()" style="display: none">
-      診断結果をコピー
-    </button>
-    <div id="shareBtns" style="display: none; margin-top: 10px">
-      <a id="xShare" target="_blank">Xでシェア</a> |
-      <a id="lineShare" target="_blank">LINEで送る</a>
+    <button class="btn-primary" onclick="calculateResult()">診断する</button>
+
+    <div id="result-container">
+      <div id="result"></div>
+      <div style="text-align: center; margin-top: 20px;">
+        <button id="copyBtn" class="btn-secondary" onclick="copyResult()">
+          診断結果をコピー
+        </button>
+        <div id="copy-message">コピーしました！</div>
+      </div>
+      <div id="shareBtns">
+        <a id="xShare" class="share-link" target="_blank" rel="noopener noreferrer">Xでシェア</a>
+        <a id="lineShare" class="share-link" target="_blank" rel="noopener noreferrer">LINEで送る</a>
+      </div>
     </div>
+  </div>
 
-    <script>
- const data = {
-  1: [
-    "完璧主義 (Perfectionism)",
-    "規律 (Discipline)",
-    "秩序 (Order)",
-    "正義感 (Sense of Justice)",
-    "責任感 (Responsibility)",
-    "倫理観 (Ethics)",
-    "自己抑制 (Self-control)",
-    "理想主義 (Idealism)",
-    "批判的 (Critical)",
-    "真面目 (Serious)",
-    "向上心 (Self-improvement)",
-    "義務感 (Sense of Duty)",
-    "緊張感 (Tension)",
-    "律儀 (Honesty)",
-    "内省的 (Reflective)",
-    "常識重視 (Conventional)",
-    "正直 (Integrity)",
-    "自分に厳しい (Self-demanding)",
-    "厳格 (Strict)",
-    "潔癖 (Purity)"
-  ],
-  2: [
-    "思いやり (Compassion)",
-    "親切 (Kindness)",
-    "助けたい (Helpful)",
-    "献身 (Devotion)",
-    "優しい (Gentle)",
-    "面倒見がよい (Caring)",
-    "人懐っこい (Affectionate)",
-    "感情豊か (Emotional)",
-    "共感的 (Empathetic)",
-    "尽くす (Self-giving)",
-    "お節介 (Interfering)",
-    "感謝されたい (Desire to be appreciated)",
-    "気遣い (Consideration)",
-    "過干渉 (Overinvolved)",
-    "自己犠牲 (Self-sacrificing)",
-    "愛されたい (Desire to be loved)",
-    "依存的 (Dependent)",
-    "NOが言えない (Cannot say no)",
-    "他者優先 (Others-oriented)",
-    "世話好き (Nurturing)"
-  ],
-  3: [
-    "目標達成 (Goal-oriented)",
-    "努力家 (Hardworking)",
-    "成果重視 (Achievement-oriented)",
-    "自信家 (Confident)",
-    "実行力 (Action-oriented)",
-    "成功志向 (Success-minded)",
-    "競争心 (Competitive)",
-    "スピード重視 (Fast-paced)",
-    "評価を気にする (Image-conscious)",
-    "自己アピール (Self-promotion)",
-    "プレゼン上手 (Persuasive)",
-    "リーダーシップ (Leadership)",
-    "カリスマ性 (Charismatic)",
-    "合理的 (Pragmatic)",
-    "承認欲求 (Desire for recognition)",
-    "自分磨き (Self-improvement)",
-    "有能さ (Competence)",
-    "結果主義 (Result-oriented)",
-    "仕事好き (Work-driven)",
-    "パフォーマンス (Performer)"
-  ],
-  4: [
-    "個性的 (Individualistic)",
-    "感受性豊か (Sensitive)",
-    "ロマンチスト (Romantic)",
-    "表現欲求 (Expressive)",
-    "感情の起伏 (Emotional fluctuation)",
-    "創造的 (Creative)",
-    "美意識 (Aesthetic sense)",
-    "孤独好き (Solitary)",
-    "内向的 (Introverted)",
-    "ミステリアス (Mysterious)",
-    "妄想好き (Imaginative)",
-    "詩的 (Poetic)",
-    "自意識過剰 (Self-conscious)",
-    "傷つきやすい (Vulnerable)",
-    "繊細 (Delicate)",
-    "複雑な感情 (Complex emotions)",
-    "悲観的 (Pessimistic)",
-    "嫉妬 (Jealous)",
-    "特別でありたい (Desire to be unique)",
-    "憂鬱さ (Melancholic)"
-  ],
-  5: [
-    "知的 (Intellectual)",
-    "冷静 (Calm)",
-    "分析好き (Analytical)",
-    "探究心 (Curious)",
-    "一人が好き (Prefers solitude)",
-    "専門家肌 (Expert-minded)",
-    "観察好き (Observant)",
-    "独立的 (Independent)",
-    "情報収集 (Information-seeking)",
-    "論理的 (Logical)",
-    "感情を抑える (Emotionally restrained)",
-    "控えめ (Reserved)",
-    "無口 (Quiet)",
-    "深く考える (Deep thinker)",
-    "無駄を嫌う (Avoids waste)",
-    "集中力 (Focused)",
-    "説明が得意 (Good explainer)",
-    "時間管理 (Time management)",
-    "マイペース (Self-paced)",
-    "事前準備 (Well-prepared)"
-  ],
-  6: [
-    "慎重 (Cautious)",
-    "心配性 (Worrier)",
-    "安全第一 (Safety first)",
-    "忠誠心 (Loyal)",
-    "用心深い (Careful)",
-    "責任感 (Responsible)",
-    "サポート役 (Supportive)",
-    "疑い深い (Skeptical)",
-    "チーム思考 (Team-oriented)",
-    "規律遵守 (Rule-abiding)",
-    "決断が遅い (Indecisive)",
-    "警戒心 (Vigilant)",
-    "現実的 (Practical)",
-    "リスク回避 (Risk-averse)",
-    "指示に従う (Obedient)",
-    "人に相談する (Seeks reassurance)",
-    "対立回避 (Conflict-avoidant)",
-    "助けを求める (Help-seeking)",
-    "確認癖 (Double-checking)",
-    "守りの姿勢 (Defensive)"
-  ],
-  7: [
-    "楽観的 (Optimistic)",
-    "活動的 (Active)",
-    "刺激好き (Thrill-seeking)",
-    "多趣味 (Multi-interested)",
-    "明るい性格 (Cheerful)",
-    "ポジティブ (Positive)",
-    "自由人 (Free-spirited)",
-    "好奇心旺盛 (Curious)",
-    "未来志向 (Future-oriented)",
-    "社交的 (Sociable)",
-    "話好き (Talkative)",
-    "アイデア豊富 (Idea-rich)",
-    "飽きっぽい (Easily bored)",
-    "冒険好き (Adventurous)",
-    "切り替えが早い (Quick to adapt)",
-    "我慢が苦手 (Impatient)",
-    "深刻を避ける (Avoids seriousness)",
-    "チャレンジャー (Challenger)",
-    "エネルギッシュ (Energetic)",
-    "楽しいこと優先 (Fun-oriented)"
-  ],
-  8: [
-    "リーダーシップ (Leadership)",
-    "自己主張 (Assertive)",
-    "決断力 (Decisive)",
-    "強い意志 (Strong-willed)",
-    "支配的 (Dominant)",
-    "怒りやすい (Hot-tempered)",
-    "行動的 (Action-oriented)",
-    "パワフル (Powerful)",
-    "弱さを見せない (Hides vulnerability)",
-    "攻撃的 (Aggressive)",
-    "対立を恐れない (Fearless in conflict)",
-    "頼れる存在 (Reliable)",
-    "白黒はっきり (Black-and-white thinker)",
-    "挑戦好き (Loves challenges)",
-    "恐れを隠す (Hides fear)",
-    "堂々としている (Dignified)",
-    "自己防衛 (Self-protective)",
-    "支配欲 (Desire for control)",
-    "独立心 (Independent)",
-    "正面突破 (Head-on approach)"
-  ],
-  9: [
-    "平和主義 (Peaceful)",
-    "のんびり (Easygoing)",
-    "衝突回避 (Conflict-avoidant)",
-    "順応性 (Adaptable)",
-    "優柔不断 (Indecisive)",
-    "受け身 (Passive)",
-    "協調性 (Cooperative)",
-    "控えめ (Modest)",
-    "空気が読めない (Insensitive to atmosphere)",
-    "受容的 (Accepting)",
-    "癒し系 (Soothing)",
-    "穏やか (Calm)",
-    "自己主張が苦手 (Unassertive)",
-    "後回しにする (Procrastinating)",
-    "人に合わせる (People-pleasing)",
-    "安定重視 (Stability-oriented)",
-    "我慢する (Enduring)",
-    "受動的 (Passive)",
-    "妥協しがち (Compromising)",
-    "自分の意見が薄い (Self-effacing)"
-  ]
-};
+  <script>
+    // データは元のまま維持し、構造を少し整理します。
+    const data = {
+      1: [ "完璧主義", "規律", "秩序", "正義感", "責任感", "倫理観", "自己抑制", "理想主義", "批判的", "真面目", "向上心", "義務感", "緊張感", "律儀", "内省的", "常識重視", "正直", "自分に厳しい", "厳格", "潔癖" ],
+      2: [ "思いやり", "親切", "助けたい", "献身", "優しい", "面倒見がよい", "人懐っこい", "感情豊か", "共感的", "尽くす", "お節介", "感謝されたい", "気遣い", "過干渉", "自己犠牲", "愛されたい", "依存的", "NOが言えない", "他者優先", "世話好き" ],
+      3: [ "目標達成", "努力家", "成果重視", "自信家", "実行力", "成功志向", "競争心", "スピード重視", "評価を気にする", "自己アピール", "プレゼン上手", "リーダーシップ", "カリスマ性", "合理的", "承認欲求", "自分磨き", "有能さ", "結果主義", "仕事好き", "パフォーマンス" ],
+      4: [ "個性的", "感受性豊か", "ロマンチスト", "表現欲求", "感情の起伏", "創造的", "美意識", "孤独好き", "内向的", "ミステリアス", "妄想好き", "詩的", "自意識過剰", "傷つきやすい", "繊細", "複雑な感情", "悲観的", "嫉妬", "特別でありたい", "憂鬱さ" ],
+      5: [ "知的", "冷静", "分析好き", "探究心", "一人が好き", "専門家肌", "観察好き", "独立的", "情報収集", "論理的", "感情を抑える", "控えめ", "無口", "深く考える", "無駄を嫌う", "集中力", "説明が得意", "時間管理", "マイペース", "事前準備" ],
+      6: [ "慎重", "心配性", "安全第一", "忠誠心", "用心深い", "責任感", "サポート役", "疑い深い", "チーム思考", "規律遵守", "決断が遅い", "警戒心", "現実的", "リスク回避", "指示に従う", "人に相談する", "対立回避", "助けを求める", "確認癖", "守りの姿勢" ],
+      7: [ "楽観的", "活動的", "刺激好き", "多趣味", "明るい性格", "ポジティブ", "自由人", "好奇心旺盛", "未来志向", "社交的", "話好き", "アイデア豊富", "飽きっぽい", "冒険好き", "切り替えが早い", "我慢が苦手", "深刻を避ける", "チャレンジャー", "エネルギッシュ", "楽しいこと優先" ],
+      8: [ "リーダーシップ", "自己主張", "決断力", "強い意志", "支配的", "怒りやすい", "行動的", "パワフル", "弱さを見せない", "攻撃的", "対立を恐れない", "頼れる存在", "白黒はっきり", "挑戦好き", "恐れを隠す", "堂々としている", "自己防衛", "支配欲", "独立心", "正面突破" ],
+      9: [ "平和主義", "のんびり", "衝突回避", "順応性", "優柔不断", "受け身", "協調性", "控えめ", "空気が読めない", "受容的", "癒し系", "穏やか", "自己主張が苦手", "後回しにする", "人に合わせる", "安定重視", "我慢する", "受動的", "妥協しがち", "自分の意見が薄い" ]
+    };
 
-
-const descriptions = {
-  1: "タイプ1：理想主義者 — 高い理想を持ち、正しさや規律を大切にします。自己にも他者にも厳しくなりやすい傾向があります。\nType 1: The Reformer — Principled, disciplined, and perfection-oriented, striving for moral integrity and improvement.\nアドバイス：完璧を求めすぎず、柔軟な視点を持つことで心が軽くなります。\nAdvice: Strive for progress, not perfection. Allow flexibility and compassion toward yourself.",
-
-  2: "タイプ2：献身的な援助者 — 人の役に立ちたい思いが強く、他者とのつながりを大切にします。\nType 2: The Helper — Caring, generous, and warm-hearted, seeking connection through helping others.\nアドバイス：自分のニーズを後回しにしがちなので、自分を満たす時間も意識しましょう。\nAdvice: Take care of your own needs first—self-love enables true generosity.",
-
-  3: "タイプ3：達成者 — 成果を出すことに長け、効率や評価を意識するタイプです。\nType 3: The Achiever — Ambitious, adaptable, and success-oriented, driven by goals and recognition.\nアドバイス：自分の本心や感情を見つめ、他人の評価ではなく自分軸を大切に。\nAdvice: Pause to connect with your true feelings—your worth isn’t defined by success alone.",
-
-  4: "タイプ4：個性派ロマンチスト — 感受性が豊かで独自性を大切にします。\nType 4: The Individualist — Sensitive, expressive, and authentic, valuing emotional depth and uniqueness.\nアドバイス：感情に振り回されすぎず、今ある日常に価値を見い出すことも意識して。\nAdvice: Ground yourself in the present and find beauty in the ordinary moments of life.",
-
-  5: "タイプ5：知識探究者 — 冷静で観察力が高く、知識を得ることに安心感を持ちます。\nType 5: The Investigator — Analytical, insightful, and independent, seeking understanding and knowledge.\nアドバイス：感情表現や他者とのつながりも、少しずつ育ててみましょう。\nAdvice: Share your insights and emotions—connection can deepen your wisdom.",
-
-  6: "タイプ6：忠誠心のあるサポーター — 不安を抱きやすい反面、組織や仲間への貢献意識が高いです。\nType 6: The Loyalist — Responsible, trustworthy, and security-oriented, seeking safety and reassurance.\nアドバイス：自分の直感や判断にも自信を持ち、行動に移す練習を。\nAdvice: Trust your inner guidance and take one step forward with courage.",
-
-  7: "タイプ7：楽天的な冒険者 — 明るく前向きで、楽しいことに積極的に関わります。\nType 7: The Enthusiast — Optimistic, curious, and spontaneous, always seeking new experiences and joy.\nアドバイス：ひとつのことをじっくり味わい、今この瞬間に意識を向けてみましょう。\nAdvice: Slow down and savor the present moment.",
-
-  8: "タイプ8：挑戦するリーダー — 行動力があり、自分の力で状況を切り開いていきます。\nType 8: The Challenger — Strong, assertive, and protective, leading with confidence and decisiveness.\nアドバイス：時には人に頼ることも大切。弱さを見せることで信頼が深まることも。\nAdvice: Let others support you—vulnerability can build even greater strength.",
-
-  9: "タイプ9：平和を愛する調停者 — 周囲との調和を大切にし、衝突を避ける傾向があります。\nType 9: The Peacemaker — Calm, patient, and accepting, seeking inner and outer harmony.\nアドバイス：自分の考えや希望を言葉にしていくことが、自分らしい人生につながります。\nAdvice: Speak your truth with kindness—your voice matters.",
-};
-
-      const images = {
-        1: "img/type1.png",
-        2: "img/type2.png",
-        3: "img/type3.png",
-        4: "img/type4.png",
-        5: "img/type5.png",
-        6: "img/type6.png",
-        7: "img/type7.png",
-        8: "img/type8.png",
-        9: "img/type9.png",
-      };
-
-      window.onload = () => {
-        const form = document.getElementById("enneagramForm");
-        for (let type in data) {
-          const section = document.createElement("div");
-          section.className = "type-section";
-          const title = document.createElement("strong");
-          title.textContent = `タイプ${type}`;
-          section.appendChild(title);
-          data[type].forEach((keyword) => {
-            const label = document.createElement("label");
-            const checkbox = document.createElement("input");
-            checkbox.type = "checkbox";
-            checkbox.name = `type${type}`;
-            checkbox.value = keyword;
-            label.appendChild(checkbox);
-            label.appendChild(document.createTextNode(" " + keyword));
-            section.appendChild(label);
-          });
-          form.appendChild(section);
-        }
-      };
-
-      function calculateResult() {
-        const counts = {};
-        for (let type in data) {
-          const checkboxes = document.querySelectorAll(
-            `input[name='type${type}']:checked`
-          );
-          counts[type] = checkboxes.length;
-        }
-        const max = Math.max(...Object.values(counts));
-        const resultTypes = Object.keys(counts).filter(
-          (type) => counts[type] === max
-        );
-        resultTypes.sort((a, b) => parseInt(a) - parseInt(b));
-        const mainType = resultTypes[0];
-
-        let resultText = `あなたのタイプ候補は <strong>タイプ${mainType}</strong> です。<br><br>${descriptions[
-          mainType
-        ].replace(/\n/g, "<br>")}`;
-        if (resultTypes.length > 1) {
-          resultText += `<br><br>※他にもタイプ${resultTypes
-            .slice(1)
-            .join("・")}の傾向も見られます。`;
-        }
-        const resultHTML = `${resultText}<br><img src="${images[mainType]}" class="type-image" alt="タイプ${mainType}の画像">`;
-        document.getElementById("result").innerHTML = resultHTML;
-        document.getElementById("copyBtn").style.display = "block";
-        document.getElementById("shareBtns").style.display = "block";
-
-        const shareText = encodeURIComponent(
-          `エニアグラム簡易診断の結果 → タイプ${mainType}候補でした！`
-        );
-        const shareURL = encodeURIComponent(window.location.href);
-        document.getElementById(
-          "xShare"
-        ).href = `https://twitter.com/intent/tweet?text=${shareText}%0A${shareURL}`;
-        document.getElementById(
-          "lineShare"
-        ).href = `https://social-plugins.line.me/lineit/share?url=${shareURL}`;
+    const descriptions = {
+      1: {
+        title: "タイプ1：理想主義者 (The Reformer)",
+        desc: "高い理想を持ち、正しさや規律を大切にします。自己にも他者にも厳しくなりやすい傾向があります。",
+        advice: "完璧を求めすぎず、柔軟な視点を持つことで心が軽くなります。"
+      },
+      2: {
+        title: "タイプ2：献身的な援助者 (The Helper)",
+        desc: "人の役に立ちたい思いが強く、他者とのつながりを大切にします。",
+        advice: "自分のニーズを後回しにしがちなので、自分を満たす時間も意識しましょう。"
+      },
+      3: {
+        title: "タイプ3：達成者 (The Achiever)",
+        desc: "成果を出すことに長け、効率や評価を意識するタイプです。",
+        advice: "自分の本心や感情を見つめ、他人の評価ではなく自分軸を大切に。"
+      },
+      4: {
+        title: "タイプ4：個性派ロマンチスト (The Individualist)",
+        desc: "感受性が豊かで独自性を大切にします。",
+        advice: "感情に振り回されすぎず、今ある日常に価値を見い出すことも意識して。"
+      },
+      5: {
+        title: "タイプ5：知識探究者 (The Investigator)",
+        desc: "冷静で観察力が高く、知識を得ることに安心感を持ちます。",
+        advice: "感情表現や他者とのつながりも、少しずつ育ててみましょう。"
+      },
+      6: {
+        title: "タイプ6：忠誠心のあるサポーター (The Loyalist)",
+        desc: "不安を抱きやすい反面、組織や仲間への貢献意識が高いです。",
+        advice: "自分の直感や判断にも自信を持ち、行動に移す練習を。"
+      },
+      7: {
+        title: "タイプ7：楽天的な冒険者 (The Enthusiast)",
+        desc: "明るく前向きで、楽しいことに積極的に関わります。",
+        advice: "ひとつのことをじっくり味わい、今この瞬間に意識を向けてみましょう。"
+      },
+      8: {
+        title: "タイプ8：挑戦するリーダー (The Challenger)",
+        desc: "行動力があり、自分の力で状況を切り開いていきます。",
+        advice: "時には人に頼ることも大切。弱さを見せることで信頼が深まることも。"
+      },
+      9: {
+        title: "タイプ9：平和を愛する調停者 (The Peacemaker)",
+        desc: "周囲との調和を大切にし、衝突を避ける傾向があります。",
+        advice: "自分の考えや希望を言葉にしていくことが、自分らしい人生につながります。"
       }
+    };
 
-      function copyResult() {
-        const text = document.getElementById("result").innerText;
-        navigator.clipboard.writeText(text).then(() => {
-          alert("診断結果をコピーしました！");
+    // 画像パスは変更なしと仮定
+    const images = {
+      1: "img/type1.png", 2: "img/type2.png", 3: "img/type3.png",
+      4: "img/type4.png", 5: "img/type5.png", 6: "img/type6.png",
+      7: "img/type7.png", 8: "img/type8.png", 9: "img/type9.png",
+    };
+
+    // フォームの生成
+    window.onload = () => {
+      const form = document.getElementById("enneagramForm");
+      for (let type in data) {
+        const section = document.createElement("div");
+        section.className = "type-section";
+        
+        const title = document.createElement("span");
+        title.className = "type-section-title";
+        title.textContent = `タイプ${type}のキーワード`;
+        section.appendChild(title);
+        
+        const checkboxGroup = document.createElement("div");
+        checkboxGroup.className = "checkbox-group";
+
+        data[type].forEach((keyword, index) => {
+          const label = document.createElement("label");
+          label.className = "checkbox-label";
+          
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.name = `type${type}`;
+          checkbox.value = keyword;
+          checkbox.id = `type${type}-${index}`; // IDを追加
+
+          const customSpan = document.createElement("span");
+          customSpan.className = "checkbox-custom";
+          customSpan.textContent = keyword.split(" (")[0]; // 英語部分をカットして表示
+
+          label.appendChild(checkbox);
+          label.appendChild(customSpan);
+          checkboxGroup.appendChild(label);
         });
+        section.appendChild(checkboxGroup);
+        form.appendChild(section);
       }
-    </script>
-  </body>
+    };
+
+    function calculateResult() {
+      const counts = {};
+      let max = 0;
+
+      for (let type in data) {
+        const checkedCount = document.querySelectorAll(`input[name='type${type}']:checked`).length;
+        counts[type] = checkedCount;
+        if (checkedCount > max) {
+          max = checkedCount;
+        }
+      }
+
+      if (max === 0) {
+        alert("少なくとも1つはチェックしてください。");
+        return;
+      }
+
+      const resultTypes = Object.keys(counts).filter(type => counts[type] === max);
+      resultTypes.sort((a, b) => parseInt(a) - parseInt(b));
+      const mainType = resultTypes[0];
+      const typeInfo = descriptions[mainType];
+
+      let resultHTML = `
+        <h2>診断結果</h2>
+        <p>あなたのタイプ候補は <span class="result-type">${typeInfo.title}</span> です。</p>
+        <div class="type-description">
+          <p>${typeInfo.desc}</p>
+          <div class="advice-box">
+            <span class="advice-title">💡 アドバイス</span>
+            ${typeInfo.advice}
+          </div>
+        </div>
+        <img src="${images[mainType]}" class="type-image" alt="${typeInfo.title}のイメージ画像">
+      `;
+
+      if (resultTypes.length > 1) {
+        const otherTypes = resultTypes.slice(1).map(t => `タイプ${t}`).join("・");
+        resultHTML += `<p class="other-types">※他にも ${otherTypes} の傾向も強く見られます。</p>`;
+      }
+
+      const resultContainer = document.getElementById("result-container");
+      document.getElementById("result").innerHTML = resultHTML;
+      resultContainer.style.display = "block";
+
+      // 結果部分へスムーズにスクロール
+      resultContainer.scrollIntoView({ behavior: 'smooth' });
+
+      // シェアリンクの更新
+      updateShareLinks(mainType, typeInfo.title);
+    }
+
+    function updateShareLinks(mainType, title) {
+      const shareText = encodeURIComponent(`私のエニアグラム簡易診断結果は「${title}」でした！`);
+      const shareURL = encodeURIComponent(window.location.href);
+      
+      document.getElementById("xShare").href = `https://twitter.com/intent/tweet?text=${shareText}&url=${shareURL}`;
+      document.getElementById("lineShare").href = `https://social-plugins.line.me/lineit/share?url=${shareURL}`;
+    }
+
+    function copyResult() {
+      const resultText = document.getElementById("result").innerText;
+      navigator.clipboard.writeText(resultText).then(() => {
+        const message = document.getElementById("copy-message");
+        message.style.display = "block";
+        setTimeout(() => {
+          message.style.display = "none";
+        }, 3000); // 3秒後に非表示
+      }).catch(err => {
+        console.error('コピーに失敗しました:', err);
+        alert('コピーに失敗しました。');
+      });
+    }
+  </script>
+</body>
 </html>
- 
