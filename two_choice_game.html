@@ -266,33 +266,32 @@ function renderResult18(){
 ========================================================= */
 function renderPenalty(){
   stopConfetti();
-  // 「タイプ5崩壊」の画像を、謎めいた「機密ミッション」の象徴として使用
+  // 「タイプ5崩壊」の画像を表示
   app.innerHTML = `
-    <h1 style="color:#f5b642; text-shadow: 0 0 15px #f5b642; font-size:1.6rem;">🔒 TOP SECRET MISSION 🔒</h1>
-    <img class="hero" src="img/enneagram_penalty_lightstick.png" style="border: 3px solid #f5b642; filter: grayscale(0.5) contrast(1.2);">
+    <h1 style="color:#f5b642; text-shadow: 0 0 15px #f5b642; font-size:1.6rem;">🚨 SPECIAL MISSION 🚨</h1>
+    <img class="hero" src="img/enneagram_penalty_lightstick.png" style="border: 2px solid #f5b642; border-radius:15px; box-shadow: 0 0 20px rgba(245,182,66,0.5);">
     
-    <div style="background:rgba(0,0,0,0.8); border:2px solid #f5b642; padding:15px; border-radius:12px; margin:15px 0; text-align:left;">
-      <p style="color:#f5b642; font-weight:700; text-align:center; margin-bottom:10px; font-size:1.1rem;">
-        【参加条件：徳を積む義務】
+    <div style="background:rgba(20,20,20,0.9); border:1px solid #f5b642; padding:20px; border-radius:12px; margin:20px 0; text-align:left;">
+      <p style="color:#fff; font-size:1.0rem; line-height:1.8; margin:0;">
+        本イベントは<strong>参加費0円</strong>です。<br>
+        その代わり、<strong>「徳を積む」という名目で、LINEスタンプという“お布施”</strong>をご用意しています。
       </p>
       
-      <p style="color:#fff; font-size:0.9rem; line-height:1.6; margin-bottom:10px;">
-        <strong>① 全員共通ミッション：</strong><br>
-        本イベントは参加費0円です。その代わり、<strong>お布施（LINEスタンプ購入）</strong>により徳を積むことが全員に義務付けられます。
-      </p>
-      
-      <p style="color:#aaa; font-size:0.9rem; line-height:1.6; margin:0; padding-top:10px; border-top:1px dashed #444;">
-        <strong>② 敗者限定ミッション：</strong><br>
-        内容は現在<strong>【機密事項】</strong>です。この後、Rainyの口から直接「最下位の方」へ告げられます。
-      </p>
+      <div style="margin-top:15px; padding-top:15px; border-top:1px dashed #444;">
+        <p style="color:#f5b642; font-size:0.9rem; margin:0;">
+          <strong>① 全員：徳を積む（スタンプ購入）</strong><br>
+          <strong>② 敗者：機密ミッションの遂行</strong><br>
+          <span style="color:#888; font-size:0.8rem;">※ミッション内容は当日まで秘匿。この後発表します。</span>
+        </p>
+      </div>
     </div>
 
-    <a href="${STICKER_URL}" class="btn line-btn" target="_blank" style="background:linear-gradient(135deg, #f5b642, #b8860b); color:#fff; font-size:1.1rem; padding:18px;">
-      🙏 全員：お布施（徳を積む）
+    <a href="${STICKER_URL}" class="btn line-btn" target="_blank" style="background:linear-gradient(135deg, #f5b642, #b8860b); color:#fff; font-weight:700; padding:20px; text-decoration:none; border-radius:999px; display:block; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+      🙏 徳を積む（お布施会場へ）
     </a>
 
-    <div class="nav" style="margin-top:15px;">
-      <button class="btn sub" onclick="renderStart()" style="font-size:0.8rem; opacity:0.5;">TOPへ戻る</button>
+    <div class="nav" style="margin-top:20px;">
+      <button class="btn sub" onclick="renderStart()" style="font-size:0.8rem; opacity:0.6;">最初に戻る</button>
     </div>
   `;
 }
