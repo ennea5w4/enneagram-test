@@ -32,25 +32,23 @@
   .btn{
     border:none; border-radius:999px; padding:15px 18px;
     font-size:1rem; cursor:pointer; transition: transform 0.1s, background 0.2s;
-    -webkit-tap-highlight-color: transparent;
+    -webkit-tap-highlight-color: transparent; text-decoration: none;
   }
   .btn:active { transform: scale(0.96); }
   .choice{ background:#252525; color:#fff; border:1px solid #444; text-align:left; line-height:1.4; }
   .choice.selectedA{ border-color:#f5b642; background:rgba(245,182,66,.15); }
   .choice.selectedB{ border-color:#e50914; background:rgba(229,9,20,.15); }
 
-  .main{ background:linear-gradient(135deg,#e50914,#f5b642); color:#111; font-weight:700; width:100%; }
-  /* LINEボタンのスタイルを少し変更して目立たせます */
-  .line-btn{ background:#06C755; color:#fff; font-weight:700; width:100%; margin-bottom: 15px; display: block; text-decoration: none; text-align: center; line-height: 1.2; padding: 18px;}
+  .main{ background:linear-gradient(135deg,#e50914,#f5b642); color:#111; font-weight:700; width:100%; display: block;}
+  .line-btn{ background:#06C755; color:#fff; font-weight:700; width:100%; margin-bottom: 15px; display: block; text-decoration: none; text-align: center; line-height: 1.2; padding: 18px; box-sizing: border-box;}
   .sub{ background:#2a2a2a; color:#fff; border:1px solid #444; flex:1; }
   .danger{ background:#e50914; color:#fff; font-weight:700; width:100%; }
-  .nav{ display:flex; gap:8px; margin-top:10px; }
+  .nav{ display:flex; gap:8px; margin-top:10px; flex-direction: column; }
   
   img.hero{ width:100%; max-width:280px; display:block; margin:10px auto; border-radius:10px; }
   .highlight{ color:#f5b642; font-weight:700; }
   .small{ font-size:.8rem; color:#ccc; margin-top: 10px; }
   
-  /* 円形チャート用スタイル */
   .chart-container { position: relative; width: 180px; height: 180px; margin: 15px auto; }
   .chart-svg { transform: rotate(-90deg); }
   .chart-bg { fill: none; stroke: #333; stroke-width: 15; }
@@ -65,9 +63,10 @@
 
 <script>
 /* =========================================================
-   基本設定 & LINEリンク
+   基本設定 & 各種リンク
 ========================================================= */
 const STICKER_URL = "https://line.me/S/shop/sticker/author/5729491";
+const ENNEA_URL = "https://ennea5w4.github.io/enneagram-test/"; // エニア診断用アドレス
 const rainyTypeLabel = "作者：Rainy（タイプ5）";
 
 const dogImages = {
@@ -78,9 +77,8 @@ const dogImages = {
 function getDogImg(t){ return dogImages[t] || dogImages[5]; }
 
 /* =========================================================
-   データ（2択32問 & エニア18問）
+   データ（2択32問）
 ========================================================= */
-// ... (設問データは前回のものをそのまま利用します)
 const questions32 = [
   {q:"嫌われない人生 vs なめられない人生",A:"嫌われない",B:"なめられない"},
   {q:"ずっと謝り続ける vs ずっと言い訳し続ける",A:"謝り続ける",B:"言い訳し続ける"},
@@ -116,34 +114,11 @@ const questions32 = [
   {q:"一生自分を好きでいられる vs 一生愛され続ける",A:"自分を好きでいられる",B:"愛され続ける"}
 ];
 const rainyAnswers32 = ["B","A","A","A","A","A","B","A","A","A","A","A","A","A","B","B","A","B","B","A","B","A","A","A","A","B","B","B","B","A","B","A"];
-const ennea18 = [
-  {q:"ミスを見つけたとき、まず出る反応は？",A:"正しく直したくなる", B:"波風を立てずに流したくなる",Atypes:[1], Btypes:[9]},
-  {q:"誰かが落ち込んでる。あなたの最初の動きは？",A:"手伝えることを探して動く", B:"距離を保ちつつ状況を分析する",Atypes:[2], Btypes:[5]},
-  {q:"結果が必要な場面。あなたが選ぶのは？",A:"成果を出して評価を取りにいく", B:"自分らしさ・世界観を守る",Atypes:[3], Btypes:[4]},
-  {q:"集団の中でのあなたは？",A:"空気を整えて“普通に”合わせる", B:"あえて独自路線でいく",Atypes:[9,6], Btypes:[4,7]},
-  {q:"不安なときのクセは？",A:"最悪パターンを想定して備える", B:"とにかく動いて切り抜ける",Atypes:[6], Btypes:[8]},
-  {q:"揉め事が起きたとき",A:"白黒つけて前に進める", B:"みんなの妥協点を探す",Atypes:[8], Btypes:[9]},
-  {q:"休日の理想は？",A:"予定を詰めて楽しいこと全部やる", B:"整えて、質を上げて満足する",Atypes:[7], Btypes:[1,5]},
-  {q:"人に頼まれたとき",A:"つい引き受けがち（期待に応えたい）", B:"条件を確認してから決める",Atypes:[2,9], Btypes:[8,5]},
-  {q:"評価されると嬉しいのは？",A:"すごいね！結果出したね！", B:"わかってるね…深いね…",Atypes:[3], Btypes:[5,4]},
-  {q:"初対面が多い場",A:"まず周りを観察して安全確認", B:"とりあえず話しかけて場を作る",Atypes:[6,5], Btypes:[7,3]},
-  {q:"ルールが曖昧なとき",A:"こうあるべき基準を作る", B:"状況に合わせて柔軟にいく",Atypes:[1], Btypes:[9,7]},
-  {q:"気づいたらやってること",A:"人の役に立つ行動（世話/フォロー）", B:"効率化・省力化・仕組み化",Atypes:[2], Btypes:[5,3]},
-  {q:"怒りが出る瞬間",A:"筋が通ってない/ズルい", B:"支配される/舐められる",Atypes:[1], Btypes:[8]},
-  {q:"落ち込んだとき",A:"自分の世界に潜って感情を味わう", B:"とにかく前向きイベントで上書き",Atypes:[4], Btypes:[7]},
-  {q:"責任が重いとき",A:"ちゃんとやる（完璧寄り）", B:"守りを固める（確認/保険）",Atypes:[1,3], Btypes:[6]},
-  {q:"人間関係でよく言われがち",A:"優しい/合わせてくれる", B:"クール/ドライ/一線引く",Atypes:[9,2], Btypes:[5,8]},
-  {q:"“自分らしさ”で譲れないのは？",A:"センス・個性・意味", B:"結果・実利・効率",Atypes:[4], Btypes:[3,5]},
-  {q:"疲れているときの回復法",A:"一人になって充電", B:"誰かと話して回復",Atypes:[5,4], Btypes:[2,7,9]}
-];
-const typeLabel = {1:"タイプ1：改革タイプ", 2:"タイプ2：援助タイプ", 3:"タイプ3：達成タイプ", 4:"タイプ4：個性タイプ", 5:"タイプ5：分析タイプ", 6:"タイプ6：安全タイプ", 7:"タイプ7：熱中タイプ", 8:"タイプ8：挑戦タイプ", 9:"タイプ9：平和タイプ"};
-const typeOneLiner = {1:"『正しさ』に命をかける。脳内に監査部が常駐。",2:"人の役に立つと元気。世話焼きが発動中。",3:"勝ち筋を見つけて最短で取りにいく。",4:"“私だけの世界”がある。情緒が武器。",5:"情報を食べて生きる。静かに全部見てる。",6:"危機管理がプロ級。安心設計の守り神。",7:"楽しさ最優先。ワクワク嗅覚が最強。",8:"強くて頼れる。守るために前に出るボス。",9:"場を和ませる天才。争いを丸く収める。"};
 
 /* =========================================================
    メインロジック
 ========================================================= */
 let index32 = 0; let ans32 = [];
-let index18 = 0; let ans18 = [];
 
 function renderStart(){
   stopConfetti();
@@ -195,7 +170,7 @@ function renderTransition(){
 }
 
 /* =========================================================
-   2択結果表示（修正：途中のLINEリンク削除）
+   2択結果表示（修正：外部エニア診断へのリンクを追加）
 ========================================================= */
 function renderResult32(){
   let rainy = 0; ans32.forEach((a,i)=>{ if(a === rainyAnswers32[i]) rainy++; });
@@ -216,57 +191,19 @@ function renderResult32(){
     </div>
     <p class="subtitle">Rainyとのシンクロ率：<strong>${percent}%</strong></p>
     
-    <div class="nav"><button class="btn main" onclick="startEnnea18()">エニア判定（18問）へ →</button></div>
-    <div class="nav"><button class="btn sub" onclick="renderStart()">TOPへ戻る</button></div>
-  `;
-}
-
-/* =========================================================
-   エニア18問ロジック
-========================================================= */
-function startEnnea18(){ index18=0; ans18=new Array(18).fill(null); renderQuestion18(); }
-function renderQuestion18(){
-  const item = ennea18[index18]; const a = ans18[index18];
-  app.innerHTML = `
-    <div class="progress">エニア Q${index18 + 1} / 18</div>
-    <h1>エニア判定</h1>
-    <div class="question">${escapeHtml(item.q)}</div>
-    <div class="choices">
-      <button class="btn choice ${a==='A'?'selectedA':''}" onclick="ans18[index18]='A';renderQuestion18()">${escapeHtml(item.A)}</button>
-      <button class="btn choice ${a==='B'?'selectedB':''}" onclick="ans18[index18]='B';renderQuestion18()">${escapeHtml(item.B)}</button>
-    </div>
     <div class="nav">
-      <button class="btn sub" onclick="index18===0?renderResult32():(index18--,renderQuestion18())">戻る</button>
-      <button class="btn danger" onclick="index18===17?renderResult18():(index18++,renderQuestion18())" ${!a?'disabled':''}>次へ</button>
+      <a href="${ENNEA_URL}" target="_blank" class="btn main">エニア判定（外部サイト）へ →</a>
+      <button class="btn danger" onclick="renderPenalty()">罰ゲーム発表へ →</button>
+      <button class="btn sub" onclick="renderStart()">TOPへ戻る</button>
     </div>
   `;
 }
 
 /* =========================================================
-   エニア結果表示（修正：途中のLINEリンク削除）
-========================================================= */
-function renderResult18(){
-  const score = {1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0};
-  ans18.forEach((p, i)=>{ const types = (p === "A") ? ennea18[i].Atypes : ennea18[i].Btypes; types.forEach(t => score[t]++); });
-  const ranked = Object.keys(score).map(k=>({t:Number(k),p:score[k]})).sort((a,b)=>b.p-a.p);
-  const top = ranked[0].t;
-
-  app.innerHTML = `
-    <h1>判定結果：${escapeHtml(typeLabel[top])}</h1>
-    <img class="hero" src="${getDogImg(top)}">
-    <div class="subtitle"><strong>${escapeHtml(typeOneLiner[top])}</strong></div>
-    <hr class="sep">
-    <div class="small">上位3タイプ：${ranked.slice(0,3).map(r=>`${r.t}(${r.p}点)`).join(', ')}</div>
-    <div class="nav"><button class="btn danger" onclick="renderPenalty()">罰ゲーム発表へ →</button></div>
-  `;
-}
-
-/* =========================================================
-   罰ゲーム画面（修正：最後にLINEリンクボタンを設置）
+   罰ゲーム画面（ミッション：お布施＆機密ミッション）
 ========================================================= */
 function renderPenalty(){
   stopConfetti();
-  // 「タイプ5崩壊」の画像を表示
   app.innerHTML = `
     <h1 style="color:#f5b642; text-shadow: 0 0 15px #f5b642; font-size:1.6rem;">🚨 SPECIAL MISSION 🚨</h1>
     <img class="hero" src="img/enneagram_penalty_lightstick.png" style="border: 2px solid #f5b642; border-radius:15px; box-shadow: 0 0 20px rgba(245,182,66,0.5);">
@@ -287,7 +224,7 @@ function renderPenalty(){
     </div>
 
     <a href="${STICKER_URL}" class="btn line-btn" target="_blank" style="background:linear-gradient(135deg, #f5b642, #b8860b); color:#fff; font-weight:700; padding:20px; text-decoration:none; border-radius:999px; display:block; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
-    徳を積む（お布施会場へ）
+      🙏 徳を積む（お布施会場へ）
     </a>
 
     <div class="nav" style="margin-top:20px;">
@@ -295,8 +232,9 @@ function renderPenalty(){
     </div>
   `;
 }
+
 /* =========================================================
-   紙吹雪アニメーション & その他
+   演出・その他
 ========================================================= */
 const canvas = document.getElementById('confetti-canvas');
 const ctx = canvas.getContext('2d');
@@ -324,7 +262,6 @@ function animateConfetti() {
   requestAnimationFrame(animateConfetti);
 }
 function stopConfetti() { particles = []; ctx.clearRect(0,0,canvas.width,canvas.height); }
-
 function escapeHtml(s){ return String(s??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;"); }
 renderStart();
 </script>
