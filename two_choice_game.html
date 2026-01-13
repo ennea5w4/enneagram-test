@@ -2,79 +2,566 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8" />
-<title>究極の2択 性格ゲーム（新年会・宣伝SP）</title>
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>究極の2択 性格ゲーム</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 <style>
-  body{
-    margin:0; background:#111; color:#f7f7f7;
-    font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-    display:flex; justify-content:center; align-items:center; min-height:100vh;
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  body {
+    margin: 0;
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+    color: #f7f7f7;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
     overflow-x: hidden;
+    position: relative;
   }
-  #confetti-canvas {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    pointer-events: none; z-index: 999;
-  }
-  .card{
-    background:#181818; border:1px solid #444; border-radius:16px;
-    padding:22px 20px; max-width:560px; width:95%;
-    box-shadow:0 0 25px rgba(0,0,0,.6); box-sizing:border-box; text-align: center;
-    position: relative; z-index: 10;
-    animation: fadeIn 0.5s ease-out;
-  }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-  
-  h1{ margin:.2em 0 .5em; font-size:1.4rem; letter-spacing:.02em; }
-  .progress{ color:#aaa; font-size:.8rem; margin-bottom:.35em; text-align: left; }
-  .question{ margin:1em 0; font-size:1.1rem; line-height:1.5; font-weight:700; min-height: 3em; display: flex; align-items: center; justify-content: center;}
-  .choices{ display:flex; flex-direction:column; gap:12px; margin:16px 0; }
-  
-  .btn{
-    border:none; border-radius:999px; padding:15px 18px;
-    font-size:1rem; cursor:pointer; transition: transform 0.1s, background 0.2s;
-    -webkit-tap-highlight-color: transparent; text-decoration: none;
-  }
-  .btn:active { transform: scale(0.96); }
-  .choice{ background:#252525; color:#fff; border:1px solid #444; text-align:left; line-height:1.4; }
-  .choice.selectedA{ border-color:#f5b642; background:rgba(245,182,66,.15); }
-  .choice.selectedB{ border-color:#e50914; background:rgba(229,9,20,.15); }
 
-  .main{ background:linear-gradient(135deg,#e50914,#f5b642); color:#111; font-weight:700; width:100%; display: block;}
-  .line-btn{ background:#06C755; color:#fff; font-weight:700; width:100%; margin-bottom: 15px; display: block; text-decoration: none; text-align: center; line-height: 1.2; padding: 18px; box-sizing: border-box;}
-  .sub{ background:#2a2a2a; color:#fff; border:1px solid #444; flex:1; }
-  .danger{ background:#e50914; color:#fff; font-weight:700; width:100%; }
-  .nav{ display:flex; gap:8px; margin-top:10px; flex-direction: column; }
-  
-  img.hero{ width:100%; max-width:280px; display:block; margin:10px auto; border-radius:10px; }
-  .highlight{ color:#f5b642; font-weight:700; }
-  .small{ font-size:.8rem; color:#ccc; margin-top: 10px; }
-  
-  .chart-container { position: relative; width: 180px; height: 180px; margin: 15px auto; }
-  .chart-svg { transform: rotate(-90deg); }
-  .chart-bg { fill: none; stroke: #333; stroke-width: 15; }
-  .chart-bar { fill: none; stroke: #f5b642; stroke-width: 15; stroke-linecap: round; transition: stroke-dasharray 1s ease-out; }
-  .chart-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: 700; font-size: 1.2rem; }
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* 背景パーティクル */
+  .particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    animation: float 20s infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0) translateX(0); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(-100vh) translateX(100px); opacity: 0; }
+  }
+
+  #confetti-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  .card {
+    background: rgba(24, 24, 24, 0.95);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    padding: 30px 24px;
+    max-width: 580px;
+    width: 95%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+    text-align: center;
+    position: relative;
+    z-index: 10;
+    animation: cardEntry 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes cardEntry {
+    from { opacity: 0; transform: scale(0.8) translateY(50px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  /* ヘッダー */
+  h1 {
+    margin: 0.2em 0 0.6em;
+    font-size: 1.6rem;
+    letter-spacing: 0.05em;
+    background: linear-gradient(135deg, #f5b642, #e50914);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 900;
+    text-shadow: 0 0 30px rgba(245, 182, 66, 0.5);
+    animation: titleGlow 2s ease-in-out infinite;
+  }
+
+  @keyframes titleGlow {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.3); }
+  }
+
+  .subtitle {
+    color: #ccc;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0.8em 0;
+  }
+
+  /* プログレスバー */
+  .progress-wrapper {
+    margin: 20px 0 10px;
+  }
+
+  .progress-bar-container {
+    background: rgba(255, 255, 255, 0.1);
+    height: 10px;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 8px;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #e50914, #f5b642);
+    transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  .progress-text {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: #aaa;
+  }
+
+  .mode-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    animation: badgePulse 2s ease-in-out infinite;
+  }
+
+  .mode-hell {
+    background: linear-gradient(135deg, #e50914, #8b0000);
+    box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4);
+  }
+
+  .mode-heaven {
+    background: linear-gradient(135deg, #f5b642, #ffd700);
+    box-shadow: 0 4px 15px rgba(245, 182, 66, 0.4);
+    color: #111;
+  }
+
+  @keyframes badgePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+
+  /* 質問エリア */
+  .question {
+    margin: 1.5em 0;
+    font-size: 1.15rem;
+    line-height: 1.6;
+    font-weight: 700;
+    min-height: 4em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    animation: questionSlide 0.5s ease-out;
+  }
+
+  @keyframes questionSlide {
+    from { opacity: 0; transform: translateX(-30px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  /* 選択肢 */
+  .choices {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin: 20px 0;
+  }
+
+  .btn {
+    border: none;
+    border-radius: 999px;
+    padding: 18px 22px;
+    font-size: 1.05rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    -webkit-tap-highlight-color: transparent;
+    text-decoration: none;
+    font-weight: 600;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+  }
+
+  .btn:active::before {
+    width: 300px;
+    height: 300px;
+  }
+
+  .btn:active {
+    transform: scale(0.95);
+  }
+
+  .choice {
+    background: linear-gradient(135deg, rgba(37, 37, 37, 0.8), rgba(50, 50, 50, 0.8));
+    color: #fff;
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    text-align: left;
+    line-height: 1.5;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    position: relative;
+    z-index: 1;
+  }
+
+  .choice:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  .choice.selectedA {
+    border-color: #f5b642;
+    background: linear-gradient(135deg, rgba(245, 182, 66, 0.3), rgba(255, 215, 0, 0.2));
+    box-shadow: 0 0 30px rgba(245, 182, 66, 0.5);
+    animation: selectedPulse 0.5s ease-out;
+  }
+
+  .choice.selectedB {
+    border-color: #e50914;
+    background: linear-gradient(135deg, rgba(229, 9, 20, 0.3), rgba(139, 0, 0, 0.2));
+    box-shadow: 0 0 30px rgba(229, 9, 20, 0.5);
+    animation: selectedPulse 0.5s ease-out;
+  }
+
+  @keyframes selectedPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+
+  .main {
+    background: linear-gradient(135deg, #e50914, #f5b642);
+    color: #fff;
+    font-weight: 700;
+    width: 100%;
+    display: block;
+    box-shadow: 0 6px 20px rgba(229, 9, 20, 0.4);
+    font-size: 1.15rem;
+    padding: 20px;
+  }
+
+  .main:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(229, 9, 20, 0.6);
+  }
+
+  .line-btn {
+    background: linear-gradient(135deg, #06C755, #00a843);
+    color: #fff;
+    font-weight: 700;
+    width: 100%;
+    margin-bottom: 15px;
+    display: block;
+    text-align: center;
+    line-height: 1.3;
+    padding: 20px;
+    box-shadow: 0 6px 20px rgba(6, 199, 85, 0.4);
+  }
+
+  .line-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(6, 199, 85, 0.6);
+  }
+
+  .sub {
+    background: rgba(42, 42, 42, 0.8);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    flex: 1;
+  }
+
+  .sub:hover {
+    background: rgba(60, 60, 60, 0.9);
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+
+  .danger {
+    background: linear-gradient(135deg, #e50914, #8b0000);
+    color: #fff;
+    font-weight: 700;
+    width: 100%;
+    box-shadow: 0 6px 20px rgba(229, 9, 20, 0.4);
+  }
+
+  .danger:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .danger:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(229, 9, 20, 0.6);
+  }
+
+  .nav {
+    display: flex;
+    gap: 12px;
+    margin-top: 15px;
+    flex-direction: column;
+  }
+
+  /* 画像 */
+  img.hero {
+    width: 100%;
+    max-width: 300px;
+    display: block;
+    margin: 15px auto;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    animation: imageFloat 3s ease-in-out infinite;
+  }
+
+  @keyframes imageFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  /* 結果画面の円グラフ */
+  .chart-container {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 25px auto;
+  }
+
+  .chart-svg {
+    transform: rotate(-90deg);
+    filter: drop-shadow(0 0 15px currentColor);
+  }
+
+  .chart-bg {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.1);
+    stroke-width: 18;
+  }
+
+  .chart-bar {
+    fill: none;
+    stroke-width: 18;
+    stroke-linecap: round;
+    transition: stroke-dasharray 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .chart-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: 900;
+    font-size: 2.5rem;
+    text-shadow: 0 0 20px currentColor;
+    animation: scoreCount 1.5s ease-out;
+  }
+
+  @keyframes scoreCount {
+    from { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  }
+
+  /* ランクバッジ */
+  .rank-badge {
+    display: inline-block;
+    padding: 15px 30px;
+    border-radius: 50px;
+    font-size: 1.3rem;
+    font-weight: 900;
+    margin: 20px auto;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    animation: rankEntry 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes rankEntry {
+    from { opacity: 0; transform: scale(0.5) rotate(-10deg); }
+    to { opacity: 1; transform: scale(1) rotate(0); }
+  }
+
+  .rank-gold {
+    background: linear-gradient(135deg, #f5b642, #ffd700);
+    color: #111;
+    box-shadow: 0 10px 40px rgba(245, 182, 66, 0.6);
+  }
+
+  .rank-red {
+    background: linear-gradient(135deg, #e50914, #8b0000);
+    color: #fff;
+    box-shadow: 0 10px 40px rgba(229, 9, 20, 0.6);
+  }
+
+  .rank-normal {
+    background: linear-gradient(135deg, #666, #999);
+    color: #fff;
+    box-shadow: 0 10px 40px rgba(100, 100, 100, 0.4);
+  }
+
+  /* ミッションボックス */
+  .mission-box {
+    background: rgba(20, 20, 20, 0.95);
+    border: 2px solid #f5b642;
+    padding: 25px;
+    border-radius: 15px;
+    margin: 25px 0;
+    text-align: left;
+    box-shadow: 0 0 30px rgba(245, 182, 66, 0.3);
+    animation: missionPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes missionPulse {
+    0%, 100% { box-shadow: 0 0 30px rgba(245, 182, 66, 0.3); }
+    50% { box-shadow: 0 0 50px rgba(245, 182, 66, 0.6); }
+  }
+
+  /* トランジション画面 */
+  .transition-content {
+    animation: transitionZoom 1s ease-out;
+  }
+
+  @keyframes transitionZoom {
+    0% { opacity: 0; transform: scale(1.5) rotate(5deg); }
+    100% { opacity: 1; transform: scale(1) rotate(0); }
+  }
+
+  /* レスポンシブ */
+  @media (max-width: 600px) {
+    h1 { font-size: 1.4rem; }
+    .question { font-size: 1.05rem; min-height: 3.5em; }
+    .btn { font-size: 1rem; padding: 16px 20px; }
+    .chart-container { width: 180px; height: 180px; }
+    .chart-text { font-size: 2rem; }
+  }
+
+  /* シェアボタン */
+  .share-section {
+    margin-top: 30px;
+    padding-top: 25px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .share-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #f5b642;
+  }
+
+  .share-buttons {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .share-btn {
+    flex: 1;
+    min-width: 140px;
+    padding: 14px 20px;
+    border-radius: 50px;
+    text-decoration: none;
+    color: #fff;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+  }
+
+  .share-x {
+    background: linear-gradient(135deg, #000, #333);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  }
+
+  .share-line {
+    background: linear-gradient(135deg, #06C755, #00a843);
+    box-shadow: 0 4px 15px rgba(6, 199, 85, 0.4);
+  }
+
+  .share-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+  }
 </style>
 </head>
 
 <body>
+<!-- 背景パーティクル -->
+<div class="particles" id="particles"></div>
+
+<!-- 紙吹雪キャンバス -->
 <canvas id="confetti-canvas"></canvas>
+
+<!-- メインカード -->
 <div class="card" id="app"></div>
 
 <script>
 /* =========================================================
-   基本設定 & 各種リンク
+   基本設定 & リンク
 ========================================================= */
 const STICKER_URL = "https://line.me/S/shop/sticker/author/5729491";
-const ENNEA_URL = "https://ennea5w4.github.io/enneagram-test/"; // エニア診断用アドレス
-const rainyTypeLabel = "作者：Rainy（タイプ5）";
+const ENNEA_URL = "https://ennea5w4.github.io/enneagram-test/";
 
 const dogImages = {
   1: "img/dog_type01.png", 2: "img/dog_type02.png", 3: "img/dog_type03.png",
   4: "img/dog_type04.png", 5: "img/dog_type05.png", 6: "img/dog_type06.png",
   7: "img/dog_type07.png", 8: "img/dog_type08.png", 9: "img/dog_type09.png"
 };
-function getDogImg(t){ return dogImages[t] || dogImages[5]; }
+function getDogImg(t) { return dogImages[t] || dogImages[5]; }
 
 /* =========================================================
    データ（2択32問）
@@ -115,154 +602,358 @@ const questions32 = [
 ];
 const rainyAnswers32 = ["B","A","A","A","A","A","B","A","A","A","A","A","A","A","B","B","A","B","B","A","B","A","A","A","A","B","B","B","B","A","B","A"];
 
-/* =========================================================
-   メインロジック
-========================================================= */
-let index32 = 0; let ans32 = [];
+let index32 = 0;
+let ans32 = [];
 
-function renderStart(){
+/* =========================================================
+   背景パーティクル生成
+========================================================= */
+function createParticles() {
+  const container = document.getElementById('particles');
+  for (let i = 0; i < 30; i++) {
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    particle.style.left = Math.random() * 100 + '%';
+    particle.style.animationDelay = Math.random() * 20 + 's';
+    particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+    container.appendChild(particle);
+  }
+}
+createParticles();
+
+/* =========================================================
+   画面レンダリング
+========================================================= */
+function renderStart() {
   stopConfetti();
   app.innerHTML = `
-    <h1>究極の2択 性格ゲーム</h1>
+    <h1>🎮 究極の2択<br>性格ゲーム</h1>
     <img class="hero" src="${getDogImg(5)}" alt="タイプ5">
-    <p class="subtitle">新年会を盛り上げる「思考シンクロ診断」<br>あなたの考えは作者Rainyと一致するか？</p>
-    <button class="btn main" onclick="startTwoChoice()">ゲーム開始</button>
+    <p class="subtitle">新年会を盛り上げる<strong>思考シンクロ診断</strong><br>あなたの考えは作者Rainyと一致するか？</p>
+    <button class="btn main" onclick="startTwoChoice()">✨ ゲーム開始 ✨</button>
   `;
 }
 
-function startTwoChoice(){ index32 = 0; ans32 = []; renderQuestion32(); }
+function startTwoChoice() {
+  index32 = 0;
+  ans32 = [];
+  renderQuestion32();
+}
 
 function next32() {
-  if (index32 === 15) { renderTransition(); return; }
+  if (index32 === 15) {
+    renderTransition();
+    return;
+  }
   index32++;
-  if (index32 >= questions32.length) { renderResult32(); } else { renderQuestion32(); }
-}
-function prev32() {
-  if (index32 === 0) { renderStart(); return; }
-  if (index32 === 16) { renderTransition(); return; }
-  index32--; renderQuestion32();
+  if (index32 >= questions32.length) {
+    renderResult32();
+  } else {
+    renderQuestion32();
+  }
 }
 
-function renderQuestion32(){
-  const q = questions32[index32]; const a = ans32[index32];
+function prev32() {
+  if (index32 === 0) {
+    renderStart();
+    return;
+  }
+  if (index32 === 16) {
+    renderTransition();
+    return;
+  }
+  index32--;
+  renderQuestion32();
+}
+
+function renderQuestion32() {
+  const q = questions32[index32];
+  const a = ans32[index32];
   const mode = index32 < 16 ? "地獄" : "天国";
+  const modeClass = index32 < 16 ? "mode-hell" : "mode-heaven";
+  const progress = ((index32 + 1) / 32) * 100;
+  
   app.innerHTML = `
-    <div class="progress">Q${index32 + 1} / 32 [${mode}]</div>
+    <div class="mode-badge ${modeClass}">${mode}モード</div>
+    <div class="progress-wrapper">
+      <div class="progress-bar-container">
+        <div class="progress-bar-fill" style="width: ${progress}%"></div>
+      </div>
+      <div class="progress-text">
+        <span>Q${index32 + 1} / 32</span>
+        <span>残り ${32 - index32} 問</span>
+      </div>
+    </div>
     <div class="question">${escapeHtml(q.q)}</div>
     <div class="choices">
-      <button class="btn choice ${a === 'A' ? 'selectedA' : ''}" onclick="ans32[index32]='A';renderQuestion32()">${escapeHtml(q.A)}</button>
-      <button class="btn choice ${a === 'B' ? 'selectedB' : ''}" onclick="ans32[index32]='B';renderQuestion32()">${escapeHtml(q.B)}</button>
+      <button class="btn choice ${a === 'A' ? 'selectedA' : ''}" onclick="selectAnswer('A')">
+        ${escapeHtml(q.A)}
+      </button>
+      <button class="btn choice ${a === 'B' ? 'selectedB' : ''}" onclick="selectAnswer('B')">
+        ${escapeHtml(q.B)}
+      </button>
     </div>
     <div class="nav">
-      <button class="btn sub" onclick="prev32()">戻る</button>
-      <button class="btn danger" onclick="next32()" ${!a?'disabled':''}>${index32===31?'結果へ':'次へ'}</button>
+      <button class="btn sub" onclick="prev32()">← 戻る</button>
+      <button class="btn danger" onclick="next32()" ${!a ? 'disabled' : ''}>
+        ${index32 === 31 ? '🎯 結果へ' : '次へ →'}
+      </button>
     </div>
   `;
 }
 
-function renderTransition(){
+function selectAnswer(choice) {
+  ans32[index32] = choice;
+  // バイブレーション（対応デバイスのみ）
+  if (navigator.vibrate) {
+    navigator.vibrate(50);
+  }
+  renderQuestion32();
+}
+
+function renderTransition() {
   app.innerHTML = `
-    <h1>地獄モード終了！</h1>
-    <img class="hero" src="img/transition_hell_to_heaven.png" alt="天国へ">
-    <p class="subtitle">ここからは「究極の幸せ」を選ぶ<br><strong>天国モード</strong>突入です！</p>
-    <button class="btn main" onclick="index32=16;renderQuestion32()">天国へ進む →</button>
+    <div class="transition-content">
+      <h1 style="font-size: 2rem;">🔥 地獄モード終了！</h1>
+      <img class="hero" src="img/transition_hell_to_heaven.png" alt="天国へ" style="max-width: 350px;">
+      <p class="subtitle" style="font-size: 1.1rem;">ここからは「究極の幸せ」を選ぶ<br><strong style="color: #f5b642; font-size: 1.3rem;">✨ 天国モード ✨</strong>突入です！</p>
+      <button class="btn main" onclick="index32=16;renderQuestion32()" style="font-size: 1.2rem; padding: 22px;">
+        🌟 天国へ進む →
+      </button>
+    </div>
   `;
 }
 
-/* =========================================================
-   2択結果表示（修正：外部エニア診断へのリンクを追加）
-========================================================= */
-function renderResult32(){
-  let rainy = 0; ans32.forEach((a,i)=>{ if(a === rainyAnswers32[i]) rainy++; });
+function renderResult32() {
+  let rainy = 0;
+  ans32.forEach((a, i) => {
+    if (a === rainyAnswers32[i]) rainy++;
+  });
   const percent = Math.round((rainy / 32) * 100);
   
-  let status = "普通の人"; let color = "#aaa";
-  if (rainy >= 26) { status = "景品対象！ソウルメイト"; color = "#f5b642"; startConfetti(); }
-  else if (rainy <= 8) { status = "罰ゲーム対象！異星人"; color = "#e50914"; }
-
+  let status = "普通の人";
+  let rankClass = "rank-normal";
+  let chartColor = "#999";
+  let message = "あなたは標準的な思考パターンを持っています。";
+  
+  if (rainy >= 26) {
+    status = "🏆 ソウルメイト";
+    rankClass = "rank-gold";
+    chartColor = "#f5b642";
+    message = "景品対象！あなたとRainyは運命の赤い糸で結ばれています！";
+    startConfetti();
+  } else if (rainy <= 8) {
+    status = "👽 異星人";
+    rankClass = "rank-red";
+    chartColor = "#e50914";
+    message = "罰ゲーム対象！あなたは地球外生命体の可能性があります...";
+  } else if (rainy >= 20) {
+    status = "🌟 親友候補";
+    chartColor = "#f5b642";
+    message = "かなり高い一致率！気が合いそうです。";
+  } else if (rainy <= 12) {
+    status = "⚠️ 要注意人物";
+    chartColor = "#e50914";
+    message = "思考回路が大きく異なります。ご注意を...";
+  }
+  
+  const circumference = 2 * Math.PI * 75;
+  const dashArray = (circumference * percent) / 100;
+  
   app.innerHTML = `
-    <h1 style="color:${color}">${status}</h1>
-    <div class="chart-container">
-      <svg class="chart-svg" width="180" height="180">
-        <circle class="chart-bg" cx="90" cy="90" r="75"></circle>
-        <circle class="chart-bar" cx="90" cy="90" r="75" style="stroke-dasharray: ${471 * (percent/100)} 471; stroke: ${color}"></circle>
-      </svg>
-      <div class="chart-text">${rainy} pt</div>
-    </div>
-    <p class="subtitle">Rainyとのシンクロ率：<strong>${percent}%</strong></p>
+    <div class="rank-badge ${rankClass}">${status}</div>
     
-    <div class="nav">
-      <a href="${ENNEA_URL}" target="_blank" class="btn main">エニア判定へ →</a>
-      <button class="btn danger" onclick="renderPenalty()">罰ゲーム発表へ →</button>
-      <button class="btn sub" onclick="renderStart()">TOPへ戻る</button>
+    <div class="chart-container">
+      <svg class="chart-svg" width="200" height="200">
+        <circle class="chart-bg" cx="100" cy="100" r="75"></circle>
+        <circle class="chart-bar" cx="100" cy="100" r="75" 
+          style="stroke: ${chartColor}; stroke-dasharray: ${dashArray} ${circumference}">
+        </circle>
+      </svg>
+      <div class="chart-text" style="color: ${chartColor}">${rainy}</div>
+    </div>
+    
+    <p class="subtitle" style="font-size: 1.1rem;">
+      <strong style="color: ${chartColor}; font-size: 1.4rem;">${percent}%</strong><br>
+      Rainyとのシンクロ率
+    </p>
+    
+    <p style="margin: 20px 0; line-height: 1.7; color: #ddd;">
+      ${message}
+    </p>
+    
+    <div class="share-section">
+      <div class="share-title">📱 結果をシェアしよう</div>
+      <div class="share-buttons">
+        <a href="#" class="share-btn share-x" onclick="shareToX(${rainy}, ${percent}, '${status}'); return false;">
+          𝕏 でシェア
+        </a>
+        <a href="#" class="share-btn share-line" onclick="shareToLine(${rainy}, ${percent}, '${status}'); return false;">
+          LINE でシェア
+        </a>
+      </div>
+    </div>
+    
+    <div class="nav" style="margin-top: 25px;">
+      <a href="${ENNEA_URL}" target="_blank" class="btn main">
+        🎯 エニアグラム診断へ
+      </a>
+      <button class="btn danger" onclick="renderPenalty()">
+        🎁 景品・罰ゲーム発表
+      </button>
+      <button class="btn sub" onclick="renderStart()">
+        🏠 TOPへ戻る
+      </button>
     </div>
   `;
 }
 
-/* =========================================================
-   罰ゲーム画面（ミッション：お布施＆機密ミッション）
-========================================================= */
-function renderPenalty(){
+function renderPenalty() {
   stopConfetti();
   app.innerHTML = `
-    <h1 style="color:#f5b642; text-shadow: 0 0 15px #f5b642; font-size:1.6rem;">🚨 SPECIAL MISSION 🚨</h1>
-    <img class="hero" src="img/enneagram_penalty_lightstick.png" style="border: 2px solid #f5b642; border-radius:15px; box-shadow: 0 0 20px rgba(245,182,66,0.5);">
+    <h1 style="font-size: 1.8rem; text-shadow: 0 0 20px #f5b642;">
+      🚨 SPECIAL MISSION 🚨
+    </h1>
+    <img class="hero" src="img/enneagram_penalty_lightstick.png" 
+         style="border: 3px solid #f5b642; max-width: 320px; box-shadow: 0 0 30px rgba(245, 182, 66, 0.5);">
     
-    <div style="background:rgba(20,20,20,0.9); border:1px solid #f5b642; padding:20px; border-radius:12px; margin:20px 0; text-align:left;">
-      <p style="color:#fff; font-size:1.0rem; line-height:1.8; margin:0;">
-        本イベントは<strong>参加費0円</strong>です。<br>
-        その代わり、<strong>「徳を積む」という名目で、LINEスタンプという“お布施”</strong>をご用意しています。
+    <div class="mission-box">
+      <p style="color: #fff; font-size: 1.05rem; line-height: 1.9; margin: 0;">
+        本イベントは<strong style="color: #f5b642;">参加費0円</strong>です。<br>
+        その代わり、<strong style="color: #f5b642;">「徳を積む」という名目で、LINEスタンプという"お布施"</strong>をご用意しています。
       </p>
       
-      <div style="margin-top:15px; padding-top:15px; border-top:1px dashed #444;">
-        <p style="color:#f5b642; font-size:0.9rem; margin:0;">
+      <div style="margin-top: 20px; padding-top: 20px; border-top: 1px dashed #666;">
+        <p style="color: #f5b642; font-size: 1rem; margin: 0; line-height: 1.8;">
           <strong>① 全員：徳を積む（スタンプ購入）</strong><br>
           <strong>② 敗者：機密ミッションの遂行</strong><br>
-          <span style="color:#888; font-size:0.8rem;">※ミッション内容は当日まで秘匿。この後発表します。</span>
+          <span style="color: #999; font-size: 0.85rem;">
+            ※ミッション内容は当日まで秘匿。この後発表します。
+          </span>
         </p>
       </div>
     </div>
 
-    <a href="${STICKER_URL}" class="btn line-btn" target="_blank" style="background:linear-gradient(135deg, #f5b642, #b8860b); color:#fff; font-weight:700; padding:20px; text-decoration:none; border-radius:999px; display:block; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+    <a href="${STICKER_URL}" class="btn line-btn" target="_blank" 
+       style="background: linear-gradient(135deg, #f5b642, #b8860b); padding: 22px; font-size: 1.1rem;">
       🙏 徳を積む（お布施会場へ）
     </a>
 
-    <div class="nav" style="margin-top:20px;">
-      <button class="btn sub" onclick="renderStart()" style="font-size:0.8rem; opacity:0.6;">最初に戻る</button>
+    <div class="nav" style="margin-top: 25px;">
+      <button class="btn sub" onclick="renderStart()" style="font-size: 0.9rem; opacity: 0.7;">
+        🏠 最初に戻る
+      </button>
     </div>
   `;
 }
 
 /* =========================================================
-   演出・その他
+   SNSシェア機能
+========================================================= */
+function shareToX(points, percent, status) {
+  const text = encodeURIComponent(
+    `究極の2択ゲームで「${status}」判定！\n` +
+    `Rainyとのシンクロ率: ${percent}% (${points}/32点)\n\n` +
+    `あなたも診断してみよう！✨\n`
+  );
+  const url = encodeURIComponent(window.location.href);
+  const hashtags = encodeURIComponent('究極の2択,性格診断,エニアグラム');
+  window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}&hashtags=${hashtags}`, '_blank');
+}
+
+function shareToLine(points, percent, status) {
+  const text = encodeURIComponent(
+    `究極の2択ゲームで「${status}」判定！\n` +
+    `Rainyとのシンクロ率: ${percent}% (${points}/32点)\n\n` +
+    `あなたも診断してみよう！✨`
+  );
+  const url = encodeURIComponent(window.location.href);
+  window.open(`https://social-plugins.line.me/lineit/share?url=${url}&text=${text}`, '_blank');
+}
+
+/* =========================================================
+   紙吹雪アニメーション
 ========================================================= */
 const canvas = document.getElementById('confetti-canvas');
 const ctx = canvas.getContext('2d');
 let particles = [];
+let animationId = null;
+
 function startConfetti() {
-  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-  particles = Array.from({length:100}, () => ({
-    x: Math.random()*canvas.width, y: Math.random()*canvas.height - canvas.height,
-    r: Math.random()*6+4, d: Math.random()*10,
-    color: `hsl(${Math.random()*360}, 100%, 50%)`,
-    tilt: Math.random()*10-10
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  
+  particles = Array.from({ length: 150 }, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height - canvas.height,
+    r: Math.random() * 6 + 3,
+    d: Math.random() * 10,
+    color: ['#f5b642', '#e50914', '#06C755', '#fff', '#ffd700'][Math.floor(Math.random() * 5)],
+    tilt: Math.random() * 10 - 10,
+    tiltAngle: 0,
+    tiltAngleIncrement: Math.random() * 0.07 + 0.05
   }));
+  
   animateConfetti();
 }
+
 function animateConfetti() {
   if (particles.length === 0) return;
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  particles.forEach(p => {
-    p.y += Math.cos(p.d) + 1 + p.r/2; p.tilt = Math.sin(p.d) * 15;
-    ctx.beginPath(); ctx.lineWidth = p.r; ctx.strokeStyle = p.color;
-    ctx.moveTo(p.x + p.tilt + p.r/4, p.y); ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r/4);
+  
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  particles.forEach((p, index) => {
+    p.tiltAngle += p.tiltAngleIncrement;
+    p.y += (Math.cos(p.d) + 3 + p.r / 2) / 2;
+    p.tilt = Math.sin(p.tiltAngle - index / 3) * 15;
+    
+    ctx.beginPath();
+    ctx.lineWidth = p.r / 2;
+    ctx.strokeStyle = p.color;
+    ctx.moveTo(p.x + p.tilt + p.r / 3, p.y);
+    ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 5);
     ctx.stroke();
-    if(p.y > canvas.height) p.y = -20;
+    
+    if (p.y > canvas.height) {
+      particles.splice(index, 1);
+    }
   });
-  requestAnimationFrame(animateConfetti);
+  
+  if (particles.length > 0) {
+    animationId = requestAnimationFrame(animateConfetti);
+  }
 }
-function stopConfetti() { particles = []; ctx.clearRect(0,0,canvas.width,canvas.height); }
-function escapeHtml(s){ return String(s??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;"); }
+
+function stopConfetti() {
+  particles = [];
+  if (animationId) {
+    cancelAnimationFrame(animationId);
+    animationId = null;
+  }
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+/* =========================================================
+   ユーティリティ
+========================================================= */
+function escapeHtml(s) {
+  return String(s ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+// ウィンドウリサイズ対応
+window.addEventListener('resize', () => {
+  if (particles.length > 0) {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+});
+
+// 初期化
 renderStart();
 </script>
 </body>
