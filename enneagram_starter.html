@@ -1,959 +1,424 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8" />
-<title>究極の2択 性格ゲーム</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+<meta charset="UTF-8"/>
+<title>エニアグラム診断</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  
-  body {
-    margin: 0;
-    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-    background-size: 400% 400%;
-    animation: gradientShift 15s ease infinite;
-    color: #f7f7f7;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    overflow-x: hidden;
-    position: relative;
-  }
-
-  @keyframes gradientShift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
-
-  /* 背景パーティクル */
-  .particles {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 1;
-  }
-
-  .particle {
-    position: absolute;
-    width: 4px;
-    height: 4px;
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 50%;
-    animation: float 20s infinite;
-  }
-
-  @keyframes float {
-    0%, 100% { transform: translateY(0) translateX(0); opacity: 0; }
-    10% { opacity: 1; }
-    90% { opacity: 1; }
-    100% { transform: translateY(-100vh) translateX(100px); opacity: 0; }
-  }
-
-  #confetti-canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 999;
-  }
-
-  .card {
-    background: rgba(24, 24, 24, 0.95);
-    backdrop-filter: blur(10px);
-    border: 2px solid rgba(255, 255, 255, 0.1);
-    border-radius: 24px;
-    padding: 30px 24px;
-    max-width: 580px;
-    width: 95%;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
-    text-align: center;
-    position: relative;
-    z-index: 10;
-    animation: cardEntry 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-
-  @keyframes cardEntry {
-    from { opacity: 0; transform: scale(0.8) translateY(50px); }
-    to { opacity: 1; transform: scale(1) translateY(0); }
-  }
-
-  /* ヘッダー */
-  h1 {
-    margin: 0.2em 0 0.6em;
-    font-size: 1.6rem;
-    letter-spacing: 0.05em;
-    background: linear-gradient(135deg, #f5b642, #e50914);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    font-weight: 900;
-    text-shadow: 0 0 30px rgba(245, 182, 66, 0.5);
-    animation: titleGlow 2s ease-in-out infinite;
-  }
-
-  @keyframes titleGlow {
-    0%, 100% { filter: brightness(1); }
-    50% { filter: brightness(1.3); }
-  }
-
-  .subtitle {
-    color: #ccc;
-    font-size: 0.95rem;
-    line-height: 1.6;
-    margin: 0.8em 0;
-  }
-
-  /* プログレスバー */
-  .progress-wrapper {
-    margin: 20px 0 10px;
-  }
-
-  .progress-bar-container {
-    background: rgba(255, 255, 255, 0.1);
-    height: 10px;
-    border-radius: 10px;
-    overflow: hidden;
-    position: relative;
-    margin-bottom: 8px;
-  }
-
-  .progress-bar-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #e50914, #f5b642);
-    transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-    border-radius: 10px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .progress-bar-fill::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-    animation: shimmer 2s infinite;
-  }
-
-  @keyframes shimmer {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
-  }
-
-  .progress-text {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.85rem;
-    color: #aaa;
-  }
-
-  .mode-badge {
-    display: inline-block;
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 700;
-    margin-bottom: 15px;
-    animation: badgePulse 2s ease-in-out infinite;
-  }
-
-  .mode-hell {
-    background: linear-gradient(135deg, #e50914, #8b0000);
-    box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4);
-  }
-
-  .mode-heaven {
-    background: linear-gradient(135deg, #f5b642, #ffd700);
-    box-shadow: 0 4px 15px rgba(245, 182, 66, 0.4);
-    color: #111;
-  }
-
-  @keyframes badgePulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-  }
-
-  /* 質問エリア */
-  .question {
-    margin: 1.5em 0;
-    font-size: 1.15rem;
-    line-height: 1.6;
-    font-weight: 700;
-    min-height: 4em;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 15px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 15px;
-    animation: questionSlide 0.5s ease-out;
-  }
-
-  @keyframes questionSlide {
-    from { opacity: 0; transform: translateX(-30px); }
-    to { opacity: 1; transform: translateX(0); }
-  }
-
-  /* 選択肢 */
-  .choices {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    margin: 20px 0;
-  }
-
-  .btn {
-    border: none;
-    border-radius: 999px;
-    padding: 18px 22px;
-    font-size: 1.05rem;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    -webkit-tap-highlight-color: transparent;
-    text-decoration: none;
-    font-weight: 600;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .btn::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.4);
-    transform: translate(-50%, -50%);
-    transition: width 0.6s, height 0.6s;
-  }
-
-  .btn:active::before {
-    width: 300px;
-    height: 300px;
-  }
-
-  .btn:active {
-    transform: scale(0.95);
-  }
-
-  .choice {
-    background: linear-gradient(135deg, rgba(37, 37, 37, 0.8), rgba(50, 50, 50, 0.8));
-    color: #fff;
-    border: 2px solid rgba(255, 255, 255, 0.15);
-    text-align: left;
-    line-height: 1.5;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    position: relative;
-    z-index: 1;
-  }
-
-  .choice:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
-    border-color: rgba(255, 255, 255, 0.3);
-  }
-
-  .choice.selectedA {
-    border-color: #f5b642;
-    background: linear-gradient(135deg, rgba(245, 182, 66, 0.3), rgba(255, 215, 0, 0.2));
-    box-shadow: 0 0 30px rgba(245, 182, 66, 0.5);
-    animation: selectedPulse 0.5s ease-out;
-  }
-
-  .choice.selectedB {
-    border-color: #e50914;
-    background: linear-gradient(135deg, rgba(229, 9, 20, 0.3), rgba(139, 0, 0, 0.2));
-    box-shadow: 0 0 30px rgba(229, 9, 20, 0.5);
-    animation: selectedPulse 0.5s ease-out;
-  }
-
-  @keyframes selectedPulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
-  }
-
-  .main {
-    background: linear-gradient(135deg, #e50914, #f5b642);
-    color: #fff;
-    font-weight: 700;
-    width: 100%;
-    display: block;
-    box-shadow: 0 6px 20px rgba(229, 9, 20, 0.4);
-    font-size: 1.15rem;
-    padding: 20px;
-  }
-
-  .main:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 30px rgba(229, 9, 20, 0.6);
-  }
-
-  .line-btn {
-    background: linear-gradient(135deg, #06C755, #00a843);
-    color: #fff;
-    font-weight: 700;
-    width: 100%;
-    margin-bottom: 15px;
-    display: block;
-    text-align: center;
-    line-height: 1.3;
-    padding: 20px;
-    box-shadow: 0 6px 20px rgba(6, 199, 85, 0.4);
-  }
-
-  .line-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 30px rgba(6, 199, 85, 0.6);
-  }
-
-  .sub {
-    background: rgba(42, 42, 42, 0.8);
-    color: #fff;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    flex: 1;
-  }
-
-  .sub:hover {
-    background: rgba(60, 60, 60, 0.9);
-    border-color: rgba(255, 255, 255, 0.4);
-  }
-
-  .danger {
-    background: linear-gradient(135deg, #e50914, #8b0000);
-    color: #fff;
-    font-weight: 700;
-    width: 100%;
-    box-shadow: 0 6px 20px rgba(229, 9, 20, 0.4);
-  }
-
-  .danger:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-    transform: none;
-  }
-
-  .danger:hover:not(:disabled) {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 30px rgba(229, 9, 20, 0.6);
-  }
-
-  .nav {
-    display: flex;
-    gap: 12px;
-    margin-top: 15px;
-    flex-direction: column;
-  }
-
-  /* 画像 */
-  img.hero {
-    width: 100%;
-    max-width: 300px;
-    display: block;
-    margin: 15px auto;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    animation: imageFloat 3s ease-in-out infinite;
-  }
-
-  @keyframes imageFloat {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-  }
-
-  /* 結果画面の円グラフ */
-  .chart-container {
-    position: relative;
-    width: 200px;
-    height: 200px;
-    margin: 25px auto;
-  }
-
-  .chart-svg {
-    transform: rotate(-90deg);
-    filter: drop-shadow(0 0 15px currentColor);
-  }
-
-  .chart-bg {
-    fill: none;
-    stroke: rgba(255, 255, 255, 0.1);
-    stroke-width: 18;
-  }
-
-  .chart-bar {
-    fill: none;
-    stroke-width: 18;
-    stroke-linecap: round;
-    transition: stroke-dasharray 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-
-  .chart-text {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-weight: 900;
-    font-size: 2.5rem;
-    text-shadow: 0 0 20px currentColor;
-    animation: scoreCount 1.5s ease-out;
-  }
-
-  @keyframes scoreCount {
-    from { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
-    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-  }
-
-  /* ランクバッジ */
-  .rank-badge {
-    display: inline-block;
-    padding: 15px 30px;
-    border-radius: 50px;
-    font-size: 1.3rem;
-    font-weight: 900;
-    margin: 20px auto;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    animation: rankEntry 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-
-  @keyframes rankEntry {
-    from { opacity: 0; transform: scale(0.5) rotate(-10deg); }
-    to { opacity: 1; transform: scale(1) rotate(0); }
-  }
-
-  .rank-gold {
-    background: linear-gradient(135deg, #f5b642, #ffd700);
-    color: #111;
-    box-shadow: 0 10px 40px rgba(245, 182, 66, 0.6);
-  }
-
-  .rank-red {
-    background: linear-gradient(135deg, #e50914, #8b0000);
-    color: #fff;
-    box-shadow: 0 10px 40px rgba(229, 9, 20, 0.6);
-  }
-
-  .rank-normal {
-    background: linear-gradient(135deg, #666, #999);
-    color: #fff;
-    box-shadow: 0 10px 40px rgba(100, 100, 100, 0.4);
-  }
-
-  /* ミッションボックス */
-  .mission-box {
-    background: rgba(20, 20, 20, 0.95);
-    border: 2px solid #f5b642;
-    padding: 25px;
-    border-radius: 15px;
-    margin: 25px 0;
-    text-align: left;
-    box-shadow: 0 0 30px rgba(245, 182, 66, 0.3);
-    animation: missionPulse 2s ease-in-out infinite;
-  }
-
-  @keyframes missionPulse {
-    0%, 100% { box-shadow: 0 0 30px rgba(245, 182, 66, 0.3); }
-    50% { box-shadow: 0 0 50px rgba(245, 182, 66, 0.6); }
-  }
-
-  /* トランジション画面 */
-  .transition-content {
-    animation: transitionZoom 1s ease-out;
-  }
-
-  @keyframes transitionZoom {
-    0% { opacity: 0; transform: scale(1.5) rotate(5deg); }
-    100% { opacity: 1; transform: scale(1) rotate(0); }
-  }
-
-  /* レスポンシブ */
-  @media (max-width: 600px) {
-    h1 { font-size: 1.4rem; }
-    .question { font-size: 1.05rem; min-height: 3.5em; }
-    .btn { font-size: 1rem; padding: 16px 20px; }
-    .chart-container { width: 180px; height: 180px; }
-    .chart-text { font-size: 2rem; }
-  }
-
-  /* シェアボタン */
-  .share-section {
-    margin-top: 30px;
-    padding-top: 25px;
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
-  }
-
-  .share-title {
-    font-size: 1.1rem;
-    font-weight: 700;
-    margin-bottom: 15px;
-    color: #f5b642;
-  }
-
-  .share-buttons {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-
-  .share-btn {
-    flex: 1;
-    min-width: 140px;
-    padding: 14px 20px;
-    border-radius: 50px;
-    text-decoration: none;
-    color: #fff;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    transition: all 0.3s ease;
-  }
-
-  .share-x {
-    background: linear-gradient(135deg, #000, #333);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-  }
-
-  .share-line {
-    background: linear-gradient(135deg, #06C755, #00a843);
-    box-shadow: 0 4px 15px rgba(6, 199, 85, 0.4);
-  }
-
-  .share-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
-  }
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:linear-gradient(135deg,#0d1b2a,#1b2838,#0f2027);
+  background-size:400% 400%;
+  animation:bg 15s ease infinite;
+  color:#f0f0f0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px;
+}
+@keyframes bg{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.card{
+  background:rgba(15,25,40,0.97);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:24px;padding:32px 24px;
+  max-width:580px;width:100%;
+  box-shadow:0 20px 60px rgba(0,0,0,0.8);
+  text-align:center;
+}
+h1{
+  font-size:1.5rem;font-weight:900;
+  background:linear-gradient(135deg,#34d399,#60a5fa);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;margin-bottom:8px;line-height:1.3;
+}
+h2{
+  font-size:1.3rem;font-weight:900;
+  background:linear-gradient(135deg,#f472b6,#a78bfa);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;margin-bottom:8px;line-height:1.3;
+}
+.subtitle{color:#aaa;font-size:.92rem;line-height:1.6;margin-bottom:20px}
+.phase-badge{
+  display:inline-block;padding:4px 14px;border-radius:20px;
+  font-size:.78rem;font-weight:700;margin-bottom:12px;
+}
+.phase1{background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.3);color:#6ee7b7}
+.phase2{background:rgba(244,114,182,.15);border:1px solid rgba(244,114,182,.3);color:#f9a8d4}
+.scene-label{
+  display:inline-block;background:rgba(255,255,255,.06);
+  border-radius:20px;padding:4px 13px;font-size:.78rem;color:#94a3b8;margin-bottom:10px;
+}
+.progress-wrap{margin-bottom:16px}
+.progress-bg{background:rgba(255,255,255,.08);height:7px;border-radius:7px;overflow:hidden;margin-bottom:5px}
+.progress-fill{height:100%;border-radius:7px;transition:width .4s ease}
+.fill1{background:linear-gradient(90deg,#34d399,#60a5fa)}
+.fill2{background:linear-gradient(90deg,#f472b6,#a78bfa)}
+.progress-text{display:flex;justify-content:space-between;font-size:.76rem;color:#666}
+.question{
+  font-size:1.02rem;font-weight:700;line-height:1.7;
+  padding:15px;background:rgba(255,255,255,.04);
+  border-radius:13px;margin-bottom:16px;
+  min-height:62px;display:flex;align-items:center;justify-content:center;
+}
+.choices{display:flex;flex-direction:column;gap:9px;margin-bottom:16px}
+.choice-btn{
+  background:rgba(30,45,60,.8);border:2px solid rgba(255,255,255,.08);
+  border-radius:13px;color:#e2e8f0;padding:13px 15px;
+  font-size:.91rem;text-align:left;cursor:pointer;
+  transition:all .22s ease;line-height:1.5;
+}
+.choice-btn:hover{border-color:rgba(52,211,153,.4);background:rgba(52,211,153,.07);transform:translateY(-2px)}
+.choice-btn:hover.p2{border-color:rgba(244,114,182,.4);background:rgba(244,114,182,.07)}
+.sel-A{border-color:#f87171!important;background:rgba(248,113,113,.18)!important;box-shadow:0 0 15px rgba(248,113,113,.22)}
+.sel-B{border-color:#fb923c!important;background:rgba(251,146,60,.18)!important;box-shadow:0 0 15px rgba(251,146,60,.22)}
+.sel-C{border-color:#60a5fa!important;background:rgba(96,165,250,.18)!important;box-shadow:0 0 15px rgba(96,165,250,.22)}
+.sel-D{border-color:#a78bfa!important;background:rgba(167,139,250,.18)!important;box-shadow:0 0 15px rgba(167,139,250,.22)}
+.nav{display:flex;gap:10px}
+.btn{border:none;border-radius:50px;padding:13px 18px;font-size:.96rem;font-weight:700;cursor:pointer;transition:all .22s ease;flex:1}
+.btn-next1{background:linear-gradient(135deg,#34d399,#60a5fa);color:#fff;box-shadow:0 4px 14px rgba(52,211,153,.3)}
+.btn-next1:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 22px rgba(52,211,153,.5)}
+.btn-next2{background:linear-gradient(135deg,#f472b6,#a78bfa);color:#fff;box-shadow:0 4px 14px rgba(244,114,182,.3)}
+.btn-next2:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 22px rgba(244,114,182,.5)}
+.btn-next1:disabled,.btn-next2:disabled{opacity:.3;cursor:not-allowed}
+.btn-back{background:rgba(50,65,80,.8);color:#bbb;border:1px solid rgba(255,255,255,.1)}
+.btn-back:hover{background:rgba(70,85,100,.9)}
+.btn-start{width:100%;font-size:1.08rem;padding:17px}
+.btn-restart{background:rgba(50,65,80,.8);color:#bbb;border:1px solid rgba(255,255,255,.1);width:100%;margin-top:11px;padding:13px}
+/* センター結果中間画面 */
+.center-result-box{background:rgba(255,255,255,.04);border-radius:16px;padding:20px;margin:16px 0;text-align:left}
+.center-badge{display:inline-block;padding:8px 22px;border-radius:50px;font-size:1.1rem;font-weight:900;margin:10px 0 14px;letter-spacing:.04em}
+.badge-i{background:linear-gradient(135deg,#f87171,#dc2626);color:#fff;box-shadow:0 5px 15px rgba(248,113,113,.4)}
+.badge-f{background:linear-gradient(135deg,#fb923c,#ea580c);color:#fff;box-shadow:0 5px 15px rgba(251,146,60,.4)}
+.badge-t{background:linear-gradient(135deg,#60a5fa,#2563eb);color:#fff;box-shadow:0 5px 15px rgba(96,165,250,.4)}
+.score-bars{margin:14px 0;text-align:left}
+.score-row{margin-bottom:11px}
+.score-label{display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:4px;color:#94a3b8}
+.score-bg{background:rgba(255,255,255,.07);height:8px;border-radius:8px;overflow:hidden}
+.score-bar{height:100%;border-radius:8px;transition:width 1s cubic-bezier(.34,1.56,.64,1)}
+.bar-i{background:linear-gradient(90deg,#f87171,#dc2626)}
+.bar-f{background:linear-gradient(90deg,#fb923c,#ea580c)}
+.bar-t{background:linear-gradient(90deg,#60a5fa,#2563eb)}
+.next-hint{background:rgba(244,114,182,.08);border:1px solid rgba(244,114,182,.2);border-radius:12px;padding:13px 15px;font-size:.86rem;color:#f9a8d4;line-height:1.7;margin:14px 0}
+/* 最終結果 */
+.type-card{background:rgba(255,255,255,.05);border-radius:16px;padding:18px;text-align:left;margin:12px 0}
+.type-card.rank1{border:2px solid rgba(250,204,21,.4);box-shadow:0 0 20px rgba(250,204,21,.1)}
+.type-card.rank2{border:1px solid rgba(255,255,255,.12)}
+.rank-label{font-size:.78rem;font-weight:700;margin-bottom:6px}
+.rank1 .rank-label{color:#fcd34d}
+.rank2 .rank-label{color:#94a3b8}
+.type-name{font-size:1.1rem;font-weight:900;margin-bottom:6px}
+.type-desc{font-size:.88rem;color:#d1d5db;line-height:1.7}
+.type-kw{font-size:.82rem;color:#a78bfa;margin-top:8px}
+.final-hint{background:rgba(52,211,153,.07);border:1px solid rgba(52,211,153,.2);border-radius:12px;padding:13px 15px;font-size:.85rem;color:#6ee7b7;line-height:1.7;margin-top:14px}
 </style>
 </head>
-
 <body>
-<!-- 背景パーティクル -->
-<div class="particles" id="particles"></div>
-
-<!-- 紙吹雪キャンバス -->
-<canvas id="confetti-canvas"></canvas>
-
-<!-- メインカード -->
 <div class="card" id="app"></div>
-
 <script>
-/* =========================================================
-   基本設定 & リンク
-========================================================= */
-const STICKER_URL = "https://line.me/S/shop/sticker/author/5729491";
-const ENNEA_URL = "https://ennea5w4.github.io/enneagram-test/";
-
-const dogImages = {
-  1: "img/dog_type01.png", 2: "img/dog_type02.png", 3: "img/dog_type03.png",
-  4: "img/dog_type04.png", 5: "img/dog_type05.png", 6: "img/dog_type06.png",
-  7: "img/dog_type07.png", 8: "img/dog_type08.png", 9: "img/dog_type09.png"
-};
-function getDogImg(t) { return dogImages[t] || dogImages[5]; }
-
-/* =========================================================
-   データ（2択32問）
-========================================================= */
-const questions32 = [
-  {q:"嫌われない人生 vs なめられない人生",A:"嫌われない",B:"なめられない"},
-  {q:"ずっと謝り続ける vs ずっと言い訳し続ける",A:"謝り続ける",B:"言い訳し続ける"},
-  {q:"一生気まずい沈黙 vs 一生浅い雑談",A:"気まずい沈黙",B:"浅い雑談"},
-  {q:"毎日上司に詰められる vs 毎日部下に裏切られる",A:"上司に詰められる",B:"部下に裏切られる"},
-  {q:"一生頼れない vs 一生頼られすぎる",A:"頼れない",B:"頼られすぎる"},
-  {q:"一生本音しか言えない vs 一生ウソしか言えない",A:"本音しか言えない",B:"ウソしか言えない"},
-  {q:"一生予定が狂う vs 一生予定通りで退屈",A:"予定が狂う",B:"予定通りで退屈"},
-  {q:"一生誤解され続ける vs 一生期待され続ける",A:"誤解され続ける",B:"期待され続ける"},
-  {q:"一生選択を迫られる vs 一生選択肢がない",A:"選択を迫られる",B:"選択肢がない"},
-  {q:"一生相談されない vs 一生相談され続ける",A:"相談されない",B:"相談され続ける"},
-  {q:"一生評価されない努力 vs 一生評価される実力不足",A:"評価されない努力",B:"評価される実力不足"},
-  {q:"一生予定を守らされる vs 一生予定を守られない",A:"守らされる",B:"守られない"},
-  {q:"一生人に合わせ続ける vs 一生人に合わせてもらう",A:"合わせ続ける",B:"合わせてもらう"},
-  {q:"一生安心できない成功 vs 一生安心だけの失敗",A:"安心できない成功",B:"安心だけの失敗"},
-  {q:"一生注目され続ける vs 一生存在感ゼロ",A:"注目され続ける",B:"存在感ゼロ"},
-  {q:"一生誰かに依存される vs 一生誰にも頼られない",A:"誰かに依存される",B:"誰にも頼られない"},
-  {q:"一生安心 vs 一生ワクワク",A:"安心",B:"ワクワク"},
-  {q:"一生理解される vs 一生自由でいられる",A:"理解される",B:"自由でいられる"},
-  {q:"一生お金に困らない vs 一生時間に追われない",A:"お金に困らない",B:"時間に追われない"},
-  {q:"称賛される天才 vs 愛される凡人",A:"称賛される天才",B:"愛される凡人"},
-  {q:"一生自信がある vs 一生不安がない",A:"自信がある",B:"不安がない"},
-  {q:"一生心が穏やか vs 一生感動が多い",A:"心が穏やか",B:"感動が多い"},
-  {q:"一生好きなことだけ vs 一生得意なことだけ",A:"好きなことだけ",B:"得意なことだけ"},
-  {q:"一生ひとり時間たっぷり vs 一生仲間と一緒",A:"ひとり時間",B:"仲間と一緒"},
-  {q:"一生今のままでOKと言われる vs 一生もっと期待される",A:"今のままでOK",B:"もっと期待される"},
-  {q:"一生失敗しない vs 一生後悔しない",A:"失敗しない",B:"後悔しない"},
-  {q:"一生誰かの一番 vs 一生みんなに好かれる",A:"誰かの一番",B:"みんなに好かれる"},
-  {q:"一生自分を信じられる vs 一生人を信じられる",A:"自分を信じられる",B:"人を信じられる"},
-  {q:"一生必要とされる vs 一生尊敬される",A:"必要とされる",B:"尊敬される"},
-  {q:"一生穏やかな日常 vs 一生忘れられない瞬間",A:"穏やかな日常",B:"忘れられない瞬間"},
-  {q:"一生選ばれる側 vs 一生選ぶ側",A:"選ばれる側",B:"選ぶ側"},
-  {q:"一生自分を好きでいられる vs 一生愛され続ける",A:"自分を好きでいられる",B:"愛され続ける"}
+/* ============================================================
+   PHASE 1: センター診断（20問）
+============================================================ */
+const P1 = [
+  {scene:"🚶 日常の場面",q:"並んでいたら横入りされた。あなたの最初の反応は？",A:"むっとして「並んでますよ」と声をかける",B:"見て見ぬふりをするが、モヤモヤが残る",C:"「注意したら揉めるかも」と頭の中でシミュレーションしてしまう"},
+  {scene:"📱 日常の場面",q:"LINEを送ったのに、既読がつかない。どう感じる？",A:"特に気にしない。相手にも事情があるだろうと思う",B:"「嫌われたかな」「何か気に障ることを言ったかな」と考えてしまう",C:"「何かあったのかな」と心配になる。最悪のケースが浮かぶ"},
+  {scene:"🗣️ 日常の場面",q:"グループの話し合いで自分の意見が無視された。あなたは？",A:"もう一度、はっきり自分の意見を言おうとする",B:"「受け入れてもらえなかった」と傷ついて、黙ってしまう",C:"「なぜ通らなかったのか」を頭の中で分析し始める"},
+  {scene:"🏠 日常の場面",q:"家に帰ったら、部屋が散らかっていた（家族・同居人が原因）。まず何をする？",A:"片付けながら、相手に「次からはやってほしい」と伝える",B:"波風を立てたくないから自分で片付ける",C:"「どうすれば繰り返さないか」を考えながら静かに片付ける"},
+  {scene:"🙋 日常の場面",q:"カフェで注文と違うものが来た。あなたはどうする？",A:"すぐ店員を呼んで、穏やかに、でも確実に伝える",B:"「まあいいか」と思いながらも、なんとなくモヤモヤする",C:"「言うべきか言わざるべきか」少し迷ってから店員に伝える"},
+  {scene:"👥 日常の場面",q:"久しぶりの集まりで、自分だけ話の輪に入れなかった。どう感じる？",A:"「自分から話しかければいい」と思い、積極的に動こうとする",B:"「自分は必要とされていないのかも」と落ち込む",C:"「なぜ話が合わなかったのか」を後で振り返って考える"},
+  {scene:"📋 日常の場面",q:"誰かに頼まれた用事を忘れてしまった。あなたはどう感じる？",A:"すぐ謝って、できる範囲で今すぐ対処しようとする",B:"相手をがっかりさせてしまったことが、すごく気になる",C:"「なぜ忘れたのか」「次はどうすれば防げるか」を考える"},
+  {scene:"🚗 日常の場面",q:"急いでいるのに道が混んでいる。あなたはどうなりやすい？",A:"イライラして、別ルートを探したり、何か行動を起こそうとする",B:"「遅刻したら相手にどう思われるか」が気になる",C:"「この道を選んだのは失敗だった」と自己反省が始まる"},
+  {scene:"💬 日常の場面",q:"SNSに投稿したら、予想外に反応がなかった。どう感じる？",A:"特に気にならない。発信すること自体が目的",B:"「つまらなかったのかな」「センスがないと思われたかも」と気になる",C:"「いつ投稿するのがベストだったか」を分析する"},
+  {scene:"🎯 日常の場面",q:"自分が頑張ったことを、誰にも気づかれなかった。どう感じる？",A:"結果が出ればそれでいい。人の評価はあまり関係ない",B:"認めてほしかったという気持ちが、じわじわ出てくる",C:"「もっとうまくアピールする方法があったかも」と考える"},
+  {scene:"🤝 日常の場面",q:"急に予定をキャンセルされた。あなたは？",A:"「なんで急にキャンセルするんだ」と内心腹が立つ",B:"「私のことが嫌いになったのかも」と不安になる",C:"「何か事情があるのかな」と心配しながら、次の予定を組み直す"},
+  {scene:"🏃 日常の場面",q:"何か新しいことを始めようとするとき、あなたはどうしやすい？",A:"まず動いてみる。考えるより先に体が動く",B:"「うまくできるかな」「周りにどう見られるか」が気になる",C:"十分に調べてから始めたい。準備が整わないと動けない"},
+  {scene:"😤 日常の場面",q:"理不尽なルールや決まりに従わなければならないとき、どう感じる？",A:"納得できないと、反発心が出る。場合によっては声に出す",B:"「みんながそうしているから」と従うが、本音では割り切れない",C:"「なぜこのルールがあるのか」を調べたり、意味を理解しようとする"},
+  {scene:"🌧️ 日常の場面",q:"予定していたことが急に変更になった。あなたの最初の感情は？",A:"「また変わったのか」という苛立ち",B:"「また迷惑をかけてしまうかも」という申し訳なさ",C:"「どうなるんだろう」という漠然とした不安"},
+  {scene:"🔍 日常の場面",q:"大事な場面で「あなたはどう思いますか？」と突然聞かれた。",A:"正直に思ったことをズバリ言う",B:"相手の期待に応えられるか考えながら、慎重に答える",C:"まず状況を整理してから答えたい。即答は難しい"},
+  {scene:"🎁 日常の場面",q:"プレゼントをもらった。一番うれしいのはどんなとき？",A:"「自分のことをよく分かっているな」と感じるものをもらったとき",B:"「こんなに気にかけてもらっていたんだ」と感じるものをもらったとき",C:"「これは役に立つ」「よく考えられている」と感じるものをもらったとき"},
+  {scene:"😶 日常の場面",q:"誰かに「最近どう？」と聞かれた。本音では何を感じる？",A:"「まあ普通かな」とシンプルに答えたい",B:"「どう答えればいい印象を与えられるか」が少し頭をよぎる",C:"「どこまで話すべきか」を一瞬考える"},
+  {scene:"💡 日常の場面",q:"「自分はこれでよかったのかな」と思う瞬間、何がきっかけになりやすい？",A:"思い通りにいかなかったとき・納得できない出来事があったとき",B:"誰かと自分を比べたとき・人から評価されなかったとき",C:"将来や先行きが見えなくなったとき・不確かな状況に置かれたとき"},
+  {scene:"🌙 日常の場面",q:"夜、なかなか眠れないとき、頭の中にあるのは？",A:"今日うまくいかなかったことへの不満・明日やること",B:"「あの人に悪く思われていないかな」という対人関係の心配",C:"「もし〇〇になったらどうしよう」という将来への不安"},
+  {scene:"🏁 日常の場面",q:"何かが終わったあと、真っ先に感じるのは？",A:"「次は何をしようか」というエネルギーの向かい先",B:"「ちゃんとできていたかな」「どう思われたかな」という振り返り",C:"「終わった…」という安堵と、次への準備を始めたい気持ち"}
 ];
-const rainyAnswers32 = ["B","A","A","A","A","A","B","A","A","A","A","A","A","A","B","B","A","B","B","A","B","A","A","A","A","B","B","B","B","A","B","A"];
+// A=本能 B=感情 C=思考
+const P1MAP={A:"instinct",B:"feeling",C:"thinking"};
 
-let index32 = 0;
-let ans32 = [];
+const CI={
+  instinct:{name:"🔴 本能センター",types:"タイプ 8・9・1",badge:"badge-i",bar:"bar-i",emotion:"怒り",
+    desc:"直感や行動を重視し、状況に対して「まず動く」反応が出やすいタイプです。エネルギーの源は自律と正義感にあります。"},
+  feeling:{name:"🟠 感情センター",types:"タイプ 2・3・4",badge:"badge-f",bar:"bar-f",emotion:"恥",
+    desc:"人との関係性や承認を重視し、「人にどう思われるか」が自然と気になるタイプです。感情の感度が高く、人とのつながりが力の源です。"},
+  thinking:{name:"🔵 思考センター",types:"タイプ 5・6・7",badge:"badge-t",bar:"bar-t",emotion:"不安",
+    desc:"情報と計画を重視し、「なぜ・どうなるか」を自然と考えるタイプです。見通しが立つと安心でき、準備と分析が力の源です。"}
+};
 
-/* =========================================================
-   背景パーティクル生成
-========================================================= */
-function createParticles() {
-  const container = document.getElementById('particles');
-  for (let i = 0; i < 30; i++) {
-    const particle = document.createElement('div');
-    particle.className = 'particle';
-    particle.style.left = Math.random() * 100 + '%';
-    particle.style.animationDelay = Math.random() * 20 + 's';
-    particle.style.animationDuration = (15 + Math.random() * 10) + 's';
-    container.appendChild(particle);
-  }
-}
-createParticles();
+/* ============================================================
+   PHASE 2: タイプ診断（18問・全タイプ共通）
+   各設問で9タイプのいずれかに1点加算
+============================================================ */
+const P2 = [
+  {q:"仕事で一番モチベーションが上がるのはどれ？",
+   opts:["きちんと正しいことができたとき","誰かの役に立てたとき","目標を達成して評価されたとき","自分だけの独創的な成果を出せたとき","深く専門的なことを理解できたとき","信頼できる仲間と安定して進められたとき","新しくて楽しいことに挑戦できたとき","自分の力で大きな影響を与えられたとき","みんなが仲良く穏やかに進められたとき"],
+   types:[1,2,3,4,5,6,7,8,9]},
+  {q:"ストレスを感じたとき、あなたが一番やりがちなことは？",
+   opts:["完璧にやり直そうとして、さらに疲弊する","もっと人の役に立とうとして、無理をする","さらに仕事や目標に没頭する","感情が揺れて、自分の世界に引きこもる","情報収集や分析にさらに没頭する","心配が増えて、確認や準備が止まらなくなる","楽しいことを探して、問題から目を逸らす","支配的・攻撃的になる","ぼーっとして、何もしたくなくなる"],
+   types:[1,2,3,4,5,6,7,8,9]},
+  {q:"他の人から「あなたって〇〇だよね」と言われてうれしいのはどれ？",
+   opts:["誠実で真面目だね","思いやりがあるね","デキる人だね","個性的でセンスがあるね","博識で賢いね","信頼できるね","明るくて楽しいね","頼もしいね","いると場が和むね"],
+   types:[1,2,3,4,5,6,7,8,9]},
+  {q:"自分が一番許せないのはどれ？",
+   opts:["不正直・ずるいこと","感謝されない・無視されること","無能・失敗すること","平凡・個性のないこと","無知・浅いこと","裏切り・約束破り","退屈・制限されること","支配・弱さを見せること","対立・争いごと"],
+   types:[1,2,3,4,5,6,7,8,9]},
+  {q:"理想の休日に一番近いのはどれ？",
+   opts:["やるべきことをきちんと片付けてから、落ち着いて過ごす","大切な人と過ごして、喜ばれることをする","充実した予定をこなして達成感を得る","一人でクリエイティブなことに没頭する","興味ある分野を深く調べたり、本を読んだりする","いつものメンバーと安心して過ごす","新しい場所や体験を楽しむ","思いっきり動いて、エネルギーを発散する","何もせず、ゆっくりのんびりする"],
+   types:[1,2,3,4,5,6,7,8,9]},
+  {q:"誰かと意見が対立したとき、あなたはどうしやすい？",
+   opts:["自分の正しさを根拠を持って説明する","相手の気持ちを優先して、自分が引く","相手を説得して、自分の意見を通す","「分かってもらえない」と傷ついて黙る","論理的に議論して、最善の答えを探す","信頼できる人に意見を求めてから動く","話題を変えるか、明るく和らげようとする","はっきり自分の意見を主張して、引かない","対立を避けて、どちらにも寄り添おうとする"],
+   types:[1,2,3,4,5,6,7,8,9]},
+  {q:"仕事や活動で自然と担う役割はどれ？",
+   opts:["品質チェック・ルール整備役","サポート・気配り役","リーダー・旗振り役","クリエイター・表現役","専門家・調査役","安全管理・サポート役","アイデア・企画役","指揮・決断役","調整・まとめ役"],
+   types:[1,2,3,4,5,6,7,8,9]},
+  {q:"自分の「弱さ」として一番当てはまるのはどれ？",
+   opts:["完璧主義で自分や人に厳しすぎる","NOと言えず自己犠牲しがち","失敗を恐れて本音を隠しがち","感情の波が激しく落ち込みやすい","人との距離を置きすぎる","不安が強く、決断を先延ばしにしがち","飽きっぽく、継続が苦手","強引になって対立を生みやすい","優柔不断で自分の意見を言いにくい"],
+   types:[1,2,3,4,5,6,7,8,9]},
+  {q:"幼い頃や今も、心のどこかで感じていることに近いのはどれ？",
+   opts:["もっとちゃんとしなければ、という緊張感","愛されるために、役に立たなければという感覚","成功しなければ、認められないという焦り","自分は何か大切なものが欠けているという孤独感","一人でいた方が安心、という感覚","何か悪いことが起きるかもしれない、という不安感","もっと楽しいことがあるはず、という期待感","弱みを見せてはいけない、という緊張感","争いを起こしてはいけない、という緊張感"],
+   types:[1,2,3,4,5,6,7,8,9]},
+  {q:"「充実している」と感じる瞬間に一番近いのはどれ？",
+   opts:["物事が正しく、きれいに整っているとき","誰かに「ありがとう」と言われたとき","目標を達成して周囲に認められたとき","自分らしい表現ができたとき","深く集中して何かを理解できたとき","信頼できる環境で安心して動けているとき","楽しいことや新しい体験に夢中になっているとき","自分の力で何かを動かせたとき","みんなが和やかで、争いのない時間にいるとき"],
+   types:[1,2,3,4,5,6,7,8,9]},
+  {q:"人間関係で一番大切にしていることは？",
+   opts:["誠実さ・正直さ","思いやり・温かさ","信頼・実績","共感・深いつながり","知的な刺激・尊重","安心・一貫性","楽しさ・自由","対等さ・強さへの敬意","調和・穏やかさ"],
+   types:[1,2,3,4,5,6,7,8,9]},
+  {q:"誰かに何かを頼まれたとき、断れないのはどんな理由から？",
+   opts:["断るのは無責任だと感じるから","断ったら相手を傷つけると思うから","断ると評価が下がると感じるから","断ると孤立しそうで怖いから","断り方が分からず、つい引き受けてしまうから","断って関係が壊れるのが不安だから","その場の流れで断れなくなるから","弱く見られたくないから引き受けてしまうから","相手が困るのを見ていられないから"],
+   types:[1,2,3,4,5,6,7,8,9]},
+  {q:"自分が一番成長できると感じる環境は？",
+   opts:["高い基準と規律がある環境","人に必要とされ、感謝される環境","成果が評価され、競争できる環境","自分の感性や個性を発揮できる環境","専門性を深められる静かな環境","信頼できる仲間と安定して動ける環境","自由で変化に富んだ環境","自分が主導権を持って動ける環境","争いがなく、穏やかに協力できる環境"],
+   types:[1,2,3,4,5,6,7,8,9]},
+  {q:"「もっと〇〇できたらいいのに」と思うことに近いのはどれ？",
+   opts:["もっと完璧にできたら","もっと人に愛されたら","もっと成功できたら","もっと自分を理解してもらえたら","もっと知識・能力があったら","もっと安心できる環境があったら","もっと自由に楽しめたら","もっと強くコントロールできたら","もっと平和に過ごせたら"],
+   types:[1,2,3,4,5,6,7,8,9]},
+  {q:"次の言葉の中で、一番「自分っぽい」と感じるのはどれ？",
+   opts:["誠実・正確・改善","献身・共感・温かさ","達成・効率・成功","独自・感性・深み","分析・探求・専門","忠実・慎重・安心","冒険・楽観・自由","力強さ・決断・影響","調和・穏やか・受容"],
+   types:[1,2,3,4,5,6,7,8,9]},
+  {q:"仕事でミスをしたとき、一番感じる感情に近いのはどれ？",
+   opts:["「なんて不完全なんだ」という自己批判","「人を失望させてしまった」という罪悪感","「評価が下がるかも」という焦り","「やっぱり自分はダメだ」という落ち込み","「なぜこうなったか分析しなければ」という冷静さ","「最悪の事態になるかも」という不安","「まあ次に挽回すればいい」という切り替え","「こんなことで負けない」という反骨心","「波風を立てないように早く収めたい」という気持ち"],
+   types:[1,2,3,4,5,6,7,8,9]},
+  {q:"「これだけは譲れない」と感じることに一番近いのはどれ？",
+   opts:["正しさと誠実さ","人を大切にすること","結果と評価","自分らしさと独自性","自分の時間と専門性","安全と信頼できる仲間","自由と楽しさ","自律と誰にも支配されないこと","平和と争いのない日常"],
+   types:[1,2,3,4,5,6,7,8,9]},
+  {q:"ふと「自分らしい」と感じる瞬間はどれ？",
+   opts:["きちんとやるべきことをやり遂げたとき","誰かが笑顔になってくれたとき","目標を達成してスポットライトを浴びたとき","自分だけの世界や表現に没頭しているとき","誰にも邪魔されず深く思考しているとき","信頼できる人たちと安心して動いているとき","初めての場所や体験にワクワクしているとき","障壁を乗り越えて前に進んでいるとき","何も起きず、みんなが穏やかにいるとき"],
+   types:[1,2,3,4,5,6,7,8,9]}
+];
 
-/* =========================================================
-   画面レンダリング
-========================================================= */
-function renderStart() {
-  stopConfetti();
-  app.innerHTML = `
-    <h1>🎮 究極の2択<br>性格ゲーム</h1>
-    <img class="hero" src="${getDogImg(5)}" alt="タイプ5">
-    <p class="subtitle">新年会を盛り上げる<strong>思考シンクロ診断</strong><br>あなたの考えは作者Rainyと一致するか？</p>
-    <button class="btn main" onclick="startTwoChoice()">✨ ゲーム開始 ✨</button>
+const TYPES={
+  1:{name:"タイプ1｜改革する人",emoji:"⚖️",color:"#86efac",img:"https://ennea5w4.github.io/enneagram-test/img/type1.png",
+     desc:"誠実さと正確さを大切にする完璧主義者。高い倫理観と責任感で、物事を正しく改善しようとします。",kw:"誠実・規律・改善・責任感"},
+  2:{name:"タイプ2｜助ける人",emoji:"🤝",color:"#fca5a5",img:"https://ennea5w4.github.io/enneagram-test/img/type2.png",
+     desc:"思いやりと共感にあふれ、人の役に立つことに喜びを感じます。周囲のニーズを先回りして察知します。",kw:"共感・献身・温かさ・人間関係"},
+  3:{name:"タイプ3｜達成する人",emoji:"🏆",color:"#fcd34d",img:"https://ennea5w4.github.io/enneagram-test/img/type3.png",
+     desc:"目標達成への強い意欲と実行力を持ちます。成果を出すことで自分の価値を証明しようとします。",kw:"達成・効率・影響力・成功"},
+  4:{name:"タイプ4｜個性的な人",emoji:"🎨",color:"#c4b5fd",img:"https://ennea5w4.github.io/enneagram-test/img/type4.png",
+     desc:"豊かな感受性と独自の世界観を持つクリエイター。自己表現と深い感情の探求を大切にします。",kw:"独自性・感性・深み・自己表現"},
+  5:{name:"タイプ5｜観察する人",emoji:"🔭",color:"#93c5fd",img:"https://ennea5w4.github.io/enneagram-test/img/type5.png",
+     desc:"知識と分析を重視する探求者。深く考え、専門性を高めることで安心感と有能感を得ます。",kw:"知識・分析・専門性・独立"},
+  6:{name:"タイプ6｜忠実な人",emoji:"🛡️",color:"#6ee7b7",img:"https://ennea5w4.github.io/enneagram-test/img/type6.png",
+     desc:"信頼と安全を大切にする忠実なサポーター。慎重にリスクを見極め、仲間との絆を守ります。",kw:"信頼・安全・慎重・責任感"},
+  7:{name:"タイプ7｜熱中する人",emoji:"🌟",color:"#fde68a",img:"https://ennea5w4.github.io/enneagram-test/img/type7.png",
+     desc:"好奇心とエネルギーにあふれる冒険家。楽しいことや新しい体験を次々と求めます。",kw:"自由・楽観・冒険・発想力"},
+  8:{name:"タイプ8｜挑戦する人",emoji:"🔥",color:"#fca5a5",img:"https://ennea5w4.github.io/enneagram-test/img/type8.png",
+     desc:"強い意志と決断力で周囲を引っ張るリーダー。正義感が強く、弱い者を守ろうとします。",kw:"力強さ・決断・影響力・正義"},
+  9:{name:"タイプ9｜平和を好む人",emoji:"🕊️",color:"#a5f3fc",img:"https://ennea5w4.github.io/enneagram-test/img/type9.png",
+     desc:"穏やかで調和を愛する平和主義者。場を和ませ、対立を和らげる調整力を持ちます。",kw:"調和・穏やか・受容・包容力"}
+};
+
+/* ============================================================
+   状態管理
+============================================================ */
+let phase=1, idx=0, p1ans=[], p2ans=[], p1scores={};
+const app=document.getElementById("app");
+
+/* ============================================================
+   スタート画面
+============================================================ */
+function renderStart(){
+  phase=1;idx=0;p1ans=[];p2ans=[];
+  app.innerHTML=`
+    <h1>エニアグラム<br>センター→タイプ診断</h1>
+    <p class="subtitle">日常場面への反応からセンターを探り<br>さらにあなたのタイプ候補を診断します</p>
+    <p class="subtitle" style="color:#666;font-size:.82rem;">全38問 ／ 正解はありません。直感で選んでください。</p>
+    <button class="btn btn-next1 btn-start" onclick="startP1()">✨ 診断スタート ✨</button>
   `;
 }
 
-function startTwoChoice() {
-  index32 = 0;
-  ans32 = [];
-  renderQuestion32();
-}
+/* ============================================================
+   PHASE 1 レンダリング
+============================================================ */
+function startP1(){idx=0;p1ans=[];renderP1();}
 
-function next32() {
-  if (index32 === 15) {
-    renderTransition();
-    return;
-  }
-  index32++;
-  if (index32 >= questions32.length) {
-    renderResult32();
-  } else {
-    renderQuestion32();
-  }
-}
-
-function prev32() {
-  if (index32 === 0) {
-    renderStart();
-    return;
-  }
-  if (index32 === 16) {
-    renderTransition();
-    return;
-  }
-  index32--;
-  renderQuestion32();
-}
-
-function renderQuestion32() {
-  const q = questions32[index32];
-  const a = ans32[index32];
-  const mode = index32 < 16 ? "地獄" : "天国";
-  const modeClass = index32 < 16 ? "mode-hell" : "mode-heaven";
-  const progress = ((index32 + 1) / 32) * 100;
-  
-  app.innerHTML = `
-    <div class="mode-badge ${modeClass}">${mode}モード</div>
-    <div class="progress-wrapper">
-      <div class="progress-bar-container">
-        <div class="progress-bar-fill" style="width: ${progress}%"></div>
-      </div>
-      <div class="progress-text">
-        <span>Q${index32 + 1} / 32</span>
-        <span>残り ${32 - index32} 問</span>
-      </div>
+function renderP1(){
+  const q=P1[idx], a=p1ans[idx];
+  const pct=((idx+1)/20)*100;
+  app.innerHTML=`
+    <div class="phase-badge phase1">PHASE 1　センター診断　${idx+1}/20</div>
+    <div class="progress-wrap">
+      <div class="progress-bg"><div class="progress-fill fill1" style="width:${pct}%"></div></div>
+      <div class="progress-text"><span>Q${idx+1} / 20</span><span>残り ${20-idx} 問</span></div>
     </div>
-    <div class="question">${escapeHtml(q.q)}</div>
+    <div class="scene-label">${q.scene}</div>
+    <div class="question">${q.q}</div>
     <div class="choices">
-      <button class="btn choice ${a === 'A' ? 'selectedA' : ''}" onclick="selectAnswer('A')">
-        ${escapeHtml(q.A)}
-      </button>
-      <button class="btn choice ${a === 'B' ? 'selectedB' : ''}" onclick="selectAnswer('B')">
-        ${escapeHtml(q.B)}
-      </button>
+      <button class="choice-btn ${a==='A'?'sel-A':''}" onclick="selP1('A')">A　${q.A}</button>
+      <button class="choice-btn ${a==='B'?'sel-B':''}" onclick="selP1('B')">B　${q.B}</button>
+      <button class="choice-btn ${a==='C'?'sel-C':''}" onclick="selP1('C')">C　${q.C}</button>
     </div>
     <div class="nav">
-      <button class="btn sub" onclick="prev32()">← 戻る</button>
-      <button class="btn danger" onclick="next32()" ${!a ? 'disabled' : ''}>
-        ${index32 === 31 ? '🎯 結果へ' : '次へ →'}
+      <button class="btn btn-back" onclick="backP1()">← 戻る</button>
+      <button class="btn btn-next1" onclick="nextP1()" ${!a?'disabled':''}>
+        ${idx===19?'センター結果へ →':'次へ →'}
       </button>
     </div>
   `;
 }
 
-function selectAnswer(choice) {
-  ans32[index32] = choice;
-  // バイブレーション（対応デバイスのみ）
-  if (navigator.vibrate) {
-    navigator.vibrate(50);
-  }
-  renderQuestion32();
+function selP1(c){p1ans[idx]=c;if(navigator.vibrate)navigator.vibrate(25);renderP1();}
+function nextP1(){if(idx===19){calcP1();return;}idx++;renderP1();}
+function backP1(){if(idx===0){renderStart();return;}idx--;renderP1();}
+
+function calcP1(){
+  const sc={instinct:0,feeling:0,thinking:0};
+  p1ans.forEach(a=>{if(P1MAP[a])sc[P1MAP[a]]++;});
+  p1scores=sc;
+  renderCenterResult();
 }
 
-function renderTransition() {
-  app.innerHTML = `
-    <div class="transition-content">
-      <h1 style="font-size: 2rem;">🔥 地獄モード終了！</h1>
-      <img class="hero" src="img/transition_hell_to_heaven.png" alt="天国へ" style="max-width: 350px;">
-      <p class="subtitle" style="font-size: 1.1rem;">ここからは「究極の幸せ」を選ぶ<br><strong style="color: #f5b642; font-size: 1.3rem;">✨ 天国モード ✨</strong>突入です！</p>
-      <button class="btn main" onclick="index32=16;renderQuestion32()" style="font-size: 1.2rem; padding: 22px;">
-        🌟 天国へ進む →
+/* ============================================================
+   センター結果中間画面
+============================================================ */
+function renderCenterResult(){
+  const top=Object.entries(p1scores).sort((a,b)=>b[1]-a[1])[0][0];
+  const ci=CI[top];
+  app.innerHTML=`
+    <h1>PHASE 1 結果</h1>
+    <p class="subtitle">あなたのセンター候補</p>
+    <div class="center-badge ${ci.badge}">${ci.name}</div>
+    <p style="color:#94a3b8;font-size:.86rem;margin-bottom:4px;">${ci.types}　根本感情：${ci.emotion}</p>
+    <div class="center-result-box">
+      <p style="font-size:.9rem;color:#d1d5db;line-height:1.7;">${ci.desc}</p>
+      <div class="score-bars" style="margin-top:14px">
+        ${['instinct','feeling','thinking'].map(c=>{
+          const i=CI[c],p=Math.round(p1scores[c]/20*100);
+          return `<div class="score-row">
+            <div class="score-label"><span>${i.name}（${i.types}）</span><span>${p1scores[c]}問 / ${p}%</span></div>
+            <div class="score-bg"><div class="score-bar ${i.bar}" style="width:${p}%"></div></div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+    <div class="next-hint">
+      ✨ 次はタイプ診断です。<br>
+      センター候補の中の3タイプのうち、どれに一番近いかを18問で探ります。
+    </div>
+    <button class="btn btn-next2 btn-start" onclick="startP2()">タイプ診断へ進む →</button>
+    <button class="btn btn-restart" onclick="startP1()">← センター診断をやり直す</button>
+  `;
+}
+
+/* ============================================================
+   PHASE 2 レンダリング
+============================================================ */
+function startP2(){idx=0;p2ans=[];renderP2();}
+
+function renderP2(){
+  const q=P2[idx], a=p2ans[idx];
+  const pct=((idx+1)/18)*100;
+  const selClass=['sel-A','sel-B','sel-C','sel-D','','','sel-A','sel-B','sel-C'];
+  app.innerHTML=`
+    <div class="phase-badge phase2">PHASE 2　タイプ診断　${idx+1}/18</div>
+    <div class="progress-wrap">
+      <div class="progress-bg"><div class="progress-fill fill2" style="width:${pct}%"></div></div>
+      <div class="progress-text"><span>Q${idx+1} / 18</span><span>残り ${18-idx} 問</span></div>
+    </div>
+    <div class="question">${q.q}</div>
+    <div class="choices">
+      ${q.opts.map((o,i)=>{
+        const lbl=String.fromCharCode(65+i);
+        const cls=a===lbl?(['sel-A','sel-B','sel-C','sel-D','sel-A','sel-B','sel-C','sel-D','sel-A'][i]):'';
+        return `<button class="choice-btn ${cls}" onclick="selP2('${lbl}')">${lbl}　${o}</button>`;
+      }).join('')}
+    </div>
+    <div class="nav">
+      <button class="btn btn-back" onclick="backP2()">← 戻る</button>
+      <button class="btn btn-next2" onclick="nextP2()" ${!a?'disabled':''}>
+        ${idx===17?'結果を見る →':'次へ →'}
       </button>
     </div>
   `;
 }
 
-function renderResult32() {
-  let rainy = 0;
-  ans32.forEach((a, i) => {
-    if (a === rainyAnswers32[i]) rainy++;
+function selP2(c){p2ans[idx]=c;if(navigator.vibrate)navigator.vibrate(25);renderP2();}
+function nextP2(){if(idx===17){calcFinal();return;}idx++;renderP2();}
+function backP2(){if(idx===0){renderCenterResult();return;}idx--;renderP2();}
+
+/* ============================================================
+   最終集計
+============================================================ */
+function calcFinal(){
+  const sc={1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0};
+  p2ans.forEach((a,i)=>{
+    const qi=P2[i];
+    const optIdx=a.charCodeAt(0)-65;
+    const t=qi.types[optIdx];
+    if(t) sc[t]++;
   });
-  const percent = Math.round((rainy / 32) * 100);
-  
-  let status = "普通の人";
-  let rankClass = "rank-normal";
-  let chartColor = "#999";
-  let message = "あなたは標準的な思考パターンを持っています。";
-  
-  if (rainy >= 26) {
-    status = "🏆 ソウルメイト";
-    rankClass = "rank-gold";
-    chartColor = "#f5b642";
-    message = "景品対象！あなたとRainyは運命の赤い糸で結ばれています！";
-    startConfetti();
-  } else if (rainy <= 8) {
-    status = "👽 異星人";
-    rankClass = "rank-red";
-    chartColor = "#e50914";
-    message = "罰ゲーム対象！あなたは地球外生命体の可能性があります...";
-  } else if (rainy >= 20) {
-    status = "🌟 親友候補";
-    chartColor = "#f5b642";
-    message = "かなり高い一致率！気が合いそうです。";
-  } else if (rainy <= 12) {
-    status = "⚠️ 要注意人物";
-    chartColor = "#e50914";
-    message = "思考回路が大きく異なります。ご注意を...";
-  }
-  
-  const circumference = 2 * Math.PI * 75;
-  const dashArray = (circumference * percent) / 100;
-  
-  app.innerHTML = `
-    <div class="rank-badge ${rankClass}">${status}</div>
-    
-    <div class="chart-container">
-      <svg class="chart-svg" width="200" height="200">
-        <circle class="chart-bg" cx="100" cy="100" r="75"></circle>
-        <circle class="chart-bar" cx="100" cy="100" r="75" 
-          style="stroke: ${chartColor}; stroke-dasharray: ${dashArray} ${circumference}">
-        </circle>
-      </svg>
-      <div class="chart-text" style="color: ${chartColor}">${rainy}</div>
-    </div>
-    
-    <p class="subtitle" style="font-size: 1.1rem;">
-      <strong style="color: ${chartColor}; font-size: 1.4rem;">${percent}%</strong><br>
-      Rainyとのシンクロ率
-    </p>
-    
-    <p style="margin: 20px 0; line-height: 1.7; color: #ddd;">
-      ${message}
-    </p>
-    
-    <div class="share-section">
-      <div class="share-title">📱 結果をシェアしよう</div>
-      <div class="share-buttons">
-        <a href="#" class="share-btn share-x" onclick="shareToX(${rainy}, ${percent}, '${status}'); return false;">
-          𝕏 でシェア
-        </a>
-        <a href="#" class="share-btn share-line" onclick="shareToLine(${rainy}, ${percent}, '${status}'); return false;">
-          LINE でシェア
-        </a>
-      </div>
-    </div>
-    
-    <div class="nav" style="margin-top: 25px;">
-      <a href="${ENNEA_URL}" target="_blank" class="btn main">
-        🎯 エニアグラム診断へ
-      </a>
-      <button class="btn danger" onclick="renderPenalty()">
-        🎁 景品・罰ゲーム発表
-      </button>
-      <button class="btn sub" onclick="renderStart()">
-        🏠 TOPへ戻る
-      </button>
-    </div>
-  `;
+  // センタースコアをボーナスとして加算（該当センターの3タイプに+1）
+  const bonusMap={instinct:[8,9,1],feeling:[2,3,4],thinking:[5,6,7]};
+  Object.entries(p1scores).forEach(([c,s])=>{
+    const bonus=Math.round(s/20*3);
+    bonusMap[c].forEach(t=>sc[t]+=bonus);
+  });
+  const sorted=Object.entries(sc).sort((a,b)=>b[1]-a[1]);
+  renderFinal(sorted);
 }
 
-function renderPenalty() {
-  stopConfetti();
-  app.innerHTML = `
-    <h1 style="font-size: 1.8rem; text-shadow: 0 0 20px #f5b642;">
-      🚨 SPECIAL MISSION 🚨
-    </h1>
-    <img class="hero" src="img/enneagram_penalty_lightstick.png" 
-         style="border: 3px solid #f5b642; max-width: 320px; box-shadow: 0 0 30px rgba(245, 182, 66, 0.5);">
-    
-    <div class="mission-box">
-      <p style="color: #fff; font-size: 1.05rem; line-height: 1.9; margin: 0;">
-        本イベントは<strong style="color: #f5b642;">参加費0円</strong>です。<br>
-        その代わり、<strong style="color: #f5b642;">「徳を積む」という名目で、LINEスタンプという"お布施"</strong>をご用意しています。
-      </p>
-      
-      <div style="margin-top: 20px; padding-top: 20px; border-top: 1px dashed #666;">
-        <p style="color: #f5b642; font-size: 1rem; margin: 0; line-height: 1.8;">
-          <strong>① 全員：徳を積む（スタンプ購入）</strong><br>
-          <strong>② 敗者：機密ミッションの遂行</strong><br>
-          <span style="color: #999; font-size: 0.85rem;">
-            ※ミッション内容は当日まで秘匿。この後発表します。
-          </span>
-        </p>
-      </div>
+/* ============================================================
+   最終結果画面（上位2タイプ）
+============================================================ */
+function renderFinal(sorted){
+  const top2=sorted.slice(0,2);
+  app.innerHTML=`
+    <h2>診断結果</h2>
+    <p class="subtitle">あなたのタイプ候補 上位2つ</p>
+    ${top2.map(([t,s],rank)=>{
+      const ti=TYPES[t];
+      return `
+        <div class="type-card rank${rank+1}">
+          <div class="rank-label">${rank===0?'🥇 第1候補':'🥈 第2候補'}</div>
+          <img src="${ti.img}" alt="${ti.name}"
+               style="width:110px;height:110px;object-fit:contain;display:block;margin:8px auto 12px;border-radius:16px;">
+          <div class="type-name" style="color:${ti.color}">${ti.emoji} ${ti.name}</div>
+          <div class="type-desc">${ti.desc}</div>
+          <div class="type-kw">🔑 ${ti.kw}</div>
+        </div>
+      `;
+    }).join('')}
+    <div class="final-hint">
+      💡 これはあくまで「タイプ候補」です。<br>
+      授業の中でさらに深掘りして、自分のタイプを確かめていきましょう！
     </div>
-
-    <a href="${STICKER_URL}" class="btn line-btn" target="_blank" 
-       style="background: linear-gradient(135deg, #f5b642, #b8860b); padding: 22px; font-size: 1.1rem;">
-      🙏 徳を積む（お布施会場へ）
+    <a href="https://store.line.me/stickershop/author/5729491/ja" target="_blank"
+       style="display:block;margin-top:14px;padding:15px;border-radius:50px;
+              background:linear-gradient(135deg,#06C755,#00a843);
+              color:#fff;font-weight:700;font-size:.98rem;text-decoration:none;
+              box-shadow:0 4px 15px rgba(6,199,85,.4);transition:all .22s ease;"
+       onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 25px rgba(6,199,85,.6)'"
+       onmouseout="this.style.transform='';this.style.boxShadow='0 4px 15px rgba(6,199,85,.4)'">
+      🎁 Rainy Muse LINEスタンプはこちら
     </a>
-
-    <div class="nav" style="margin-top: 25px;">
-      <button class="btn sub" onclick="renderStart()" style="font-size: 0.9rem; opacity: 0.7;">
-        🏠 最初に戻る
-      </button>
-    </div>
+    <button class="btn btn-restart" onclick="renderStart()">🔄 最初からやり直す</button>
   `;
 }
 
-/* =========================================================
-   SNSシェア機能
-========================================================= */
-function shareToX(points, percent, status) {
-  const text = encodeURIComponent(
-    `究極の2択ゲームで「${status}」判定！\n` +
-    `Rainyとのシンクロ率: ${percent}% (${points}/32点)\n\n` +
-    `あなたも診断してみよう！✨\n`
-  );
-  const url = encodeURIComponent(window.location.href);
-  const hashtags = encodeURIComponent('究極の2択,性格診断,エニアグラム');
-  window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}&hashtags=${hashtags}`, '_blank');
-}
-
-function shareToLine(points, percent, status) {
-  const text = encodeURIComponent(
-    `究極の2択ゲームで「${status}」判定！\n` +
-    `Rainyとのシンクロ率: ${percent}% (${points}/32点)\n\n` +
-    `あなたも診断してみよう！✨`
-  );
-  const url = encodeURIComponent(window.location.href);
-  window.open(`https://social-plugins.line.me/lineit/share?url=${url}&text=${text}`, '_blank');
-}
-
-/* =========================================================
-   紙吹雪アニメーション
-========================================================= */
-const canvas = document.getElementById('confetti-canvas');
-const ctx = canvas.getContext('2d');
-let particles = [];
-let animationId = null;
-
-function startConfetti() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-  
-  particles = Array.from({ length: 150 }, () => ({
-    x: Math.random() * canvas.width,
-    y: Math.random() * canvas.height - canvas.height,
-    r: Math.random() * 6 + 3,
-    d: Math.random() * 10,
-    color: ['#f5b642', '#e50914', '#06C755', '#fff', '#ffd700'][Math.floor(Math.random() * 5)],
-    tilt: Math.random() * 10 - 10,
-    tiltAngle: 0,
-    tiltAngleIncrement: Math.random() * 0.07 + 0.05
-  }));
-  
-  animateConfetti();
-}
-
-function animateConfetti() {
-  if (particles.length === 0) return;
-  
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  
-  particles.forEach((p, index) => {
-    p.tiltAngle += p.tiltAngleIncrement;
-    p.y += (Math.cos(p.d) + 3 + p.r / 2) / 2;
-    p.tilt = Math.sin(p.tiltAngle - index / 3) * 15;
-    
-    ctx.beginPath();
-    ctx.lineWidth = p.r / 2;
-    ctx.strokeStyle = p.color;
-    ctx.moveTo(p.x + p.tilt + p.r / 3, p.y);
-    ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 5);
-    ctx.stroke();
-    
-    if (p.y > canvas.height) {
-      particles.splice(index, 1);
-    }
-  });
-  
-  if (particles.length > 0) {
-    animationId = requestAnimationFrame(animateConfetti);
-  }
-}
-
-function stopConfetti() {
-  particles = [];
-  if (animationId) {
-    cancelAnimationFrame(animationId);
-    animationId = null;
-  }
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-}
-
-/* =========================================================
-   ユーティリティ
-========================================================= */
-function escapeHtml(s) {
-  return String(s ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-// ウィンドウリサイズ対応
-window.addEventListener('resize', () => {
-  if (particles.length > 0) {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }
-});
-
-// 初期化
 renderStart();
 </script>
 </body>
