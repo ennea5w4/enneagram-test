@@ -12,7 +12,7 @@ body{
   animation:bg 15s ease infinite;
   color:#f0f0f0;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px;
+  min-height:100vh;display:flex;justify-content:center;align-items:flex-start;padding:20px;
 }
 @keyframes bg{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
 .card{
@@ -22,6 +22,7 @@ body{
   max-width:580px;width:100%;
   box-shadow:0 20px 60px rgba(0,0,0,0.8);
   text-align:center;
+  margin:auto;
 }
 h1{
   font-size:1.5rem;font-weight:900;
@@ -35,6 +36,12 @@ h2{
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;
   background-clip:text;margin-bottom:8px;line-height:1.3;
 }
+h3{
+  font-size:1.2rem;font-weight:900;
+  background:linear-gradient(135deg,#fbbf24,#f97316);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;margin-bottom:8px;line-height:1.3;
+}
 .subtitle{color:#aaa;font-size:.92rem;line-height:1.6;margin-bottom:20px}
 .phase-badge{
   display:inline-block;padding:4px 14px;border-radius:20px;
@@ -42,6 +49,7 @@ h2{
 }
 .phase1{background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.3);color:#6ee7b7}
 .phase2{background:rgba(244,114,182,.15);border:1px solid rgba(244,114,182,.3);color:#f9a8d4}
+.phase3{background:rgba(251,191,36,.15);border:1px solid rgba(251,191,36,.3);color:#fcd34d}
 .scene-label{
   display:inline-block;background:rgba(255,255,255,.06);
   border-radius:20px;padding:4px 13px;font-size:.78rem;color:#94a3b8;margin-bottom:10px;
@@ -51,6 +59,7 @@ h2{
 .progress-fill{height:100%;border-radius:7px;transition:width .4s ease}
 .fill1{background:linear-gradient(90deg,#34d399,#60a5fa)}
 .fill2{background:linear-gradient(90deg,#f472b6,#a78bfa)}
+.fill3{background:linear-gradient(90deg,#fbbf24,#f97316)}
 .progress-text{display:flex;justify-content:space-between;font-size:.76rem;color:#666}
 .question{
   font-size:1.02rem;font-weight:700;line-height:1.7;
@@ -66,7 +75,6 @@ h2{
   transition:all .22s ease;line-height:1.5;
 }
 .choice-btn:hover{border-color:rgba(52,211,153,.4);background:rgba(52,211,153,.07);transform:translateY(-2px)}
-.choice-btn:hover.p2{border-color:rgba(244,114,182,.4);background:rgba(244,114,182,.07)}
 .sel-A{border-color:#f87171!important;background:rgba(248,113,113,.18)!important;box-shadow:0 0 15px rgba(248,113,113,.22)}
 .sel-B{border-color:#fb923c!important;background:rgba(251,146,60,.18)!important;box-shadow:0 0 15px rgba(251,146,60,.22)}
 .sel-C{border-color:#60a5fa!important;background:rgba(96,165,250,.18)!important;box-shadow:0 0 15px rgba(96,165,250,.22)}
@@ -77,12 +85,14 @@ h2{
 .btn-next1:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 22px rgba(52,211,153,.5)}
 .btn-next2{background:linear-gradient(135deg,#f472b6,#a78bfa);color:#fff;box-shadow:0 4px 14px rgba(244,114,182,.3)}
 .btn-next2:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 22px rgba(244,114,182,.5)}
-.btn-next1:disabled,.btn-next2:disabled{opacity:.3;cursor:not-allowed}
+.btn-next3{background:linear-gradient(135deg,#fbbf24,#f97316);color:#fff;box-shadow:0 4px 14px rgba(251,191,36,.3)}
+.btn-next3:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 22px rgba(251,191,36,.5)}
+.btn-next1:disabled,.btn-next2:disabled,.btn-next3:disabled{opacity:.3;cursor:not-allowed}
 .btn-back{background:rgba(50,65,80,.8);color:#bbb;border:1px solid rgba(255,255,255,.1)}
 .btn-back:hover{background:rgba(70,85,100,.9)}
 .btn-start{width:100%;font-size:1.08rem;padding:17px}
 .btn-restart{background:rgba(50,65,80,.8);color:#bbb;border:1px solid rgba(255,255,255,.1);width:100%;margin-top:11px;padding:13px}
-/* センター結果中間画面 */
+/* センター結果 */
 .center-result-box{background:rgba(255,255,255,.04);border-radius:16px;padding:20px;margin:16px 0;text-align:left}
 .center-badge{display:inline-block;padding:8px 22px;border-radius:50px;font-size:1.1rem;font-weight:900;margin:10px 0 14px;letter-spacing:.04em}
 .badge-i{background:linear-gradient(135deg,#f87171,#dc2626);color:#fff;box-shadow:0 5px 15px rgba(248,113,113,.4)}
@@ -96,7 +106,44 @@ h2{
 .bar-i{background:linear-gradient(90deg,#f87171,#dc2626)}
 .bar-f{background:linear-gradient(90deg,#fb923c,#ea580c)}
 .bar-t{background:linear-gradient(90deg,#60a5fa,#2563eb)}
-.next-hint{background:rgba(244,114,182,.08);border:1px solid rgba(244,114,182,.2);border-radius:12px;padding:13px 15px;font-size:.86rem;color:#f9a8d4;line-height:1.7;margin:14px 0}
+.next-hint{border-radius:12px;padding:13px 15px;font-size:.86rem;line-height:1.7;margin:14px 0}
+.hint-green{background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.25);color:#6ee7b7}
+.hint-pink{background:rgba(244,114,182,.08);border:1px solid rgba(244,114,182,.2);color:#f9a8d4}
+.hint-yellow{background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.2);color:#fcd34d}
+/* PHASE3 キーワード */
+.kw-section{margin-bottom:14px;border-radius:12px;overflow:hidden}
+.kw-header{
+  padding:14px 16px;cursor:pointer;
+  display:flex;justify-content:space-between;align-items:center;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:12px;
+  font-weight:700;font-size:.95rem;color:#e2e8f0;
+  transition:all .22s ease;
+}
+.kw-header:hover{background:rgba(255,255,255,.1)}
+.kw-header.open{border-radius:12px 12px 0 0;border-bottom:none}
+.kw-body{
+  display:none;padding:14px;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.1);
+  border-top:none;border-radius:0 0 12px 12px;
+}
+.kw-body.open{display:block}
+.kw-tags{display:flex;flex-wrap:wrap;gap:8px}
+.kw-tag{
+  display:inline-block;padding:8px 14px;
+  background:rgba(40,55,75,.8);border:2px solid rgba(255,255,255,.1);
+  border-radius:25px;font-size:.85rem;color:#e2e8f0;
+  cursor:pointer;transition:all .2s ease;user-select:none;
+}
+.kw-tag:hover{border-color:rgba(251,191,36,.4);background:rgba(251,191,36,.1);transform:translateY(-1px)}
+.kw-tag.checked{
+  background:linear-gradient(135deg,rgba(251,191,36,.3),rgba(249,115,22,.3));
+  border-color:#fbbf24;color:#fde68a;
+  box-shadow:0 0 10px rgba(251,191,36,.2);
+}
+.kw-count{font-size:.78rem;color:#94a3b8;margin-top:8px;text-align:right}
 /* 最終結果 */
 .type-card{background:rgba(255,255,255,.05);border-radius:16px;padding:18px;text-align:left;margin:12px 0}
 .type-card.rank1{border:2px solid rgba(250,204,21,.4);box-shadow:0 0 20px rgba(250,204,21,.1)}
@@ -104,9 +151,11 @@ h2{
 .rank-label{font-size:.78rem;font-weight:700;margin-bottom:6px}
 .rank1 .rank-label{color:#fcd34d}
 .rank2 .rank-label{color:#94a3b8}
-.type-name{font-size:1.1rem;font-weight:900;margin-bottom:6px}
+.type-name{font-size:1.1rem;font-weight:900;margin-bottom:8px}
+.type-img{width:100px;height:100px;object-fit:contain;display:block;margin:8px auto 12px;border-radius:14px}
 .type-desc{font-size:.88rem;color:#d1d5db;line-height:1.7}
 .type-kw{font-size:.82rem;color:#a78bfa;margin-top:8px}
+.match-info{font-size:.8rem;color:#94a3b8;margin-top:6px}
 .final-hint{background:rgba(52,211,153,.07);border:1px solid rgba(52,211,153,.2);border-radius:12px;padding:13px 15px;font-size:.85rem;color:#6ee7b7;line-height:1.7;margin-top:14px}
 </style>
 </head>
@@ -116,7 +165,7 @@ h2{
 /* ============================================================
    PHASE 1: センター診断（20問）
 ============================================================ */
-const P1 = [
+const P1=[
   {scene:"🚶 日常の場面",q:"並んでいたら横入りされた。あなたの最初の反応は？",A:"むっとして「並んでますよ」と声をかける",B:"見て見ぬふりをするが、モヤモヤが残る",C:"「注意したら揉めるかも」と頭の中でシミュレーションしてしまう"},
   {scene:"📱 日常の場面",q:"LINEを送ったのに、既読がつかない。どう感じる？",A:"特に気にしない。相手にも事情があるだろうと思う",B:"「嫌われたかな」「何か気に障ることを言ったかな」と考えてしまう",C:"「何かあったのかな」と心配になる。最悪のケースが浮かぶ"},
   {scene:"🗣️ 日常の場面",q:"グループの話し合いで自分の意見が無視された。あなたは？",A:"もう一度、はっきり自分の意見を言おうとする",B:"「受け入れてもらえなかった」と傷ついて、黙ってしまう",C:"「なぜ通らなかったのか」を頭の中で分析し始める"},
@@ -138,23 +187,20 @@ const P1 = [
   {scene:"🌙 日常の場面",q:"夜、なかなか眠れないとき、頭の中にあるのは？",A:"今日うまくいかなかったことへの不満・明日やること",B:"「あの人に悪く思われていないかな」という対人関係の心配",C:"「もし〇〇になったらどうしよう」という将来への不安"},
   {scene:"🏁 日常の場面",q:"何かが終わったあと、真っ先に感じるのは？",A:"「次は何をしようか」というエネルギーの向かい先",B:"「ちゃんとできていたかな」「どう思われたかな」という振り返り",C:"「終わった…」という安堵と、次への準備を始めたい気持ち"}
 ];
-// A=本能 B=感情 C=思考
 const P1MAP={A:"instinct",B:"feeling",C:"thinking"};
-
 const CI={
   instinct:{name:"🔴 本能センター",types:"タイプ 8・9・1",badge:"badge-i",bar:"bar-i",emotion:"怒り",
-    desc:"直感や行動を重視し、状況に対して「まず動く」反応が出やすいタイプです。エネルギーの源は自律と正義感にあります。"},
+    desc:"直感や行動を重視し、状況に対して「まず動く」反応が出やすいタイプです。"},
   feeling:{name:"🟠 感情センター",types:"タイプ 2・3・4",badge:"badge-f",bar:"bar-f",emotion:"恥",
-    desc:"人との関係性や承認を重視し、「人にどう思われるか」が自然と気になるタイプです。感情の感度が高く、人とのつながりが力の源です。"},
+    desc:"人との関係性や承認を重視し、「人にどう思われるか」が自然と気になるタイプです。"},
   thinking:{name:"🔵 思考センター",types:"タイプ 5・6・7",badge:"badge-t",bar:"bar-t",emotion:"不安",
-    desc:"情報と計画を重視し、「なぜ・どうなるか」を自然と考えるタイプです。見通しが立つと安心でき、準備と分析が力の源です。"}
+    desc:"情報と計画を重視し、「なぜ・どうなるか」を自然と考えるタイプです。"}
 };
 
 /* ============================================================
-   PHASE 2: タイプ診断（18問・全タイプ共通）
-   各設問で9タイプのいずれかに1点加算
+   PHASE 2: タイプ設問診断（18問）
 ============================================================ */
-const P2 = [
+const P2=[
   {q:"仕事で一番モチベーションが上がるのはどれ？",
    opts:["きちんと正しいことができたとき","誰かの役に立てたとき","目標を達成して評価されたとき","自分だけの独創的な成果を出せたとき","深く専門的なことを理解できたとき","信頼できる仲間と安定して進められたとき","新しくて楽しいことに挑戦できたとき","自分の力で大きな影響を与えられたとき","みんなが仲良く穏やかに進められたとき"],
    types:[1,2,3,4,5,6,7,8,9]},
@@ -211,53 +257,75 @@ const P2 = [
    types:[1,2,3,4,5,6,7,8,9]}
 ];
 
-const TYPES={
-  1:{name:"タイプ1｜改革する人",emoji:"⚖️",color:"#86efac",img:"https://ennea5w4.github.io/enneagram-test/img/type1.png",
+/* ============================================================
+   PHASE 3: キーワード診断
+============================================================ */
+const KW={
+  1:["完璧主義","規律","秩序","正義感","責任感","倫理観","自己抑制","理想主義","批判的","真面目","向上心","義務感","律儀","内省的","正直","自分に厳しい","厳格","潔癖"],
+  2:["思いやり","親切","助けたい","献身","優しい","面倒見がよい","人懐っこい","共感的","尽くす","気遣い","自己犠牲","愛されたい","NOが言えない","他者優先","世話好き","感謝されたい"],
+  3:["目標達成","努力家","成果重視","自信家","実行力","成功志向","競争心","評価を気にする","リーダーシップ","カリスマ性","合理的","承認欲求","自分磨き","有能さ","結果主義","仕事好き"],
+  4:["個性的","感受性豊か","ロマンチスト","表現欲求","創造的","美意識","孤独好き","内向的","詩的","繊細","複雑な感情","特別でありたい","傷つきやすい","自意識過剰","悲観的"],
+  5:["知的","冷静","分析好き","探究心","一人が好き","専門家肌","観察好き","独立的","論理的","感情を抑える","深く考える","集中力","マイペース","事前準備","無駄を嫌う"],
+  6:["慎重","心配性","安全第一","忠誠心","用心深い","責任感","サポート役","疑い深い","チーム思考","決断が遅い","警戒心","リスク回避","確認癖","守りの姿勢","人に相談する"],
+  7:["楽観的","活動的","刺激好き","多趣味","明るい性格","ポジティブ","好奇心旺盛","未来志向","社交的","アイデア豊富","飽きっぽい","冒険好き","エネルギッシュ","楽しいこと優先","チャレンジャー"],
+  8:["リーダーシップ","自己主張","決断力","強い意志","行動的","パワフル","弱さを見せない","対立を恐れない","頼れる存在","白黒はっきり","挑戦好き","独立心","正面突破","支配欲","堂々としている"],
+  9:["平和主義","のんびり","衝突回避","順応性","協調性","受け身","癒し系","穏やか","受容的","安定重視","人に合わせる","自己主張が苦手","妥協しがち","後回しにする","我慢する"]
+};
+
+const TINFO={
+  1:{name:"タイプ1｜改革する人",emoji:"⚖️",color:"#86efac",img:"https://ennea5w4.github.io/enneagram-test/img/dog_type01.png",
      desc:"誠実さと正確さを大切にする完璧主義者。高い倫理観と責任感で、物事を正しく改善しようとします。",kw:"誠実・規律・改善・責任感"},
-  2:{name:"タイプ2｜助ける人",emoji:"🤝",color:"#fca5a5",img:"https://ennea5w4.github.io/enneagram-test/img/type2.png",
+  2:{name:"タイプ2｜助ける人",emoji:"🤝",color:"#fca5a5",img:"https://ennea5w4.github.io/enneagram-test/img/dog_type02.png",
      desc:"思いやりと共感にあふれ、人の役に立つことに喜びを感じます。周囲のニーズを先回りして察知します。",kw:"共感・献身・温かさ・人間関係"},
-  3:{name:"タイプ3｜達成する人",emoji:"🏆",color:"#fcd34d",img:"https://ennea5w4.github.io/enneagram-test/img/type3.png",
+  3:{name:"タイプ3｜達成する人",emoji:"🏆",color:"#fcd34d",img:"https://ennea5w4.github.io/enneagram-test/img/dog_type03.png",
      desc:"目標達成への強い意欲と実行力を持ちます。成果を出すことで自分の価値を証明しようとします。",kw:"達成・効率・影響力・成功"},
-  4:{name:"タイプ4｜個性的な人",emoji:"🎨",color:"#c4b5fd",img:"https://ennea5w4.github.io/enneagram-test/img/type4.png",
+  4:{name:"タイプ4｜個性的な人",emoji:"🎨",color:"#c4b5fd",img:"https://ennea5w4.github.io/enneagram-test/img/dog_type04.png",
      desc:"豊かな感受性と独自の世界観を持つクリエイター。自己表現と深い感情の探求を大切にします。",kw:"独自性・感性・深み・自己表現"},
-  5:{name:"タイプ5｜観察する人",emoji:"🔭",color:"#93c5fd",img:"https://ennea5w4.github.io/enneagram-test/img/type5.png",
+  5:{name:"タイプ5｜観察する人",emoji:"🔭",color:"#93c5fd",img:"https://ennea5w4.github.io/enneagram-test/img/dog_type05.png",
      desc:"知識と分析を重視する探求者。深く考え、専門性を高めることで安心感と有能感を得ます。",kw:"知識・分析・専門性・独立"},
-  6:{name:"タイプ6｜忠実な人",emoji:"🛡️",color:"#6ee7b7",img:"https://ennea5w4.github.io/enneagram-test/img/type6.png",
+  6:{name:"タイプ6｜忠実な人",emoji:"🛡️",color:"#6ee7b7",img:"https://ennea5w4.github.io/enneagram-test/img/dog_type06.png",
      desc:"信頼と安全を大切にする忠実なサポーター。慎重にリスクを見極め、仲間との絆を守ります。",kw:"信頼・安全・慎重・責任感"},
-  7:{name:"タイプ7｜熱中する人",emoji:"🌟",color:"#fde68a",img:"https://ennea5w4.github.io/enneagram-test/img/type7.png",
+  7:{name:"タイプ7｜熱中する人",emoji:"🌟",color:"#fde68a",img:"https://ennea5w4.github.io/enneagram-test/img/dog_type07.png",
      desc:"好奇心とエネルギーにあふれる冒険家。楽しいことや新しい体験を次々と求めます。",kw:"自由・楽観・冒険・発想力"},
-  8:{name:"タイプ8｜挑戦する人",emoji:"🔥",color:"#fca5a5",img:"https://ennea5w4.github.io/enneagram-test/img/type8.png",
+  8:{name:"タイプ8｜挑戦する人",emoji:"🔥",color:"#fca5a5",img:"https://ennea5w4.github.io/enneagram-test/img/dog_type08.png",
      desc:"強い意志と決断力で周囲を引っ張るリーダー。正義感が強く、弱い者を守ろうとします。",kw:"力強さ・決断・影響力・正義"},
-  9:{name:"タイプ9｜平和を好む人",emoji:"🕊️",color:"#a5f3fc",img:"https://ennea5w4.github.io/enneagram-test/img/type9.png",
+  9:{name:"タイプ9｜平和を好む人",emoji:"🕊️",color:"#a5f3fc",img:"https://ennea5w4.github.io/enneagram-test/img/dog_type09.png",
      desc:"穏やかで調和を愛する平和主義者。場を和ませ、対立を和らげる調整力を持ちます。",kw:"調和・穏やか・受容・包容力"}
 };
+
+const TNAMES={1:"タイプ1",2:"タイプ2",3:"タイプ3",4:"タイプ4",5:"タイプ5",6:"タイプ6",7:"タイプ7",8:"タイプ8",9:"タイプ9"};
 
 /* ============================================================
    状態管理
 ============================================================ */
-let phase=1, idx=0, p1ans=[], p2ans=[], p1scores={};
+let phase=1,idx=0,p1ans=[],p2ans=[],p1scores={},p2scores={},kwChecked={};
 const app=document.getElementById("app");
 
 /* ============================================================
    スタート画面
 ============================================================ */
 function renderStart(){
-  phase=1;idx=0;p1ans=[];p2ans=[];
+  phase=1;idx=0;p1ans=[];p2ans=[];p1scores={};p2scores={};kwChecked={};
+  for(let t=1;t<=9;t++) kwChecked[t]=new Set();
   app.innerHTML=`
     <h1>エニアグラム<br>センター→タイプ診断</h1>
-    <p class="subtitle">日常場面への反応からセンターを探り<br>さらにあなたのタイプ候補を診断します</p>
-    <p class="subtitle" style="color:#666;font-size:.82rem;">全38問 ／ 正解はありません。直感で選んでください。</p>
+    <p class="subtitle">3つのステップであなたのタイプ候補を探します</p>
+    <div style="text-align:left;background:rgba(255,255,255,.04);border-radius:14px;padding:16px;margin:16px 0;font-size:.88rem;color:#94a3b8;line-height:1.9">
+      <div>🟢 PHASE 1　日常場面への反応（20問）</div>
+      <div>🟣 PHASE 2　タイプ設問診断（18問）</div>
+      <div>🟡 PHASE 3　キーワード診断</div>
+    </div>
+    <p class="subtitle" style="color:#666;font-size:.82rem;">正解はありません。直感で選んでください。</p>
     <button class="btn btn-next1 btn-start" onclick="startP1()">✨ 診断スタート ✨</button>
   `;
 }
 
 /* ============================================================
-   PHASE 1 レンダリング
+   PHASE 1
 ============================================================ */
 function startP1(){idx=0;p1ans=[];renderP1();}
-
 function renderP1(){
-  const q=P1[idx], a=p1ans[idx];
+  const q=P1[idx],a=p1ans[idx];
   const pct=((idx+1)/20)*100;
   app.innerHTML=`
     <div class="phase-badge phase1">PHASE 1　センター診断　${idx+1}/20</div>
@@ -280,11 +348,9 @@ function renderP1(){
     </div>
   `;
 }
-
 function selP1(c){p1ans[idx]=c;if(navigator.vibrate)navigator.vibrate(25);renderP1();}
 function nextP1(){if(idx===19){calcP1();return;}idx++;renderP1();}
 function backP1(){if(idx===0){renderStart();return;}idx--;renderP1();}
-
 function calcP1(){
   const sc={instinct:0,feeling:0,thinking:0};
   p1ans.forEach(a=>{if(P1MAP[a])sc[P1MAP[a]]++;});
@@ -315,25 +381,21 @@ function renderCenterResult(){
         }).join('')}
       </div>
     </div>
-    <div class="next-hint">
-      ✨ 次はタイプ診断です。<br>
-      センター候補の中の3タイプのうち、どれに一番近いかを18問で探ります。
+    <div class="next-hint hint-pink">
+      ✨ 次はタイプ設問診断です。18問でタイプをさらに絞ります。
     </div>
-    <button class="btn btn-next2 btn-start" onclick="startP2()">タイプ診断へ進む →</button>
-    <button class="btn btn-restart" onclick="startP1()">← センター診断をやり直す</button>
+    <button class="btn btn-next2 btn-start" onclick="startP2()">PHASE 2 へ進む →</button>
+    <button class="btn btn-restart" onclick="startP1()">← PHASE 1 をやり直す</button>
   `;
 }
 
 /* ============================================================
-   PHASE 2 レンダリング
+   PHASE 2
 ============================================================ */
 function startP2(){idx=0;p2ans=[];renderP2();}
-
 function renderP2(){
-  const q=P2[idx], a=p2ans[idx];
+  const q=P2[idx],a=p2ans[idx];
   const pct=((idx+1)/18)*100;
-
-  // 初回表示時にシャッフル順を生成して保存
   if(!q.shuffled){
     const order=[0,1,2,3,4,5,6,7,8];
     for(let i=order.length-1;i>0;i--){
@@ -343,7 +405,6 @@ function renderP2(){
     q.shuffled=order;
   }
   const order=q.shuffled;
-
   const selColors=['sel-A','sel-B','sel-C','sel-D','sel-A','sel-B','sel-C','sel-D','sel-A'];
   app.innerHTML=`
     <div class="phase-badge phase2">PHASE 2　タイプ診断　${idx+1}/18</div>
@@ -362,56 +423,159 @@ function renderP2(){
     <div class="nav">
       <button class="btn btn-back" onclick="backP2()">← 戻る</button>
       <button class="btn btn-next2" onclick="nextP2()" ${!a?'disabled':''}>
-        ${idx===17?'結果を見る →':'次へ →'}
+        ${idx===17?'PHASE 3 へ →':'次へ →'}
       </button>
     </div>
   `;
 }
-
 function selP2(c){p2ans[idx]=c;if(navigator.vibrate)navigator.vibrate(25);renderP2();}
-function nextP2(){if(idx===17){calcFinal();return;}idx++;renderP2();}
+function nextP2(){if(idx===17){calcP2();return;}idx++;renderP2();}
 function backP2(){if(idx===0){renderCenterResult();return;}idx--;renderP2();}
-
-/* ============================================================
-   最終集計
-============================================================ */
-function calcFinal(){
+function calcP2(){
   const sc={1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0};
   p2ans.forEach((a,i)=>{
     const qi=P2[i];
-    const optIdx=a.charCodeAt(0)-65; // 表示上のインデックス
-    const origIdx=qi.shuffled[optIdx]; // シャッフル前の元のインデックス
+    const optIdx=a.charCodeAt(0)-65;
+    const origIdx=qi.shuffled[optIdx];
     const t=qi.types[origIdx];
     if(t) sc[t]++;
   });
-  // センタースコアをボーナスとして加算（該当センターの3タイプに+1）
+  // センタースコアをボーナスとして加算
   const bonusMap={instinct:[8,9,1],feeling:[2,3,4],thinking:[5,6,7]};
   Object.entries(p1scores).forEach(([c,s])=>{
     const bonus=Math.round(s/20*3);
     bonusMap[c].forEach(t=>sc[t]+=bonus);
   });
-  const sorted=Object.entries(sc).sort((a,b)=>b[1]-a[1]);
-  renderFinal(sorted);
+  p2scores=sc;
+  renderP3();
+}
+
+/* ============================================================
+   PHASE 3: キーワード診断
+============================================================ */
+function renderP3(){
+  // P2上位3タイプを取得してそれを優先表示
+  const sorted=Object.entries(p2scores).sort((a,b)=>b[1]-a[1]);
+  const top3=sorted.slice(0,3).map(e=>parseInt(e[0]));
+
+  let sectionsHTML='';
+  // 上位3タイプを先に表示、残りは後
+  const order=[...top3,...[1,2,3,4,5,6,7,8,9].filter(t=>!top3.includes(t))];
+  order.forEach(t=>{
+    const ti=TINFO[t];
+    const isTop=top3.includes(t);
+    sectionsHTML+=`
+      <div class="kw-section">
+        <div class="kw-header ${isTop?'open':''}" id="kh${t}" onclick="toggleKW(${t})">
+          <span>${ti.emoji} ${TNAMES[t]}の傾向 ${isTop?'⭐':''}</span>
+          <span id="kt${t}">▼</span>
+        </div>
+        <div class="kw-body ${isTop?'open':''}" id="kb${t}">
+          <div class="kw-tags">
+            ${KW[t].map(w=>`<span class="kw-tag" onclick="toggleKwTag(${t},'${w}',this)">${w}</span>`).join('')}
+          </div>
+          <div class="kw-count" id="kc${t}">選択: 0個</div>
+        </div>
+      </div>
+    `;
+  });
+
+  app.innerHTML=`
+    <div class="phase-badge phase3">PHASE 3　キーワード診断</div>
+    <p class="subtitle">今の自分に当てはまるキーワードを<br>直感でチェックしてください（複数OK）</p>
+    <div class="next-hint hint-yellow">
+      ⭐ PHASE 2の結果から上位3タイプを先に表示しています。<br>他のタイプも確認したい場合は開いてみてください。
+    </div>
+    <div style="margin:16px 0">${sectionsHTML}</div>
+    <div style="text-align:center;color:#94a3b8;font-size:.82rem;margin-bottom:16px" id="totalKw">合計選択数: 0個</div>
+    <button class="btn btn-next3 btn-start" onclick="calcFinal()">🎯 最終結果を見る</button>
+    <button class="btn btn-restart" onclick="startP2()">← PHASE 2 をやり直す</button>
+  `;
+}
+
+function toggleKW(t){
+  const body=document.getElementById('kb'+t);
+  const header=document.getElementById('kh'+t);
+  const icon=document.getElementById('kt'+t);
+  const isOpen=body.classList.contains('open');
+  body.classList.toggle('open',!isOpen);
+  header.classList.toggle('open',!isOpen);
+  icon.textContent=isOpen?'▼':'▲';
+}
+
+function toggleKwTag(t,w,el){
+  if(kwChecked[t].has(w)){
+    kwChecked[t].delete(w);
+    el.classList.remove('checked');
+  } else {
+    kwChecked[t].add(w);
+    el.classList.add('checked');
+  }
+  document.getElementById('kc'+t).textContent=`選択: ${kwChecked[t].size}個`;
+  const total=Object.values(kwChecked).reduce((s,v)=>s+v.size,0);
+  document.getElementById('totalKw').textContent=`合計選択数: ${total}個`;
+}
+
+/* ============================================================
+   最終集計（3つの結果を統合）
+============================================================ */
+function calcFinal(){
+  const kwSc={1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0};
+  for(let t=1;t<=9;t++) kwSc[t]=kwChecked[t].size;
+
+  const kwTotal=Object.values(kwSc).reduce((s,v)=>s+v,0);
+  if(kwTotal===0){
+    alert("キーワードを1つ以上選んでください✨");
+    return;
+  }
+
+  // 3つのスコアを正規化して統合
+  // P1: センタースコア → 該当3タイプに配分
+  const p1norm={1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0};
+  const bonusMap={instinct:[8,9,1],feeling:[2,3,4],thinking:[5,6,7]};
+  Object.entries(p1scores).forEach(([c,s])=>{
+    bonusMap[c].forEach(t=>p1norm[t]+=s/20*10);
+  });
+
+  // P2: タイプスコア正規化（最大18点→10点スケール）
+  const p2max=Math.max(...Object.values(p2scores))||1;
+  const p2norm={};
+  for(let t=1;t<=9;t++) p2norm[t]=(p2scores[t]||0)/p2max*10;
+
+  // P3: キーワードスコア正規化（最大値→10点スケール）
+  const kwMax=Math.max(...Object.values(kwSc))||1;
+  const kwNorm={};
+  for(let t=1;t<=9;t++) kwNorm[t]=kwSc[t]/kwMax*10;
+
+  // 統合スコア（P1:2, P2:4, P3:4の重み）
+  const final={};
+  for(let t=1;t<=9;t++){
+    final[t]=p1norm[t]*0.2 + p2norm[t]*0.4 + kwNorm[t]*0.4;
+  }
+
+  const sorted=Object.entries(final).sort((a,b)=>b[1]-a[1]);
+  renderFinal(sorted,kwSc);
 }
 
 /* ============================================================
    最終結果画面（上位2タイプ）
 ============================================================ */
-function renderFinal(sorted){
+function renderFinal(sorted,kwSc){
   const top2=sorted.slice(0,2);
   app.innerHTML=`
     <h2>診断結果</h2>
-    <p class="subtitle">あなたのタイプ候補 上位2つ</p>
+    <p class="subtitle">3つの診断を統合したタイプ候補</p>
     ${top2.map(([t,s],rank)=>{
-      const ti=TYPES[t];
+      const ti=TINFO[t];
+      const kwCount=kwSc[t]||0;
       return `
         <div class="type-card rank${rank+1}">
           <div class="rank-label">${rank===0?'🥇 第1候補':'🥈 第2候補'}</div>
-          <img src="${ti.img}" alt="${ti.name}"
-               style="width:110px;height:110px;object-fit:contain;display:block;margin:8px auto 12px;border-radius:16px;">
+          <img src="${ti.img}" alt="${ti.name}" class="type-img">
           <div class="type-name" style="color:${ti.color}">${ti.emoji} ${ti.name}</div>
           <div class="type-desc">${ti.desc}</div>
           <div class="type-kw">🔑 ${ti.kw}</div>
+          <div class="match-info">キーワード一致: ${kwCount}個</div>
         </div>
       `;
     }).join('')}
@@ -429,7 +593,7 @@ function renderFinal(sorted){
       📝 Rainy Muse ▶ noteの記事はこちら
     </a>
     <a href="https://store.line.me/stickershop/author/5729491/ja" target="_blank"
-       style="display:block;margin-top:14px;padding:15px;border-radius:50px;
+       style="display:block;margin-top:12px;padding:15px;border-radius:50px;
               background:linear-gradient(135deg,#06C755,#00a843);
               color:#fff;font-weight:700;font-size:.98rem;text-decoration:none;
               box-shadow:0 4px 15px rgba(6,199,85,.4);transition:all .22s ease;"
@@ -441,6 +605,8 @@ function renderFinal(sorted){
   `;
 }
 
+// 初期化
+for(let t=1;t<=9;t++) kwChecked[t]=new Set();
 renderStart();
 </script>
 </body>
