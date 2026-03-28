@@ -152,7 +152,7 @@ h3{
 .rank1 .rank-label{color:#fcd34d}
 .rank2 .rank-label{color:#94a3b8}
 .type-name{font-size:1.1rem;font-weight:900;margin-bottom:8px}
-.type-img{width:100px;height:100px;object-fit:contain;display:block;margin:8px auto 12px;border-radius:14px}
+.type-img{width:160px;height:160px;object-fit:contain;display:block;margin:10px auto 14px;border-radius:14px;background:rgba(255,255,255,.05)}
 .type-desc{font-size:.88rem;color:#d1d5db;line-height:1.7}
 .type-kw{font-size:.82rem;color:#a78bfa;margin-top:8px}
 .match-info{font-size:.8rem;color:#94a3b8;margin-top:6px}
@@ -571,7 +571,9 @@ function renderFinal(sorted,kwSc){
       return `
         <div class="type-card rank${rank+1}">
           <div class="rank-label">${rank===0?'🥇 第1候補':'🥈 第2候補'}</div>
-          <img src="${ti.img}" alt="${ti.name}" class="type-img">
+          <img src="${ti.img}" alt="${ti.name}" class="type-img"
+               onerror="this.style.display='none'"
+               onload="this.style.display='block'">
           <div class="type-name" style="color:${ti.color}">${ti.emoji} ${ti.name}</div>
           <div class="type-desc">${ti.desc}</div>
           <div class="type-kw">🔑 ${ti.kw}</div>
