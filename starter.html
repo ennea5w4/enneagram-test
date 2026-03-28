@@ -332,7 +332,19 @@ function startP2(){idx=0;p2ans=[];renderP2();}
 function renderP2(){
   const q=P2[idx], a=p2ans[idx];
   const pct=((idx+1)/18)*100;
-  const selClass=['sel-A','sel-B','sel-C','sel-D','','','sel-A','sel-B','sel-C'];
+
+  // 初回表示時にシャッフル順を生成して保存
+  if(!q.shuffled){
+    const order=[0,1,2,3,4,5,6,7,8];
+    for(let i=order.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [order[i],order[j]]=[order[j],order[i]];
+    }
+    q.shuffled=order;
+  }
+  const order=q.shuffled;
+
+  const selColors=['sel-A','sel-B','sel-C','sel-D','sel-A','sel-B','sel-C','sel-D','sel-A'];
   app.innerHTML=`
     <div class="phase-badge phase2">PHASE 2　タイプ診断　${idx+1}/18</div>
     <div class="progress-wrap">
@@ -341,10 +353,10 @@ function renderP2(){
     </div>
     <div class="question">${q.q}</div>
     <div class="choices">
-      ${q.opts.map((o,i)=>{
+      ${order.map((origIdx,i)=>{
         const lbl=String.fromCharCode(65+i);
-        const cls=a===lbl?(['sel-A','sel-B','sel-C','sel-D','sel-A','sel-B','sel-C','sel-D','sel-A'][i]):'';
-        return `<button class="choice-btn ${cls}" onclick="selP2('${lbl}')">${lbl}　${o}</button>`;
+        const cls=a===lbl?selColors[i]:'';
+        return `<button class="choice-btn ${cls}" onclick="selP2('${lbl}')">${lbl}　${q.opts[origIdx]}</button>`;
       }).join('')}
     </div>
     <div class="nav">
@@ -367,8 +379,9 @@ function calcFinal(){
   const sc={1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0};
   p2ans.forEach((a,i)=>{
     const qi=P2[i];
-    const optIdx=a.charCodeAt(0)-65;
-    const t=qi.types[optIdx];
+    const optIdx=a.charCodeAt(0)-65; // 表示上のインデックス
+    const origIdx=qi.shuffled[optIdx]; // シャッフル前の元のインデックス
+    const t=qi.types[origIdx];
     if(t) sc[t]++;
   });
   // センタースコアをボーナスとして加算（該当センターの3タイプに+1）
